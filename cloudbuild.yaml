@@ -2,6 +2,5 @@ steps:
   - id: "deploy"
     name: "ubuntu"
     args: ["bash", "./publish.sh"]
-    branches: ["master"]
     env:
       - 'PROJECT=open-contest-prod'
