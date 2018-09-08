@@ -1,5 +1,7 @@
 #! /bin/bash
-if [ ! hash npm ]; then
+if [ hash npm ]; then
+    echo ""
+else
     apt install nodejs
 fi
 npm i typescript
