@@ -4,7 +4,7 @@ steps:
     args: 
       - bash
       - ./compile.sh
-  - id: "deploy index functionn"
+  - id: "deploy index function"
     name: "gcr.io/cloud-builders/gcloud"
     args: ["functions", "deploy", "index", "--entry-point=test", "--project=${_PROJECT}", "--trigger-http"]
     dir: bin/web/
