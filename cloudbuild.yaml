@@ -12,6 +12,6 @@ steps:
     name: "gcr.io/cloud-builders/gcloud"
     args: ["functions", "deploy", "index", "--entry-point=test", "--project=${_PROJECT}", "--trigger-http"]
     dir: bin/web/
-    waitFor: compile
+    waitFor: ["compile"]
 substitutions:
     _PROJECT: open-contest-dev
