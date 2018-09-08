@@ -1,9 +1,4 @@
 steps:
-  # - id: "compile"
-  #   name: "launcher.gcr.io/google/ubuntu16_04"
-  #   args: 
-  #     - bash
-  #     - ./compile.sh
   - id: "compile"
     name: "sandrokeil/typescript"
     args: 
