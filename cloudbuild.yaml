@@ -6,7 +6,8 @@ steps:
   #     - ./compile.sh
   - id: compile
     name: "sandrokeil/typescript"
-    args: ["tsc"]
+    args: 
+      - tsc
   - id: "deploy index function"
     name: "gcr.io/cloud-builders/gcloud"
     args: ["functions", "deploy", "index", "--entry-point=test", "--project=${_PROJECT}", "--trigger-http"]
