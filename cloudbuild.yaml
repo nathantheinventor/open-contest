@@ -4,7 +4,7 @@ steps:
   #   args: 
   #     - bash
   #     - ./compile.sh
-  - id: compile
+  - id: "compile"
     name: "sandrokeil/typescript"
     args: 
       - tsc
