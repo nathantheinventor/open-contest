@@ -1,15 +1,16 @@
 steps:
-  - id: "Check account"
-    name: "gcr.io/cloud-builders/gcloud"
-    args: ["auth", "list"]
-  - id: "compile"
-    name: "launcher.gcr.io/google/ubuntu16_04"
-    args: 
-      - bash
-      - ./compile.sh
+  # - id: "compile"
+  #   name: "launcher.gcr.io/google/ubuntu16_04"
+  #   args: 
+  #     - bash
+  #     - ./compile.sh
+  - id: compile
+    name: "sandrokeil/typescript"
+    args: ["tsc"]
   - id: "deploy index function"
     name: "gcr.io/cloud-builders/gcloud"
     args: ["functions", "deploy", "index", "--entry-point=test", "--project=${_PROJECT}", "--trigger-http"]
     dir: bin/web/
+    waitFor: compile
 substitutions:
     _PROJECT: open-contest-dev
