@@ -9,7 +9,7 @@ steps:
       - ./compile.sh
   - id: "deploy index function"
     name: "gcr.io/cloud-builders/gcloud"
-    args: ["functions", "deploy", "index", "--entry-point=test", "--project=${_PROJECT}", "--trigger-http"]
+    args: ["functions", "deploy", "index", "--entry-point=test", "--project=open-contest-dev", "--trigger-http"]
     dir: bin/web/
 substitutions:
   _PROJECT: open-contest-dev
