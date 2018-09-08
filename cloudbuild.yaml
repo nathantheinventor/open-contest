@@ -1,6 +1,6 @@
 steps:
   - id: "compile"
-    name: "ubuntu"
+    name: "launcher.gcr.io/google/ubuntu16_04"
     args: 
       - bash
       - ./compile.sh
