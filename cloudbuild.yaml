@@ -1,6 +1,6 @@
 steps:
   - id: "deploy"
-    name: "gcr.io/open-contest-dev/builder"
-    args: ["./publish.sh"]
+    name: "launcher.gcr.io/google/ubuntu16_04"
+    args: ["bash", "./publish.sh"]
     env:
       - 'PROJECT=open-contest-prod'

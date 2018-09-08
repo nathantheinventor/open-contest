@@ -1,4 +1,7 @@
 #! /bin/bash
+if [ ! hash npm ]; then
+    apt install nodejs
+fi
 npm i typescript
 tsc
 cd bin/web/
