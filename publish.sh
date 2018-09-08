@@ -2,7 +2,7 @@
 if [ hash npm ]; then
     echo ""
 else
-    apt install nodejs
+    apt-get -y install node
 fi
 npm i typescript
 tsc
