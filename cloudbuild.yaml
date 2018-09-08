@@ -1,6 +1,6 @@
 steps:
   - id: "deploy"
-    name: "gcr.io/cloud-builders/npm"
+    name: "gcr.io/open-contest-dev/builder"
     args: ["bash", "./publish.sh"]
     env:
       - 'PROJECT=open-contest-prod'
