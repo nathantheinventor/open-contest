@@ -1,4 +1,7 @@
 steps:
+  - id: "Check account"
+    name: "gcr.io/cloud-builders/gcloud"
+    args: ["auth", "list"]
   - id: "compile"
     name: "launcher.gcr.io/google/ubuntu16_04"
     args: 
