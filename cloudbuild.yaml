@@ -5,7 +5,7 @@ steps:
       - tsc
   - id: "Make code bucket"
     name: gcr.io/cloud-builders/gsutil
-    args: ["mb", "gs://${_PROJECT}-code/", "-p", "${_PROJECT}"]
+    args: ["mb", "-p", "${_PROJECT}", "gs://${_PROJECT}-code/"]
   - id: "deploy index function"
     name: "gcr.io/cloud-builders/gcloud"
     args: ["functions", "deploy", "index", "--entry-point=test", "--project=${_PROJECT}", "--trigger-http"]
