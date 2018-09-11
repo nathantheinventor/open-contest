@@ -1,16 +1,17 @@
 steps:
-  - id: "compile"
-    name: "sandrokeil/typescript"
-    args: 
-      - tsc
-  - id: "Make code bucket"
-    name: gcr.io/cloud-builders/gsutil
-    args: ["mb", "-p", "${_PROJECT}", "gs://${_PROJECT}-code/"]
-    waitFor: []
+  # - id: "compile"
+  #   name: "sandrokeil/typescript"
+  #   args: 
+  #     - tsc
   - id: "deploy index function"
     name: "gcr.io/cloud-builders/gcloud"
-    args: ["functions", "deploy", "index", "--entry-point=test", "--project=${_PROJECT}", "--trigger-http"]
-    dir: bin/web/
-    waitFor: ["compile"]
+    args: ["functions", "deploy", "index", "--entry-point=test", "--project=${_PROJECT}", "--trigger-http", "--region=us-east1", "--memory=128MB", "--timeout=11s"]
+    dir: src/web/
+    waitFor: []
+  - id: "deploy python runner"
+    name: "gcr.io/cloud-builders/gcloud"
+    args: ["functions", "deploy", "py2-runner", "--entry-point=run", "--project=${_PROJECT}", "--trigger-resource=${_PROJECT}-code-py-2", "--region=us-east1", "--memory=512MB", "--timeout=11s", "--trigger-event=google.storage.object.finalize"]
+    dir: src/backend/runners/python2/
+    waitFor: []
 substitutions:
     _PROJECT: open-contest-dev
