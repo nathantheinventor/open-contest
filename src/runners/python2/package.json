@@ -1,8 +1,0 @@
-{
-    "name": "open-contest-python-2-runner",
-    "version": "0.1.0",
-    "dependencies": {
-        "@google-cloud/storage": "latest",
-        "extract-zip": "latest"
-    }
-}
