@@ -12,7 +12,7 @@ timeLimit = int(sys.argv[2])
 
 def runCode(timeout):
     for i in range(testCases):
-        if os.system("python /source/code.py < /source/in{0}.txt > /source/out{0}.txt 2> /source/err{0}.txt".format(i)) != 0:
+        if os.system("python /source/code.py < /source/in{0}.txt > /source/out/out{0}.txt 2> /source/out/err{0}.txt".format(i)) != 0:
             print("runtime_error")
             timeout.cancel()
             exit(1)
