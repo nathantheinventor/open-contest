@@ -1,0 +1,1 @@
+python code.py < in$1.txt > /tmp/out$1.txt 2> /tmp/err$1.txt

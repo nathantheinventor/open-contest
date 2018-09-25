@@ -1,0 +1,103 @@
+body {
+    margin: 0%;
+    font-family: sans-serif;
+}
+div.header {
+    max-width: 960px;
+    margin-right: auto;
+    margin-left: auto;
+    color: #093;
+    padding: 20px;
+}
+div.header h1 {
+    margin: 0px;
+}
+div.menu {
+    background: #093;
+}
+div.menu-items {
+    max-width: 960px;
+    margin-right: auto;
+    margin-left: auto;
+}
+div.menu div.menu-item {
+    display: inline-block;
+    padding: 20px;
+    font-size: 20px;
+    border-right: 1px solid white;
+}
+div.menu-item:first-child {
+    border-left: 1px solid white;
+}
+div.menu a {
+    color: white;
+    text-decoration: none;
+}
+div.main-content {
+    max-width: 960px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 68px;
+}
+div.footer {
+    position: fixed;
+    width: 100%;
+    top: calc(100vh - 34px);
+    background-color: #093;
+    color: white;
+    padding: 10px;
+    z-index: 10000000;
+}
+div.footer h2 {
+    margin: 0px;
+    font-size: 12px;
+}
+a.problem-link {
+    text-decoration: none;
+}
+div.problem {
+    border: 3px solid #093;
+    border-radius: 10px;
+    color: #093;
+    padding: 10px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+h2.page-title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #096;
+}
+select.language-picker {
+    float: right;
+}
+div.code-editor div.ace-editor-wrapper {
+    width: 100%;
+    min-height: 400px;
+}
+div.code-editor div.ace-editor {
+    width: 100%;
+    min-height: 400px;
+}
+div.card {
+    box-shadow: 0 5px 15px 0 rgba(120,120,120,.5);
+    margin-bottom: 20px;
+}
+div.card-header {
+    background: #00993325;
+    padding: 10px;
+}
+h2.card-title {
+    margin: 0px;
+    font-size: 1.2em;
+    display: inline-block;
+    color: #096;
+}
+div.card-contents {
+    padding: 15px;
+    font-size: 0.8em;
+}
+a.card-link {
+    color: initial;
+    text-decoration: none;
+}
