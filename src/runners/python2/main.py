@@ -22,5 +22,6 @@ def runCode(timeout):
 
 timeout = Timer(timeLimit, kill)
 timeout.start()
-thread = Thread(target=runCode, args=(timeout,), daemon=True)
+thread = Thread(target=runCode, args=(timeout,))
+thread.daemon = True
 thread.start()
