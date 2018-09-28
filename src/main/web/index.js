@@ -1,3 +1,3 @@
-exports.test = (req, res) => {
-    res.status(200).send('Hello World 2');
-}
+const { passwordGenerator } = require("./passwordGenerator");
+
+exports.passwordGenerator = passwordGenerator;

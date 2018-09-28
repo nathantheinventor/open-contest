@@ -12,20 +12,12 @@ FROM $USER/$OC_PROJECT_NAME-vb-runner
 
 FROM ubuntu:bionic
 
-# RUN apt-get update && \
-#     apt-get -y install apt-transport-https ca-certificates curl software-properties-common && \
-#     curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add - && \
-#     add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable" && \
-#     apt-get update && \
-#     apt-get -y install nodejs python3 docker-ce
-
 RUN apt-get update && \
     apt-get -y install nodejs python3 docker.io
 
 COPY web/ /web/
 COPY static/ /serve/static
 COPY generator/ /generator/
-COPY test/ /test/
-COPY run.sh /run.sh
+COPY setup.js /setup.js
 
-ENTRYPOINT ["bash", "/run.sh"]
+ENTRYPOINT ["node", "/setup.js"]
