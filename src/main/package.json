@@ -1,0 +1,9 @@
+{
+    "name": "open-contest",
+    "version": "0.1",
+    "description": "An open source programming contest management system",
+    "dependencies": {
+        "uuid": "^3.3.2"
+    },
+    "author": "Nathan Collins"
+}
