@@ -13,11 +13,13 @@ FROM $USER/$OC_PROJECT_NAME-vb-runner
 FROM ubuntu:bionic
 
 RUN apt-get update && \
-    apt-get -y install nodejs python3 docker.io
+    apt-get -y install nodejs npm python3 docker.io && \
+    npm install -g nodemon
 
-COPY web/ /web/
-COPY static/ /serve/static
-COPY generator/ /generator/
-COPY setup.js /setup.js
+# COPY . /code
+# COPY web/ /web/
+# COPY serve/ /serve
+# COPY generator/ /generator/
+# COPY setup.js /setup.js
 
-ENTRYPOINT ["node", "/setup.js"]
+ENTRYPOINT ["nodemon", "-w", "/code", "/code/setup.js"]

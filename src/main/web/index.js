@@ -1,3 +1,8 @@
-const { passwordGenerator } = require("./passwordGenerator");
+const { login } = require("./callbacks");
 
-exports.passwordGenerator = passwordGenerator;
+exports.serveRequest = (req, res) => {
+    const url = req.url;
+    if (url == "/login") {
+        login(req, res);
+    }
+}
