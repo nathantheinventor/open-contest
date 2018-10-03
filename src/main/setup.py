@@ -2,6 +2,6 @@ from generator import generateStatic, generateDynamic
 import time
 
 generateStatic()
-for i in range(1):
+while True:
     generateDynamic()
     time.sleep(1)
