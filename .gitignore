@@ -1,4 +1,5 @@
 bin/
 test/
 *.pyc
-src/main/serve/
+serve/
+__pycache__/
