@@ -3,3 +3,4 @@ test/
 *.pyc
 serve/
 __pycache__/
+.vscode/

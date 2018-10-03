@@ -14,9 +14,10 @@ const port = args[3]; // The port to run the server on
 
 // Generate a four word password for the admin user; i.e. XKCD's "correct horse battery staple"
 let adminPassword = util.passwords.password();
-adminPassword = "presently description kirk died";
+adminPassword = "presently description kirk died"; // TODO: remove this
 console.log(`The admin password is "${adminPassword}"`);
-const adminId = uuidv1();
+let adminId = uuidv1();
+adminId = "286030a0-c74a-11e8-9e2c-83267e901a62"; // TODO: remove this
 util.db.setKey(`/users/${primaryUsername}`, {
     password: adminPassword,
     id: adminId
@@ -39,6 +40,19 @@ const server = http.createServer((req, res) => {
             res.setHeader("Location", "/static/login.html");
         } else {
             res.setHeader("Location", "/static/problems.html");
+        }
+        res.end();
+        return;
+    }
+
+    // Redirect the user to his submissions page
+    if (url == "/submissions") {
+        res.statusCode = 302;
+        let user = util.auth.checkUser(req);
+        if (user == undefined) {
+            res.setHeader("Location", "/static/login.html");
+        } else {
+            res.setHeader("Location", `/static/submissions/${user}.html`);
         }
         res.end();
         return;
