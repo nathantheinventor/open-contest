@@ -64,6 +64,8 @@ div.problem {
     margin-bottom: 10px;
 }
 h2.page-title {
+    margin-top: 20px;
+    margin-bottom: 10px;
     font-size: 24px;
     font-weight: bold;
     color: #096;
@@ -97,7 +99,7 @@ div.card-contents {
     padding: 15px;
     font-size: 0.8em;
 }
-a.card-link {
+a.card-link, a.card-link:hover {
     color: initial;
     text-decoration: none;
 }

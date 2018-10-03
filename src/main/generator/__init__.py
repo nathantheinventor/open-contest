@@ -1,1 +1,1 @@
-from .main import generateStatic
+from .main import generateStatic, generateDynamic

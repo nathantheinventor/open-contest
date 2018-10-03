@@ -13,7 +13,7 @@ FROM $USER/$OC_PROJECT_NAME-vb-runner
 FROM ubuntu:bionic
 
 RUN apt-get update && \
-    apt-get -y install nodejs npm python3 docker.io && \
+    apt-get -y install nodejs npm python3 docker.io psmisc && \
     npm install -g nodemon
 
 # COPY . /code

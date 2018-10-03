@@ -37,7 +37,7 @@ class Problem:
         self.constraints = problem["constraints"]
     
     def listElem(self):
-        return Card(self.title, self.description, "/problems/{}.html".format(self.guid))
+        return Card(self.title, self.description, "/static/problems/{}.html".format(self.guid))
 
     def descriptionPage(self):
         return str(Page(
