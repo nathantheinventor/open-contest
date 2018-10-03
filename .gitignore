@@ -1,6 +1,6 @@
 bin/
 test/
 *.pyc
-serve/
+*.html
 __pycache__/
 .vscode/

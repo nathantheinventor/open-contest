@@ -43,7 +43,6 @@ def generateProblems():
         problemList = curProblems
         generateProblemsPage()
 
-
 # Generate dynamic files that change occasionally, such as problem statements
 # Called once per second
 def generateDynamic():

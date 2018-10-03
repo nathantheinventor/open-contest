@@ -3,9 +3,14 @@ from .page import Card, Page
 from ..db import getKey
 
 languages = [
-    ("Python 2", "python"),
-    ("Python 3", "python"),
-    ("C++", "c_cpp")
+    ("C", "c"),
+    ("C++", "cpp"),
+    ("C#", "cs"),
+    ("Java", "java"),
+    ("Python 2", "python2"),
+    ("Python 3", "python3"),
+    ("Ruby", "ruby"),
+    ("Visual Basic", "vb")
 ]
 def languageElem(language):
     dispName, aceName = language
