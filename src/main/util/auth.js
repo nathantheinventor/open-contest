@@ -6,7 +6,7 @@ exports.checkPassword = async (username, password) => {
         return false;
     }
     if (data.password == password) {
-        return true;
+        return data.id;
     }
     return false;
 }

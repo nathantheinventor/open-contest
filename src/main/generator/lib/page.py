@@ -1,4 +1,4 @@
-from htmllib import *
+from .htmllib import *
 from datetime import datetime
 from uuid import uuid4
 
@@ -23,8 +23,9 @@ class Menu(UIElement):
     def __init__(self):
         self.html = div(cls="menu", contents=[
             div(cls="menu-items", contents=[
-                MenuItem("/problems.html", "Problems"),
-                MenuItem("/contests.html", "Contests")
+                MenuItem("/static/problems.html", "Problems"),
+                MenuItem("/static/leaderboard.html", "Leaderboard"),
+                MenuItem("/static/mySubmissions.html", "My Submissions")
             ])
         ])
 
@@ -39,9 +40,10 @@ class Page(UIElement):
         self.html = h.html(
             head(
                 title("Example Page"),
-                h.link(rel="stylesheet", type="text/css", href="/style.css?" + uuid()),
+                h.link(rel="stylesheet", type="text/css", href="/static/styles/style.css?" + uuid()),
+                h.link(rel="stylesheet", href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css", integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO", crossorigin="anonymous"),
                 h.script(src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"),
-                h.script(src="/script.js?" + uuid()),
+                h.script(src="/static/scripts/script.js?" + uuid()),
                 h.script(src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.1/ace.js")
             ),
             body(

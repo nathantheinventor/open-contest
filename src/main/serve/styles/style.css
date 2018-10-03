@@ -101,3 +101,26 @@ a.card-link {
     color: initial;
     text-decoration: none;
 }
+.login-box {
+    margin-top: 100px;
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 300px;
+    background: #00993325;
+    padding: 30px;
+}
+.login-header {
+    color: #093;
+    text-align: center;
+    width: 100%;
+}
+.align-right {
+    text-align: right;
+}
+button {
+    background: #093;
+    color: white;
+    border: none;
+    font-size: 20px !important;
+    margin-top: 10px !important;
+}

@@ -4,6 +4,8 @@ const path = require("path");
 const util = require("./util");
 const web = require("./web");
 const uuidv1 = require("uuid/v1");
+const { exec } = require("child_process");
+const url2 = require("url");
 
 // Get the primary arguments
 const args = process.argv;
@@ -11,11 +13,16 @@ const primaryUsername = args[2]; // The username of the admin user setting up th
 const port = args[3]; // The port to run the server on
 
 // Generate a four word password for the admin user; i.e. XKCD's "correct horse battery staple"
-const adminPassword = util.passwords.password();
+let adminPassword = util.passwords.password();
+adminPassword = "presently description kirk died";
 console.log(`The admin password is "${adminPassword}"`);
+const adminId = uuidv1();
 util.db.setKey(`/users/${primaryUsername}`, {
     password: adminPassword,
-    id: uuidv1()
+    id: adminId
+});
+util.db.setKey(`/users/${adminId}`, {
+    username: primaryUsername
 });
 
 // Create the server
@@ -36,6 +43,7 @@ const server = http.createServer((req, res) => {
     if (url.startsWith("/static")) {
         // Get the path to the file to serve
         let file = path.relative("/static", url);
+        file = url2.parse(file).pathname;
         file = path.join("/code/serve", file);
         util.log(`Serving file ${file}`);
 
@@ -63,4 +71,9 @@ const server = http.createServer((req, res) => {
 // Start serving
 server.listen(port, '0.0.0.0', _ => {
     console.log(`Server started at 0.0.0.0:${port}`);
+});
+
+exec("python3 /code/setup.py", (err, stdout, stderr) => {
+    console.log(stdout);
+    console.error(stderr)
 });

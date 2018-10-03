@@ -3,7 +3,12 @@ const files = require("./files");
 
 exports.getKey = async key => {
     const file = path.join("/db", key);
-    return JSON.parse(await files.readFile(file));
+    try {
+        const contents = await files.readFile(file);
+        return JSON.parse(contents);
+    } catch (err) {
+        return undefined;
+    }
 }
 
 exports.setKey = async (key, value) => {

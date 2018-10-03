@@ -13,9 +13,10 @@ exports.login = (req, res) => {
         params = qs.parse(body)
         const username = params.username;
         const password = params.password;
-        const valid = await util.auth.checkPassword(username, password);
-        if (valid) {
+        const user = await util.auth.checkPassword(username, password);
+        if (user) {
             res.statusCode = 200;
+            res.setHeader("Set-Cookie", `user=${user}; Secure; HttpOnly`);
             res.end("ok");
         } else {
             res.statusCode = 200;
