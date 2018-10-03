@@ -10,3 +10,10 @@ exports.checkPassword = async (username, password) => {
     }
     return false;
 }
+
+exports.checkUser = req => {
+    if (req.headers.cookie == undefined || req.headers.cookie == "" || !req.headers.cookie.indexOf("=") == -1) {
+        return undefined;
+    }
+    return req.headers.cookie.split("=")[1];
+}

@@ -34,7 +34,12 @@ const server = http.createServer((req, res) => {
     // Redirect the root to the login page
     if (url == "/") {
         res.statusCode = 302;
-        res.setHeader("Location", "/static/login.html");
+        let user = util.auth.checkUser(req);
+        if (user == undefined) {
+            res.setHeader("Location", "/static/login.html");
+        } else {
+            res.setHeader("Location", "/static/problems.html");
+        }
         res.end();
         return;
     }

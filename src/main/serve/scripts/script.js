@@ -19,7 +19,7 @@ function setupAceEditor () {
 }
 
 function setupLoginButton() {
-    $(".login-button").click(function() {
+    $(".login-button").click(_ => {
         var username = $("input[name=username]").val();
         var password = $("input[name=password]").val();
         $.post("/login", {username: username, password: password}, data => {
@@ -32,7 +32,14 @@ function setupLoginButton() {
     });
 }
 
+function setupHeaderDiv() {
+    $("div.header").click(_ => {
+        window.location = "/";
+    });
+}
+
 $(document).ready(function() {
     setupAceEditor();
     setupLoginButton();
-})
+    setupHeaderDiv();
+});

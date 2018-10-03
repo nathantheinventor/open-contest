@@ -48,5 +48,8 @@ class Problem:
                 Card("Output Format", self.output),
                 Card("Constraints", self.constraints)
             ]),
-            CodeEditor()
+            CodeEditor(),
+            div(cls="align-right", contents=[
+                h.button("Submit", cls="submit-problem", problem=self.guid)
+            ])
         ))

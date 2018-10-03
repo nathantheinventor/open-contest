@@ -25,7 +25,7 @@ class Menu(UIElement):
             div(cls="menu-items", contents=[
                 MenuItem("/static/problems.html", "Problems"),
                 MenuItem("/static/leaderboard.html", "Leaderboard"),
-                MenuItem("/static/mySubmissions.html", "My Submissions")
+                MenuItem("/submissions", "My Submissions")
             ])
         ])
 

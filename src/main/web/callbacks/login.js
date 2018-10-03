@@ -2,9 +2,6 @@ const util = require("../../util");
 const qs = require('querystring');
 
 exports.login = (req, res) => {
-    if (req.method != "POST") {
-        throw new Error("POST method required for /login");
-    }
     let body = "";
     req.on('data', data => {
         body += data;
@@ -16,7 +13,7 @@ exports.login = (req, res) => {
         const user = await util.auth.checkPassword(username, password);
         if (user) {
             res.statusCode = 200;
-            res.setHeader("Set-Cookie", `user=${user}; Secure; HttpOnly`);
+            res.setHeader("Set-Cookie", `user=${user}; HttpOnly`);
             res.end("ok");
         } else {
             res.statusCode = 200;
