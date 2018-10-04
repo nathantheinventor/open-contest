@@ -40,9 +40,24 @@ class Problem:
         self.input       = problem["input"]
         self.output      = problem["output"]
         self.constraints = problem["constraints"]
+        self.samples     = int(problem["samples"])
     
     def listElem(self):
         return Card(self.title, self.description, "/static/problems/{}.html".format(self.guid))
+
+    def getSample(self, n: int) -> Card:
+        inp = getKey("/problems/{}/input/in{}.txt".format(self.guid, n))
+        outp = getKey("/problems/{}/output/out{}.txt".format(self.guid, n))
+        return Card("Sample {}".format(n), div(cls="row", contents=[
+            div(cls="col-6", contents=[
+                h.p("Input:", cls="no-margin"),
+                h.code(inp)
+            ]),
+            div(cls="col-6", contents=[
+                h.p("Output:", cls="no-margin"),
+                h.code(outp)
+            ])
+        ]))
 
     def descriptionPage(self):
         return str(Page(
@@ -52,7 +67,8 @@ class Problem:
                 Card("Problem Statement", self.statement),
                 Card("Input Format", self.input),
                 Card("Output Format", self.output),
-                Card("Constraints", self.constraints)
+                Card("Constraints", self.constraints),
+                div(cls="samples", contents=map(self.getSample, range(self.samples)))
             ]),
             CodeEditor(),
             div(cls="align-right", contents=[

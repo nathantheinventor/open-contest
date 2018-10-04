@@ -9,8 +9,11 @@ class HTMLObject:
             options["class"] = options["cls"]
             del options["cls"]
         if "contents" in options:
-            for item in options["contents"]:
-                self.contents.append(item)
+            if isinstance(options["contents"], list):
+                for item in options["contents"]:
+                    self.contents.append(item)
+            else:
+                self.contents.append(options["contents"])
             del options["contents"]
         self.options = options
     

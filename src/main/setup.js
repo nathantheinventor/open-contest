@@ -47,7 +47,7 @@ const server = http.createServer((req, res) => {
     if (url == "/favicon.ico") {
         res.statusCode = 404;
         res.end("");
-        return
+        return;
     }
     // Redirect the user to his submissions page
     if (url == "/submissions") {

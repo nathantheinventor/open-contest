@@ -13,14 +13,20 @@ def ensureExists(file: str, isDir: bool = False):
 def getKey(key: str) -> dict:
     try:
         with open("/db" + key, "r") as f:
-            return json.loads(f.read())
+            s = f.read()
+            if s[0] in ("[", "{"):
+                return json.loads(s)
+            return s
     except:
         return None
 
-def setKey(key: str, value: dict):
+def setKey(key: str, value):
     ensureExists("/db" + key)
     with open("/db" + key, "w") as f:
-        f.write(json.dumps(value))
+        if isinstance(value, dict):
+            f.write(json.dumps(value))
+        else:
+            f.write(value)
 
 def listSubKeys(key: str) -> list:
     ensureExists("/db" + key + "/file.json")
