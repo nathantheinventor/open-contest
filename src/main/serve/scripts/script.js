@@ -46,7 +46,6 @@ async function getLanguageDefault(language) {
 
 async function setupAceEditor() {
     await getLanguages();
-    if ($("#ace-editor").length > 0) {
         // Get problem ID
         var thisProblem = $("#problem-id").val();
 
@@ -86,7 +85,6 @@ async function setupAceEditor() {
                 }
             });
         });
-    }
 }
 
 function setupLoginButton() {
@@ -109,9 +107,35 @@ function setupHeaderDiv() {
     });
 }
 
+function setupSortability() {
+    var thisProblem = $("#problem-id").val();
+    if (localStorage["sort-" + thisProblem] != undefined) {
+        var order = JSON.parse(localStorage["sort-" + thisProblem]);
+        for (var i of [0,1,2,3,4]) {
+            var cls = order[i];
+            $("div.problem-description").append($("div.problem-description div." + cls))
+        }
+    }
+    $("div.problem-description").sortable({
+        placeholder: "ui-state-highlight",
+        forcePlaceholderSize: true,
+        stop: (event, ui) => {
+            var indices = {};
+            for (var cls of ["stmt", "inp", "outp", "constraints", "samples"]) {
+                var index = $("div.problem-description > div." + cls).index();
+                indices[index] = cls;
+            }
+            localStorage["sort-" + thisProblem] = JSON.stringify(indices);
+        }
+    });
+    $("div.problem-description").disableSelection();
+}
+
 $(document).ready(function() {
-    setupAceEditor();
     setupLoginButton();
     setupHeaderDiv();
-    ;
+    if ($("#ace-editor").length > 0) {
+        setupAceEditor();
+        setupSortability();
+    }
 });

@@ -144,3 +144,9 @@ div.col-6:last-child {
 p.no-margin {
     margin: 0px;
 }
+.ui-state-highlight {
+    margin-bottom: 20px;
+    border: 1px solid #093;
+    background: repeating-linear-gradient(135deg, #00993312 0%, #00993312 5px, #00993325 5px, #00993325 10px);
+    border-radius: 5px;
+}

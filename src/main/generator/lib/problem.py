@@ -64,11 +64,11 @@ class Problem:
             h.input(type="hidden", id="problem-id", value=self.guid),
             h2(self.title, cls="page-title"),
             div(cls="problem-description", contents=[
-                Card("Problem Statement", self.statement),
-                Card("Input Format", self.input),
-                Card("Output Format", self.output),
-                Card("Constraints", self.constraints),
-                div(cls="samples", contents=map(self.getSample, range(self.samples)))
+                Card("Problem Statement", self.statement, cls="stmt"),
+                Card("Input Format", self.input, cls="inp"),
+                Card("Output Format", self.output, cls="outp"),
+                Card("Constraints", self.constraints, cls="constraints"),
+                div(cls="samples", contents=list(map(self.getSample, range(self.samples))))
             ]),
             CodeEditor(),
             div(cls="align-right", contents=[
