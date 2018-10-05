@@ -85,16 +85,23 @@ div.code-editor div.ace-editor {
 div.card {
     box-shadow: 0 5px 15px 0 rgba(120,120,120,.5);
     margin-bottom: 20px;
+    padding: 0px;
 }
 div.card-header {
     background: #00993325;
     padding: 10px;
 }
+div.card.blue div.card-header {
+    background: #00669925;
+}
 h2.card-title {
     margin: 0px;
     font-size: 1.2em;
     display: inline-block;
-    color: #096;
+    color: #093;
+}
+div.card.blue h2.card-title {
+    color: #069;
 }
 div.card-contents {
     padding: 15px;
@@ -133,6 +140,10 @@ button.button-white {
     color: #093;
     background: white;
 }
+button.button-blue {
+    background: #069;
+    border-color: #069;
+}
 div code {
     background-color: lightgray;
     color: black;
@@ -158,4 +169,17 @@ p.no-margin {
 }
 .login-box input {
     margin-bottom: 10px;
+}
+div.actions {
+    float: right;
+    display: inline-block;
+    margin-top: -48px;
+}
+div.row.user-cards {
+    margin: -5px;
+    margin-top: 15px;
+}
+div.col-3 {
+    padding-right: 5px;
+    padding-left: 5px;
 }

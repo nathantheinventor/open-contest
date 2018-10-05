@@ -7,7 +7,7 @@ exports.login = (req, res) => {
         body += data;
     });
     req.on('end', async _ => {
-        params = qs.parse(body)
+        params = qs.parse(body);
         const username = params.username;
         const password = params.password;
         const user = await util.auth.checkPassword(username, password);

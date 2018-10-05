@@ -23,3 +23,21 @@ exports.readFile = async filename => {
         });
     });
 }
+
+exports.listDir = async dirname => {
+    return new Promise((res, rej) => {
+        fs.readdir(dirname, (err, files) => {
+            if (err) {
+                rej(err);
+            } else {
+                let newList = [];
+                for (var file of files) {
+                    if (!file.startsWith(".")) {
+                        newList.push(file);
+                    }
+                }
+                res(newList);
+            }
+        });
+    });
+}

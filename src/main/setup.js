@@ -3,7 +3,6 @@ const fs = require("fs");
 const path = require("path");
 const util = require("./util");
 const web = require("./web");
-const uuidv1 = require("uuid/v1");
 const { exec } = require("child_process");
 const url2 = require("url");
 
@@ -16,14 +15,19 @@ const port = args[3]; // The port to run the server on
 let adminPassword = util.passwords.password();
 adminPassword = "presently description kirk died"; // TODO: remove this
 console.log(`The admin password is "${adminPassword}"`);
-let adminId = uuidv1();
+let adminId = util.auth.uuid();
 adminId = "286030a0-c74a-11e8-9e2c-83267e901a62"; // TODO: remove this
 util.db.setKey(`/users/${primaryUsername}`, {
+    username: primaryUsername,
     password: adminPassword,
-    id: adminId
+    id: adminId,
+    type: "admin"
 });
 util.db.setKey(`/users/${adminId}`, {
-    username: primaryUsername
+    username: primaryUsername,
+    password: adminPassword,
+    id: adminId,
+    type: "admin"
 });
 
 // Create the server

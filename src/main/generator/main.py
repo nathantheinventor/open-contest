@@ -1,4 +1,4 @@
-from .lib import Problem, Page
+from .lib import Problem, Page, Card
 from .lib.htmllib import *
 from .db import listSubKeys, ensureExists
 
@@ -21,9 +21,40 @@ def generateLogin():
         ])
     ))
 
+def generateSetup():
+    generate("setup.html", Page(
+        h2("Setup", cls="page-title"),
+        Card("Contests", "Create contests", "/static/createContests.html"),
+        Card("Users", "Create users who will participate in contests, as well as other admin users who can create and judge contests and problems", "/static/users.html")
+    ))
+
+def generateInitialProblems():
+    generate("problems.html", Page(
+        h1("No problems available yet")
+    ))
+
+def generateInitialLeaderboard():
+    generate("leaderboard.html", Page(
+        h1("Leaderboard not available yet")
+    ))
+
+def generateUsersPage():
+    generate("users.html", Page(
+        h2("Users", cls="page-title"),
+        div(cls="actions", contents=[
+            h.button("+ Create Admin", cls="button-blue create-admin"),
+            h.button("+ Create Participant", cls="create-participant")
+        ]),
+        div(cls="row user-cards")
+    ))
+
 # Generate static files needed for overall functioning
 def generateStatic():
     generateLogin()
+    generateSetup()
+    generateInitialProblems()
+    generateInitialLeaderboard()
+    generateUsersPage()
 
 problemList = []
 

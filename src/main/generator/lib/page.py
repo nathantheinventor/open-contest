@@ -12,8 +12,8 @@ class Header(UIElement):
         ])
 
 class MenuItem(UIElement):
-    def __init__(self, url, title):
-        self.html = div(cls="menu-item", contents=[
+    def __init__(self, url, title, role="any"):
+        self.html = div(role=role, cls="menu-item", contents=[
             a(href=url, contents=[
                 title
             ])
@@ -25,7 +25,8 @@ class Menu(UIElement):
             div(cls="menu-items", contents=[
                 MenuItem("/static/problems.html", "Problems"),
                 MenuItem("/static/leaderboard.html", "Leaderboard"),
-                MenuItem("/submissions", "My Submissions")
+                MenuItem("/submissions", "My Submissions", role="participant"),
+                MenuItem("/static/setup.html", "Setup", role="judge")
             ])
         ])
 

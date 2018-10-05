@@ -1,4 +1,4 @@
-const { login, submit } = require("./callbacks");
+const { login, submit, getUsers, createUser, deleteUser } = require("./callbacks");
 const util = require("../util");
 
 exports.serveRequest = (req, res) => {
@@ -17,6 +17,12 @@ exports.serveRequest = (req, res) => {
     }
     if (url == "/submit") {
         return submit(req, res);
+    } else if (url == "/getUsers") {
+        return getUsers(req, res);
+    } else if (url == "/createUser") {
+        return createUser(req, res);
+    } else if (url == "/deleteUser") {
+        return deleteUser(req, res);
     }
     res.statusCode = 404;
     res.end("Not Found");

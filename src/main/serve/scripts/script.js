@@ -131,11 +131,56 @@ function setupSortability() {
     $("div.problem-description").disableSelection();
 }
 
+function createUserCard(username, password, type) {
+    $("div.user-cards").prepend(`<div class="col-3">
+        <div class="card${type == "admin" ? " blue": ""}">
+            <div class="card-header">
+                <h2 class="card-title">${username}</h2>
+            </div>
+            <div class="card-contents">
+                ${password}
+            </div>
+        </div>
+    </div>`)
+}
+
+function displayExistingUsers() {
+    $.post("/getUsers", {}, data => {
+        for (var user of data) {
+            createUserCard(user.username, user.password, user.type);
+        }
+    });
+}
+
+function setupUserButtons() {
+    $("button.create-admin").click(function() {
+        var username = prompt("New User's Name")
+        if (username) {
+            $.post("/createUser", {type: "admin", username: username}, password => {
+                createUserCard(username, password, "admin");
+            });
+        }
+    });
+    $("button.create-participant").click(function() {
+        var username = prompt("New User's Name")
+        if (username) {
+            $.post("/createUser", {type: "participant", username: username}, password => {
+                createUserCard(username, password, "participant");
+            });
+        }
+    });
+}
+
 $(document).ready(function() {
+    var pageName = $("h2.page-title").text();
     setupLoginButton();
     setupHeaderDiv();
     if ($("#ace-editor").length > 0) {
         setupAceEditor();
         setupSortability();
+    }
+    if (pageName == "Users") {
+        displayExistingUsers();
+        setupUserButtons();
     }
 });
