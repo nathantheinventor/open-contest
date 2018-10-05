@@ -61,6 +61,8 @@ exports.deleteUser = async (req, res) => {
         const user = await util.db.getKey(`/users/${params.username}`);
         util.db.deleteKey(`/users/${user.username}`);
         util.db.deleteKey(`/users/${user.id}`);
+        res.statusCode = 200;
+        res.end("ok");
     } else {
         res.statusCode = 403;
         res.end("Not Admin");

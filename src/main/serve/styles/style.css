@@ -69,7 +69,7 @@ h2.page-title {
     margin-bottom: 10px;
     font-size: 24px;
     font-weight: bold;
-    color: #096;
+    color: #093;
 }
 select.language-picker {
     float: right;
@@ -90,6 +90,7 @@ div.card {
 div.card-header {
     background: #00993325;
     padding: 10px;
+    display: inline-block;
 }
 div.card.blue div.card-header {
     background: #00669925;
@@ -182,4 +183,12 @@ div.row.user-cards {
 div.col-3 {
     padding-right: 5px;
     padding-left: 5px;
+}
+div.delete-user {
+    float: right;
+    color: #093;
+    cursor: pointer;
+}
+div.card.blue div.delete-user {
+    color: #069;
 }

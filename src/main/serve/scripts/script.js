@@ -133,15 +133,27 @@ function setupSortability() {
 
 function createUserCard(username, password, type) {
     $("div.user-cards").prepend(`<div class="col-3">
-        <div class="card${type == "admin" ? " blue": ""}">
+        <div class="card${type == "admin" ? " blue": ""}" data-username="${username}">
             <div class="card-header">
                 <h2 class="card-title">${username}</h2>
+                <div class="delete-user"><i class="material-icons">clear</i></div>
             </div>
             <div class="card-contents">
                 ${password}
             </div>
         </div>
-    </div>`)
+    </div>`);
+    $(`div[data-username="${username}"] div.delete-user`).click(function() {
+        var username = $(this).parents(".card").data("username");
+        var col = $(this).parents(".col-3");
+        if (confirm(`Are you sure you want to delete ${username}?`)) {
+            $.post("/deleteUser", {username: username}, data => {
+                if (data == "ok") {
+                    col.remove(); // Bad practice, but I'm not completely sure how to do it right
+                }
+            });
+        }
+    });
 }
 
 function displayExistingUsers() {

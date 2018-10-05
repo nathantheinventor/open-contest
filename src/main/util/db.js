@@ -16,7 +16,12 @@ exports.setKey = async (key, value) => {
     return await files.writeFile(file, JSON.stringify(value));
 }
 
-exports.listSubKeys = async (key) => {
+exports.deleteKey = async key => {
+    const file = path.join("/db", key);
+    return await files.deleteFile(file);
+}
+
+exports.listSubKeys = async key => {
     const dir = path.join("/db", key);
     const contents = await files.listDir(dir);
     return contents;
