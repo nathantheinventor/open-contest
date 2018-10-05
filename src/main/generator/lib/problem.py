@@ -72,6 +72,7 @@ class Problem:
             ]),
             CodeEditor(),
             div(cls="align-right", contents=[
-                h.button("Submit", cls="submit-problem", problem=self.guid)
+                h.button("Test Code", cls="test-samples button-white"),
+                h.button("Submit Code", cls="submit-problem")
             ])
         ))
