@@ -1,194 +1,222 @@
-body {
-    margin: 0%;
-    font-family: sans-serif;
-}
-div.header {
-    max-width: 960px;
-    margin-right: auto;
-    margin-left: auto;
-    color: #093;
-    padding: 20px;
-    cursor: pointer;
-}
-div.header h1 {
-    margin: 0px;
-}
-div.menu {
-    background: #093;
-}
-div.menu-items {
-    max-width: 960px;
-    margin-right: auto;
-    margin-left: auto;
-}
-div.menu div.menu-item {
-    display: inline-block;
-    padding: 20px;
-    font-size: 20px;
-    border-right: 1px solid white;
-}
-div.menu-item:first-child {
-    border-left: 1px solid white;
-}
-div.menu a {
-    color: white;
-    text-decoration: none;
-}
-div.main-content {
-    max-width: 960px;
-    margin-left: auto;
-    margin-right: auto;
-    margin-bottom: 68px;
-}
-div.footer {
-    position: fixed;
-    width: 100%;
-    top: calc(100vh - 34px);
-    background-color: #093;
-    color: white;
-    padding: 10px;
-    z-index: 10000000;
-}
-div.footer h2 {
-    margin: 0px;
-    font-size: 12px;
-}
-a.problem-link {
-    text-decoration: none;
-}
-div.problem {
-    border: 3px solid #093;
-    border-radius: 10px;
-    color: #093;
-    padding: 10px;
-    margin-top: 10px;
-    margin-bottom: 10px;
-}
-h2.page-title {
-    margin-top: 20px;
-    margin-bottom: 10px;
-    font-size: 24px;
-    font-weight: bold;
-    color: #093;
-}
-select.language-picker {
-    float: right;
-}
-div.code-editor div.ace-editor-wrapper {
-    width: 100%;
-    min-height: 400px;
-}
-div.code-editor div.ace-editor {
-    width: 100%;
-    min-height: 400px;
-}
-div.card {
-    box-shadow: 0 5px 15px 0 rgba(120,120,120,.5);
-    margin-bottom: 20px;
-    padding: 0px;
-}
-div.card-header {
-    background: #00993325;
-    padding: 10px;
-    display: inline-block;
-}
-div.card.blue div.card-header {
-    background: #00669925;
-}
-h2.card-title {
-    margin: 0px;
-    font-size: 1.2em;
-    display: inline-block;
-    color: #093;
-}
-div.card.blue h2.card-title {
-    color: #069;
-}
-div.card-contents {
-    padding: 15px;
-    font-size: 0.8em;
-}
-a.card-link, a.card-link:hover {
-    color: initial;
-    text-decoration: none;
-}
-.login-box {
-    margin-top: 100px;
-    margin-left: auto;
-    margin-right: auto;
-    max-width: 300px;
-    background: #00993325;
-    padding: 30px;
-}
-.login-header {
-    color: #093;
-    text-align: center;
-    width: 100%;
-}
-.align-right {
-    text-align: right;
-}
-button {
-    border: 1px solid #093;
-    background: #093;
-    color: white;
-    box-shadow: 0 2px 5px 0 rgba(120,120,120,.4);
-    font-size: 20px !important;
-    margin-left: 20px !important;
-    padding: 5px 15px 5px 15px;
-}
-button.button-white {
-    color: #093;
-    background: white;
-}
-button.button-blue {
-    background: #069;
-    border-color: #069;
-}
-div code {
-    background-color: lightgray;
-    color: black;
-    display: block;
-    padding: 10px;
-}
-div.col-6:first-child {
-    padding-left: 10px;
-    padding-right: 5px;
-}
-div.col-6:last-child {
-    padding-left: 5px;
-    padding-right: 10px;
-}
-p.no-margin {
-    margin: 0px;
-}
-.ui-state-highlight {
-    margin-bottom: 20px;
-    border: 1px solid #093;
-    background: repeating-linear-gradient(135deg, #00993312 0%, #00993312 5px, #00993325 5px, #00993325 10px);
-    border-radius: 5px;
-}
-.login-box input {
-    margin-bottom: 10px;
-}
-div.actions {
-    float: right;
-    display: inline-block;
-    margin-top: -48px;
-}
-div.row.user-cards {
-    margin: -5px;
-    margin-top: 15px;
-}
-div.col-3 {
-    padding-right: 5px;
-    padding-left: 5px;
-}
-div.delete-user {
-    float: right;
-    color: #093;
-    cursor: pointer;
-}
-div.card.blue div.delete-user {
-    color: #069;
-}
+/*--------------------------------------------------------------------------------------------------
+General page code
+--------------------------------------------------------------------------------------------------*/
+    /*-------------------------------------------------
+    General overall page
+    -------------------------------------------------*/
+        body {
+            margin: 0%;
+            font-family: sans-serif;
+        }
+    /*-------------------------------------------------
+    Header
+    -------------------------------------------------*/
+        div.header {
+            width: 960px;
+            margin-right: auto;
+            margin-left: auto;
+            color: #093;
+            padding: 20px;
+            cursor: pointer;
+        }
+        div.header h1 {
+            margin: 0px;
+        }
+    /*-------------------------------------------------
+    Menu
+    -------------------------------------------------*/
+        div.menu {
+            background: #093;
+        }
+        div.menu-items {
+            width: 960px;
+            margin-right: auto;
+            margin-left: auto;
+        }
+        div.menu div.menu-item {
+            display: inline-block;
+            padding: 20px;
+            font-size: 20px;
+            border-right: 1px solid white;
+        }
+        div.menu-item:first-child {
+            border-left: 1px solid white;
+        }
+        div.menu a {
+            color: white;
+            text-decoration: none;
+        }
+    /*-------------------------------------------------
+    Main content
+    -------------------------------------------------*/
+        div.main-content {
+            width: 960px;
+            margin-left: auto;
+            margin-right: auto;
+            margin-bottom: 68px;
+        }
+        h2.page-title {
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #093;
+        }
+        /*-------------------------------------------------
+        Cards
+        -------------------------------------------------*/
+            div.card {
+                box-shadow: 0 5px 15px 0 rgba(120,120,120,.5);
+                margin-bottom: 20px;
+                padding: 0px;
+            }
+            div.card-header {
+                background: #00993325;
+                padding: 10px;
+                display: inline-block;
+            }
+            div.card.blue div.card-header {
+                background: #00669925;
+            }
+            h2.card-title {
+                margin: 0px;
+                font-size: 1.2em;
+                display: inline-block;
+                color: #093;
+            }
+            div.card.blue h2.card-title {
+                color: #069;
+            }
+            div.card-contents {
+                padding: 15px;
+                font-size: 0.8em;
+            }
+            a.card-link, a.card-link:hover {
+                color: initial;
+                text-decoration: none;
+            }
+        /*-------------------------------------------------
+        Buttons
+        -------------------------------------------------*/
+            button {
+                border: 1px solid #093;
+                background: #093;
+                color: white;
+                box-shadow: 0 2px 5px 0 rgba(120,120,120,.4);
+                font-size: 20px !important;
+                margin-left: 20px !important;
+                padding: 5px 15px 5px 15px;
+            }
+            button.button-white {
+                color: #093;
+                background: white;
+            }
+            button.button-blue {
+                background: #069;
+                border-color: #069;
+            }
+        /*-------------------------------------------------
+        General Stuff
+        -------------------------------------------------*/
+            .align-right {
+                text-align: right;
+            }
+            p.no-margin {
+                margin: 0px;
+            }
+            div.actions {
+                float: right;
+                margin-top: -48px;
+            }            
+    /*-------------------------------------------------
+    Footer
+    -------------------------------------------------*/
+        div.footer {
+            position: fixed;
+            width: 100%;
+            top: calc(100vh - 34px);
+            background-color: #093;
+            color: white;
+            padding: 10px;
+            z-index: 10000000;
+        }
+        div.footer h2 {
+            margin: 0px;
+            font-size: 12px;
+        }
+/*--------------------------------------------------------------------------------------------------
+Problem Page
+--------------------------------------------------------------------------------------------------*/
+    div code {
+        background-color: lightgray;
+        color: black;
+        display: block;
+        padding: 10px;
+    }
+    div.col-6:first-child {
+        padding-left: 10px;
+        padding-right: 5px;
+    }
+    div.col-6:last-child {
+        padding-left: 5px;
+        padding-right: 10px;
+    }
+    /* For drag-n-drop */
+    .ui-state-highlight {
+        margin-bottom: 20px;
+        border: 1px solid #093;
+        background: repeating-linear-gradient(135deg, #00993312 0%, #00993312 5px, #00993325 5px, #00993325 10px);
+        border-radius: 5px;
+    }
+    /*-------------------------------------------------
+    Code Editor
+    -------------------------------------------------*/
+        select.language-picker {
+            float: right;
+        }
+        div.code-editor div.ace-editor-wrapper {
+            width: 100%;
+            min-height: 400px;
+        }
+        div.code-editor div.ace-editor {
+            width: 100%;
+            min-height: 400px;
+        }
+/*--------------------------------------------------------------------------------------------------
+Login Page
+--------------------------------------------------------------------------------------------------*/
+    .login-box {
+        margin-top: 100px;
+        margin-left: auto;
+        margin-right: auto;
+        max-width: 300px;
+        background: #00993325;
+        padding: 30px;
+    }
+    .login-header {
+        color: #093;
+        text-align: center;
+        width: 100%;
+    }
+    .login-box input {
+        margin-bottom: 10px;
+    }
+/*--------------------------------------------------------------------------------------------------
+Users Page
+--------------------------------------------------------------------------------------------------*/
+    div.row.user-cards {
+        margin: -5px;
+        margin-top: 15px;
+    }
+    div.col-3 {
+        padding-right: 5px;
+        padding-left: 5px;
+    }
+    div.delete-user {
+        float: right;
+        color: #093;
+        cursor: pointer;
+    }
+    div.card.blue div.delete-user {
+        color: #069;
+    }
