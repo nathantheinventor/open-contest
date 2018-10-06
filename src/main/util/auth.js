@@ -24,7 +24,7 @@ exports.isAdmin = async req => {
     }
     const user = req.headers.cookie.split("=")[1];
     const userdata = await db.getKey(`/users/${user}`);
-    return userdata.type = "admin";
+    return userdata.type == "admin";
 }
 
 exports.uuid = _ => {
