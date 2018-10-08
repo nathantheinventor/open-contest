@@ -8,6 +8,11 @@ General page code
             margin: 0%;
             font-family: sans-serif;
         }
+        @media print {
+            .header, .menu, .footer {
+                display: none;
+            }
+        }
     /*-------------------------------------------------
     Header
     -------------------------------------------------*/
@@ -223,4 +228,39 @@ Users Page
     }
     div.card.blue div.delete-user {
         color: #069;
+    }
+    .username-hidden {
+        display: none;
+    }
+    /*-------------------------------------------------
+    Print view
+    -------------------------------------------------*/
+    @media print {
+        button {
+            display: none;
+        }
+        h2.page-title {
+            color: black;
+        }
+        .card .card-header, div.card.blue div.card-header {
+            background: white;
+        }
+        .card h2, div.card.blue h2.card-title {
+            color: black;
+        }
+        div.delete-user {
+            display: none;
+        }
+        .username-hidden {
+            display: inline;
+        }
+        div.card-header {
+            font-size: 12.8px;
+            border-bottom: none;
+            margin-bottom: -20px;
+        }
+        div.card-header h2 {
+            font-size: 12.8px;
+            margin: -3px;
+        }
     }

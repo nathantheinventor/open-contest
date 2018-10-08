@@ -176,12 +176,15 @@ Users page
         $("div.user-cards").prepend(`<div class="col-3">
             <div class="card${type == "admin" ? " blue": ""}" data-username="${username}">
                 <div class="card-header">
+                    <strong class="username-hidden"><i>Username:</i></strong><br class="username-hidden"/>
+                    <p class="username-hidden">&quot;</p>
                     <h2 class="card-title">${username}</h2>
+                    <p class="username-hidden">&quot;</p>
                     <div class="delete-user"><i class="material-icons">clear</i></div>
                 </div>
                 <div class="card-contents">
                     <strong><i>Password:</i></strong><br/>
-                    ${password}
+                    &quot;${password}&quot;
                 </div>
             </div>
         </div>`);
@@ -203,6 +206,7 @@ Users page
             for (var user of data) {
                 createUserCard(user.username, user.password, user.type);
             }
+            // window.print();
         });
     }
 
