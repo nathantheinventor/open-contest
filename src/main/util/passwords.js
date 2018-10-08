@@ -9,5 +9,12 @@ function word() {
 }
 
 exports.password = _ => {
-    return `${word()} ${word()} ${word()} ${word()}`
+    let password = `${word()} ${word()} ${word()} ${word()}`;
+    // Make sure the password is short enough to fit on a card on the users page
+    // Based on sampling of 1000 runs, this should take fewer than 10 iterations through the loop
+    // As more than half of the generated passwords were <= 33 characters
+    while (password.length > 33) {
+        password = `${word()} ${word()} ${word()} ${word()}`;
+    }
+    return password;
 }
