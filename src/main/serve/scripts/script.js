@@ -26,7 +26,7 @@ General page code
             }
         });
     }
-    
+
     $(document).ready(function() {
         var pageName = $("h2.page-title").text();
         setupMenu();
@@ -180,6 +180,7 @@ Users page
                     <div class="delete-user"><i class="material-icons">clear</i></div>
                 </div>
                 <div class="card-contents">
+                    <strong><i>Password:</i></strong><br/>
                     ${password}
                 </div>
             </div>
