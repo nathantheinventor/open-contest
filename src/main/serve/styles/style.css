@@ -12,6 +12,9 @@ General page code
             .header, .menu, .footer {
                 display: none;
             }
+            * {
+                font-family: serif;
+            }
         }
     /*-------------------------------------------------
     Header
@@ -154,7 +157,7 @@ Problem Page
 --------------------------------------------------------------------------------------------------*/
     /* For sample data */
     div code {
-        background-color: lightgray;
+        background-color: #eee;
         color: black;
         display: block;
         padding: 10px;
@@ -191,6 +194,14 @@ Problem Page
             width: 100%;
             min-height: 400px;
         }
+    /*-------------------------------------------------
+    Print view
+    -------------------------------------------------*/
+    @media print {
+        div.code-editor {
+            display: none;
+        }
+    }
 /*--------------------------------------------------------------------------------------------------
 Login Page
 --------------------------------------------------------------------------------------------------*/
@@ -254,12 +265,12 @@ Users Page
         .username-hidden {
             display: inline;
         }
-        div.card-header {
+        .user-cards div.card-header {
             font-size: 12.8px;
             border-bottom: none;
             margin-bottom: -20px;
         }
-        div.card-header h2 {
+        .user-cards div.card-header h2 {
             font-size: 12.8px;
             margin: -3px;
         }
