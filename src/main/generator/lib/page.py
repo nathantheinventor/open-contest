@@ -26,7 +26,7 @@ class Menu(UIElement):
                 MenuItem("/static/problems.html", "Problems"),
                 MenuItem("/static/leaderboard.html", "Leaderboard"),
                 MenuItem("/submissions", "My Submissions", role="participant"),
-                MenuItem("/static/setup.html", "Setup", role="judge")
+                MenuItem("/static/setup.html", "Setup", role="admin")
             ])
         ])
 

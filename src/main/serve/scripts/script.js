@@ -12,8 +12,24 @@ General page code
             window.location = "/";
         });
     }
+
+    function setupMenu() {
+        var userType = "";
+        if (document.cookie) {
+            var typeHalf = document.cookie.split(";")[1];
+            userType = typeHalf.split("=")[1];
+        }
+        $("div.menu-item").each(function() {
+            var perms = $(this).attr("role");
+            if (perms == "any" || perms == userType) {
+                $(this).css("display", "inline-block");
+            }
+        });
+    }
+    
     $(document).ready(function() {
         var pageName = $("h2.page-title").text();
+        setupMenu();
         setupLoginButton();
         setupHeaderDiv();
         if ($("#ace-editor").length > 0) {

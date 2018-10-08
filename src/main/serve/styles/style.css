@@ -34,7 +34,7 @@ General page code
             margin-left: auto;
         }
         div.menu div.menu-item {
-            display: inline-block;
+            display: none;
             padding: 20px;
             font-size: 20px;
             border-right: 1px solid white;
