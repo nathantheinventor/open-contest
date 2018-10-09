@@ -16,8 +16,7 @@ General page code
     function setupMenu() {
         var userType = "";
         if (document.cookie) {
-            var typeHalf = document.cookie.split(";")[1];
-            userType = typeHalf.split("=")[1];
+            userType = document.cookie.split("=")[1];
         }
         $("div.menu-item").each(function() {
             var perms = $(this).attr("role");

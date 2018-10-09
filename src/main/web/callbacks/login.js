@@ -13,7 +13,7 @@ exports.login = (req, res) => {
         const user = await util.auth.checkPassword(username, password);
         if (user) {
             res.statusCode = 200;
-            res.setHeader("Set-Cookie", `user=${user.id};userType=${user.type}`);
+            res.setHeader("Set-Cookie", [`user=${user.id}; HttpOnly`, `userType=${user.type}`]);
             res.end("ok");
         } else {
             res.statusCode = 200;
