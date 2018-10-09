@@ -21,7 +21,7 @@ class CodeEditor(UIElement):
         self.html = div(cls="code-editor card", contents=[
             div(cls="card-header", contents=[
                 h2("Code Editor", cls="card-title"),
-                h.select(cls="language-picker")
+                h.select(cls="language-picker custom-select col-2 custom-select-sm")
             ]),
             div(cls="ace-editor-wrapper", contents=[
                 div(id="ace-editor", cls="ace-editor", contents=[

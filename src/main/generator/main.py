@@ -24,7 +24,7 @@ def generateLogin():
 def generateSetup():
     generate("setup.html", Page(
         h2("Setup", cls="page-title"),
-        Card("Contests", "Create contests", "/static/createContests.html"),
+        Card("Contests", "Create contests", "/static/contests.html"),
         Card("Users", "Create users who will participate in contests, as well as other admin users who can create and judge contests and problems", "/static/users.html")
     ))
 
@@ -48,6 +48,49 @@ def generateUsersPage():
         div(cls="row user-cards")
     ))
 
+def generateContestsPage():
+    generate("contests.html", Page(
+        h2("Contests", cls="page-title"),
+        div(cls="actions", contents=[
+            h.button("+ Create Contest", cls="create-contest")
+        ]),
+        div(cls="row contest-cards")
+    ))
+
+def generateContestPage():
+    generate("contest.html", Page(
+        h2("Contests", cls="page-title"),
+        div(cls="actions", contents=[
+            h.button("+ Create Problem", cls="create-problem")
+        ]),
+        Card("Contest Details", div(cls="contest-details", contents=[
+            h.form(cls="row", contents=[
+                div(cls="form-group col-12", contents=[
+                    h.label(**{"for": "contest-name", "contents":"Name"}),
+                    h.input(cls="form-control", name="contest-name", id="contest-name")
+                ]),
+                div(cls="form-group col-6", contents=[
+                    h.label(**{"for": "contest-start-date", "contents":"Start Date"}),
+                    h.input(cls="form-control", name="contest-start-date", id="contest-start-date", type="date")
+                ]),
+                div(cls="form-group col-6", contents=[
+                    h.label(**{"for": "contest-start-time", "contents":"Start Time"}),
+                    h.input(cls="form-control", name="contest-start-time", id="contest-start-time", type="time")
+                ]),
+                div(cls="form-group col-6", contents=[
+                    h.label(**{"for": "contest-end-date", "contents":"End Date"}),
+                    h.input(cls="form-control", name="contest-end-date", id="contest-end-date", type="date")
+                ]),
+                div(cls="form-group col-6", contents=[
+                    h.label(**{"for": "contest-end-time", "contents":"End Time"}),
+                    h.input(cls="form-control", name="contest-end-time", id="contest-end-time", type="time")
+                ])
+            ])
+        ])),
+        div(cls="row problem-cards")
+    ))
+
+
 # Generate static files needed for overall functioning
 def generateStatic():
     generateLogin()
@@ -55,6 +98,8 @@ def generateStatic():
     generateInitialProblems()
     generateInitialLeaderboard()
     generateUsersPage()
+    generateContestsPage()
+    generateContestPage()
 
 problemList = []
 
