@@ -1,8 +1,11 @@
-const { login, submit, getUsers, createUser, deleteUser } = require("./callbacks");
+const { login, logout, submit, getUsers, createUser, deleteUser } = require("./callbacks");
 const util = require("../util");
 
 exports.serveRequest = (req, res) => {
     const url = req.url;
+    if (url == "/logout") {
+        return logout(req, res);
+    }
     if (req.method != "POST") {
         res.statusCode = 403;
         res.end("POST required");
