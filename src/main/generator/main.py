@@ -54,7 +54,7 @@ def generateContestsPage():
         div(cls="actions", contents=[
             h.button("+ Create Contest", cls="create-contest")
         ]),
-        div(cls="row contest-cards")
+        div(cls="contest-cards")
     ))
 
 def generateContestPage():
@@ -87,7 +87,7 @@ def generateContestPage():
                 ])
             ])
         ])),
-        div(cls="row problem-cards")
+        div(cls="problem-cards")
     ))
 
 

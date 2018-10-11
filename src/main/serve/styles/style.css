@@ -232,7 +232,7 @@ Users Page
         padding-right: 5px;
         padding-left: 5px;
     }
-    div.delete-user {
+    div.delete-link {
         float: right;
         color: #093;
         cursor: pointer;

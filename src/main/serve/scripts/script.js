@@ -38,6 +38,9 @@ General page code
         if (pageName == "Users") {
             displayExistingUsers();
             setupUserButtons();
+        } else if (pageName == "Contests") {
+            displayExistingContests();
+            setupContestButton();
         }
     });    
 
@@ -179,7 +182,7 @@ Users page
                     <p class="username-hidden">&quot;</p>
                     <h2 class="card-title">${username}</h2>
                     <p class="username-hidden">&quot;</p>
-                    <div class="delete-user"><i class="material-icons">clear</i></div>
+                    <div class="delete-link"><i class="material-icons">clear</i></div>
                 </div>
                 <div class="card-contents">
                     <strong><i>Password:</i></strong><br/>
@@ -187,7 +190,7 @@ Users page
                 </div>
             </div>
         </div>`);
-        $(`div[data-username="${username}"] div.delete-user`).click(function() {
+        $(`div[data-username="${username}"] div.delete-link`).click(function() {
             var username = $(this).parents(".card").data("username");
             var col = $(this).parents(".col-3");
             if (confirm(`Are you sure you want to delete ${username}?`)) {
@@ -205,7 +208,6 @@ Users page
             for (var user of data) {
                 createUserCard(user.username, user.password, user.type);
             }
-            // window.print();
         });
     }
 
@@ -225,5 +227,48 @@ Users page
                     createUserCard(username, password, "participant");
                 });
             }
+        });
+    }
+
+/*--------------------------------------------------------------------------------------------------
+Contests page
+--------------------------------------------------------------------------------------------------*/
+    function createContestCard(contest) {
+        $("div.contest-cards").append(`<a href="/static/contest.html#${contest.id}" class="card-link">
+            <div class="card" data-contest="${contest.id}" data-name="${contest.name}">
+                <div class="card-header">
+                    <h2 class="card-title">${contest.name}</h2>
+                    <div class="delete-link"><i class="material-icons">clear</i></div>
+                </div>
+                <div class="card-contents">
+                    ${new Date(parseInt(contest.start)).toLocaleString()} - ${new Date(parseInt(contest.end)).toLocaleString()}
+                </div>
+            </div>
+        </a>`);
+        $(`div[data-contest="${contest.id}"] div.delete-link`).click(function() {
+            var card = $(this).parents(".card");
+            var contest = card.data("contest");
+            var name = card.data("name");
+            if (confirm(`Are you sure you want to delete ${name}?`)) {
+                $.post("/deleteContest", {id: contest}, data => {
+                    if (data == "ok") {
+                        card.remove(); // Bad practice, but I'm not completely sure how to do it right
+                    }
+                });
+            }
+        });
+    }
+
+    function displayExistingContests() {
+        $.post("/getContests", {}, contests => {
+            for (var contest of contests) {
+                createContestCard(contest);
+            }
+        });
+    }
+
+    function setupContestButton() {
+        $(".create-contest").click(function() {
+            window.location = "/static/contest.html";
         });
     }
