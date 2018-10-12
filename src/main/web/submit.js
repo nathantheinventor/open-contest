@@ -1,5 +1,9 @@
+const util = require("../util");
+const register = require("../util/register");
+
+
 const qs = require('querystring');
-const db = require("../../util/db");
+const db = require("../util/db");
 
 async function username(user) {
     const record = await db.getKey(`/users/${user}`);

@@ -1,6 +1,5 @@
-const util = require("../../util");
-const register = require("../../util/register");
-const db = require("../../util/db");
+const util = require("../util");
+const register = require("../util/register");
 
 register.post("/getContests", "admin", async _ => {
     const contestIds = await util.db.listSubKeys("/contests");

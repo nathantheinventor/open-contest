@@ -1,4 +1,5 @@
 const fs = require("fs");
+const path = require("path");
 
 exports.writeFile = async (filename, contents) => {
     return new Promise((res, rej) => {
@@ -31,12 +32,21 @@ exports.deleteFile = async filename => {
                 rej(err); return;
             }
             if (stats.isDirectory()) {
-                fs.rmdir(filename, err => {
+                fs.readdir(filename, async (err, files) => {
                     if (err) {
                         rej(err); return;
                     }
-                    res();
-                });
+                    for (var file of files) {
+                        await exports.deleteFile(path.join(filename, file))
+                            .catch(rej);
+                    }
+                    fs.rmdir(filename, err => {
+                        if (err) {
+                            rej(err); return;
+                        }
+                        res();
+                    });
+                })
             } else {
                 fs.unlink(filename, err => {
                     if (err) {
@@ -44,13 +54,6 @@ exports.deleteFile = async filename => {
                     }
                     res();
                 });
-            }
-        });
-        fs.readFile(filename, (err, data) => {
-            if (err) {
-                rej(err);
-            } else {
-                res(data);
             }
         });
     });
