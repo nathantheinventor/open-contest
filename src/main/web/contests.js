@@ -1,18 +1,15 @@
 const util = require("../util");
 const register = require("../util/register");
+const Contest = require("../model").Contest;
 
 register.post("/getContests", "admin", async _ => {
-    const contestIds = await util.db.listSubKeys("/contests");
-    let contests = [];
-    for (var id of contestIds) {
-        contests.push(await util.db.getKey(`/contests/${id}/contest.json`));
-    }
-    return contests;
+    return await Contest.allJSON();
 });
 
 register.post("/getContest", "admin", async (params) => {
     const id = params.id;
-    return await util.db.getKey(`/contests/${id}/contest.json`);
+    var contest = await Contest.construct(id);
+    return await contest.toJSON();
 });
 
 register.post("/deleteContest", "admin", async (params) => {
@@ -22,19 +19,14 @@ register.post("/deleteContest", "admin", async (params) => {
 });
 
 register.post("/editContest", "admin", async (params) => {
-    let id = params.id;
-    const name = params.name;
-    const start = params.start;
-    const end = params.end;
-    if (id == "") {
-        id = util.auth.uuid();
-    }
-    console.log(id, name, start, end);
-    await util.db.setKey(`/contests/${id}/contest.json`, {
-        id: id,
-        name: name,
-        start: start,
-        end: end
-    });
-    return id;
+    const id = params.id;
+    let contest = id ? await Contest.construct(id): new Contest();
+    
+    contest.name = params.name;
+    contest.start = params.start;
+    contest.end = params.end;
+    
+    await contest.save();
+
+    return contest.id;
 });

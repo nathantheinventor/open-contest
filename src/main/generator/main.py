@@ -61,7 +61,7 @@ def generateContestPage():
     generate("contest.html", Page(
         h2("Contest", cls="page-title"),
         div(cls="actions", contents=[
-            h.button("+ Create Problem", cls="create-problem")
+            h.button("+ Choose Problem", cls="choose-problem")
         ]),
         Card("Contest Details", div(cls="contest-details", contents=[
             h.form(cls="row", contents=[

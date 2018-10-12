@@ -12,16 +12,22 @@ exports.getKey = async key => {
 }
 
 exports.setKey = async (key, value) => {
+    files.ensureExists(path.join("/db", key));
     const file = path.join("/db", key);
     return await files.writeFile(file, JSON.stringify(value));
 }
 
 exports.deleteKey = async key => {
-    const file = path.join("/db", key);
-    return await files.deleteFile(file);
+    try {
+        const file = path.join("/db", key);
+        return await files.deleteFile(file);
+    } catch (err) {
+        return;
+    }
 }
 
 exports.listSubKeys = async key => {
+    files.ensureExists(path.join("/db", key, "a"));
     const dir = path.join("/db", key);
     const contents = await files.listDir(dir);
     return contents;

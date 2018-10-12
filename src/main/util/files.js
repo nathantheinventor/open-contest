@@ -76,3 +76,13 @@ exports.listDir = async dirname => {
         });
     });
 }
+
+exports.ensureExists = file => {
+    var whole = "";
+    for (var part of file.split("/").splice(0, file.split("/").length - 1)) {
+        whole += "/" + part;
+        if (!fs.existsSync(whole)) {
+            fs.mkdirSync(whole);
+        }
+    }
+}
