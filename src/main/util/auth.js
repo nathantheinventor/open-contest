@@ -17,7 +17,7 @@ exports.getUser = async req => {
     }
     const userCookie = req.headers.cookie.split(";")[0];
     const id = userCookie.split("=")[1];
-    return await db.getKey("/users/${id}");
+    return await db.getKey(`/users/${id}`);
 }
 
 exports.isAdmin = async req => {

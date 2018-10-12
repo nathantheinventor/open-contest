@@ -21,12 +21,12 @@ exports.get = (url, userType, callback) => {
     };
 }
 
-function fits(req, userType) {
+async function fits(req, userType) {
     switch(userType) {
         case "any": return true;
-        case "loggedin": return auth.getUser(req) != undefined;
-        case "admin": return auth.isAdmin(req);
-        case "participant": return auth.isParticipant(req);
+        case "loggedin": return await auth.getUser(req) != undefined;
+        case "admin": return await auth.isAdmin(req);
+        case "participant": return await auth.isParticipant(req);
     };
 }
 
@@ -35,8 +35,8 @@ exports.handleRequest = async (req, res) => {
     const method = req.method;
     if (`${url}|${method}` in paths) {
         const endpoint = paths[`${url}|${method}`];
-        if (!fits(req, endpoint.userType)) {
-            if (method == "POST" || auth.getUser(req) != undefined) {
+        if (!await fits(req, endpoint.userType)) {
+            if (method == "POST" || await auth.getUser(req) != undefined) {
                 res.statusCode = 403;
                 res.end("Unauthorized");
             } else {
