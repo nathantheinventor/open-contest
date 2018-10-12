@@ -36,36 +36,6 @@ const server = http.createServer((req, res) => {
     const url = req.url;
     util.log(`Call to ${url}`)
     
-    // Redirect the root to the login page
-    if (url == "/") {
-        res.statusCode = 302;
-        let user = util.auth.checkUser(req);
-        if (user == undefined) {
-            res.setHeader("Location", "/static/login.html");
-        } else {
-            res.setHeader("Location", "/static/problems.html");
-        }
-        res.end();
-        return;
-    }
-    if (url == "/favicon.ico") {
-        res.statusCode = 404;
-        res.end("");
-        return;
-    }
-    // Redirect the user to his submissions page
-    if (url == "/submissions") {
-        res.statusCode = 302;
-        let user = util.auth.checkUser(req);
-        if (user == undefined) {
-            res.setHeader("Location", "/static/login.html");
-        } else {
-            res.setHeader("Location", `/static/submissions/${user}.html`);
-        }
-        res.end();
-        return;
-    }
-
     // Serve static files
     if (url.startsWith("/static")) {
         // Get the path to the file to serve

@@ -24,7 +24,7 @@ exports.get = (url, userType, callback) => {
 function fits(req, userType) {
     switch(userType) {
         case "any": return true;
-        case "loggedin": return auth.checkUser(req) != undefined;
+        case "loggedin": return auth.getUser(req) != undefined;
         case "admin": return auth.isAdmin(req);
         case "participant": return auth.isParticipant(req);
     };
@@ -36,8 +36,14 @@ exports.handleRequest = async (req, res) => {
     if (`${url}|${method}` in paths) {
         const endpoint = paths[`${url}|${method}`];
         if (!fits(req, endpoint.userType)) {
-            res.statusCode = 403;
-            res.end("Unauthorized");
+            if (method == "POST" || auth.getUser(req) != undefined) {
+                res.statusCode = 403;
+                res.end("Unauthorized");
+            } else {
+                res.statusCode = "302";
+                res.setHeader("Location", "/static/login.html");
+                res.end();
+            }
             return
         }
         let body = "";
@@ -47,11 +53,15 @@ exports.handleRequest = async (req, res) => {
         req.on('end', async _ => {
             const params = qs.parse(body);
             res.statusCode = 200;
-            endpoint.callback(params, req.headers, req.setHeader)
+            const user = await auth.getUser(req);
+            endpoint.callback(params, req.headers, (header, value) => res.setHeader(header, value), user)
                 .then(result => {
                     if (typeof result == "string") {
                         res.setHeader("Content-Type", "text/plain");
                         res.end(result)
+                    } else if (typeof result == "number") {
+                        res.statusCode = result;
+                        res.end();
                     } else {
                         res.setHeader("Content-Type", "application/json");
                         res.end(JSON.stringify(result));
