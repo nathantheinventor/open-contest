@@ -59,7 +59,7 @@ def generateContestsPage():
 
 def generateContestPage():
     generate("contest.html", Page(
-        h2("Contests", cls="page-title"),
+        h2("Contest", cls="page-title"),
         div(cls="actions", contents=[
             h.button("+ Create Problem", cls="create-problem")
         ]),

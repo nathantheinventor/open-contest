@@ -41,6 +41,8 @@ General page code
         } else if (pageName == "Contests") {
             displayExistingContests();
             setupContestButton();
+        } else if (pageName == "Contest") {
+            setupContestPage();
         }
     });    
 
@@ -272,4 +274,43 @@ Contests page
         $(".create-contest").click(function() {
             window.location = "/static/contest.html";
         });
+    }
+
+/*--------------------------------------------------------------------------------------------------
+Contests page
+--------------------------------------------------------------------------------------------------*/
+    function editContest() {
+        var id = (window.location.hash || "#").substr(1);
+        var name = $("#contest-name").val();
+        var startDate = $("#contest-start-date").val();
+        var startTime = $("#contest-start-time").val();
+        var endDate = $("#contest-end-date").val();
+        var endTime = $("#contest-end-time").val();
+
+        var start = new Date(`${startDate} ${startTime}`);
+        var end = new Date(`${endDate} ${endTime}`);
+
+        $.post("/editContest", {id: id, name: name, start: start.getTime(), end: end.getTime()}, id => {
+            window.location.hash = id;
+        });
+    }
+
+    function setupContestPage() {
+        if (window.location.hash) {
+            $.post("/getContest", {id: window.location.hash.substr(1)}, contest => {
+                $("#contest-name").val(contest.name);
+                var timezone = new Date().getTimezoneOffset() * 60000;
+                var start = new Date(parseInt(contest.start) - timezone);
+                $("#contest-start-date").val(start.toJSON().slice(0, 10));
+                $("#contest-start-time").val(start.toJSON().slice(11, 19));
+                var end = new Date(parseInt(contest.end) - timezone);
+                $("#contest-end-date").val(end.toJSON().slice(0, 10));
+                $("#contest-end-time").val(end.toJSON().slice(11, 19));
+            });
+        }
+        $("#contest-name").keyup(editContest);
+        $("#contest-start-date").keyup(editContest);
+        $("#contest-start-time").keyup(editContest);
+        $("#contest-end-date").keyup(editContest);
+        $("#contest-end-time").keyup(editContest);
     }
