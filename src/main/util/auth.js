@@ -29,6 +29,16 @@ exports.isAdmin = async req => {
     return userdata.type == "admin";
 }
 
+exports.isParticipant = async req => {
+    if (req.headers.cookie == undefined || req.headers.cookie == "" || !req.headers.cookie.indexOf("=") == -1) {
+        return false;
+    }
+    const userCookie = req.headers.cookie.split(";")[0];
+    const user = userCookie.split("=")[1];
+    const userdata = await db.getKey(`/users/${user}`);
+    return userdata.type == "participant";
+}
+
 exports.uuid = _ => {
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
         var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);

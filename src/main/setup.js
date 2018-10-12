@@ -91,8 +91,9 @@ const server = http.createServer((req, res) => {
         return;
     }
 
+    util.register.handleRequest(req, res);
     // If it's not a static file, forward the request to the web handler
-    web.serveRequest(req, res);
+    // web.serveRequest(req, res);
 });
 
 // Start serving

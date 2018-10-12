@@ -256,6 +256,7 @@ Contests page
                     }
                 });
             }
+            return false;
         });
     }
 
