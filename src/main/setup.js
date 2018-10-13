@@ -30,6 +30,22 @@ util.db.setKey(`/users/${adminId}`, {
     type: "admin"
 });
 
+const extensions = {
+    ".css": "text/css",
+    ".js": "text/javascript",
+    ".html": "text/html",
+    ".json": "application/json"
+}
+
+function mimeType(file) {
+    for (var extension in extensions) {
+        if (file.endsWith(extension)) {
+            return extensions[extension];
+        }
+    }
+    return "text/plain";
+}
+
 // Create the server
 const server = http.createServer((req, res) => {
     // When a request comes in, forward it based on the URL
@@ -56,6 +72,7 @@ const server = http.createServer((req, res) => {
 
             // The file was found
             res.statusCode = 200;
+            res.setHeader("Content-Type", mimeType(file));
             res.end(data);
         });
         return;
