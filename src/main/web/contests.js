@@ -13,8 +13,8 @@ register.post("/getContest", "admin", async (params) => {
 });
 
 register.post("/deleteContest", "admin", async (params) => {
-    const contestId = params.id;
-    util.db.deleteKey(`/contests/${contestId}`);
+    const id = params.id;
+    await util.db.deleteKey(`/contests/${id}`);
     return "ok";
 });
 

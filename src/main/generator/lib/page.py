@@ -42,14 +42,16 @@ class Page(UIElement):
         self.html = h.html(
             head(
                 title("Example Page"),
-                h.link(rel="stylesheet", href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css", integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO", crossorigin="anonymous"),
-                h.link(rel="stylesheet", href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css"),
-                h.link(rel="stylesheet", href="https://fonts.googleapis.com/icon?family=Material+Icons"),
+                h.link(rel="stylesheet", href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css", integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO", crossorigin="anonymous", type="text/css"),
+                h.link(rel="stylesheet", href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css", type="text/css"),
+                h.link(rel="stylesheet", href="https://fonts.googleapis.com/icon?family=Material+Icons", type="text/css"),
+                h.link(rel="stylesheet", href="/static/lib/simplemde/simplemde.min.css", type="text/css"),
                 h.link(rel="stylesheet", href="/static/styles/style.css?" + uuid(), type="text/css"),
                 h.script(src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"),
                 h.script(src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"),
-                h.script(src="/static/scripts/script.js?" + uuid()),
-                h.script(src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.1/ace.js")
+                h.script(src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.1/ace.js"),
+                h.script(src="/static/lib/simplemde/simplemde.min.js"),
+                h.script(src="/static/scripts/script.js?" + uuid())
             ),
             body(
                 Header(),

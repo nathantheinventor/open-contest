@@ -5,3 +5,4 @@ require("./root");
 require("./submissions");
 require("./submit");
 require("./users");
+require("./problems");

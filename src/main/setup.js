@@ -71,12 +71,9 @@ server.listen(port, '0.0.0.0', _ => {
     console.log(`Server started at 0.0.0.0:${port}`);
 });
 
-exec("killall -9 python3", (err, stdout, stderr) => {
-    console.log(stdout);
-    console.error(stderr)
-});
-
-exec("python3 /code/setup.py", (err, stdout, stderr) => {
-    console.log(stdout);
-    console.error(stderr)
-});
+setInterval(_ => {
+    exec("python3 /code/setup.py", (_, stdout, stderr) => {
+        if (stdout) { console.log(stdout); }
+        if (stderr) { console.log(stderr); }
+    });    
+}, 1000);

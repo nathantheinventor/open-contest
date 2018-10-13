@@ -43,8 +43,13 @@ General page code
             setupContestButton();
         } else if (pageName == "Contest") {
             setupContestPage();
+        } else if (pageName == "Problems") {
+            displayExistingProblems();
+            setupProblemButton();
+        } else if (pageName == "Problem") {
+            setupProblemPage();
         }
-    });    
+    });
 
 /*--------------------------------------------------------------------------------------------------
 Problem page
@@ -277,7 +282,7 @@ Contests page
     }
 
 /*--------------------------------------------------------------------------------------------------
-Contests page
+Contest page
 --------------------------------------------------------------------------------------------------*/
     function editContest() {
         var id = (window.location.hash || "#").substr(1);
@@ -313,4 +318,87 @@ Contests page
         $("#contest-start-time").keyup(editContest);
         $("#contest-end-date").keyup(editContest);
         $("#contest-end-time").keyup(editContest);
+    }
+
+/*--------------------------------------------------------------------------------------------------
+Problems page
+--------------------------------------------------------------------------------------------------*/
+    function createProblemCard(problem) {
+        $("div.problem-cards").append(`<a href="/static/problem.html#${problem.id}" class="card-link">
+            <div class="card" data-problem="${problem.id}" data-title="${problem.title}">
+                <div class="card-header">
+                    <h2 class="card-title">${problem.title}</h2>
+                    <div class="delete-link"><i class="material-icons">clear</i></div>
+                </div>
+                <div class="card-contents">
+                    ${problem.description}
+                </div>
+            </div>
+        </a>`);
+        $(`div[data-problem="${problem.id}"] div.delete-link`).click(function() {
+            var card = $(this).parents(".card");
+            var problem = card.data("problem");
+            var title = card.data("title");
+            if (confirm(`Are you sure you want to delete ${title}?`)) {
+                $.post("/deleteProblem", {id: problem}, data => {
+                    if (data == "ok") {
+                        card.remove(); // Bad practice, but I'm not completely sure how to do it right
+                    }
+                });
+            }
+            return false;
+        });
+    }
+
+    function displayExistingProblems() {
+        $.post("/getProblems", {}, problems => {
+            for (var problem of problems) {
+                createProblemCard(problem);
+            }
+        });
+    }
+
+    function setupProblemButton() {
+        $(".create-problem").click(function() {
+            window.location = "/static/problem.html";
+        });
+    }
+
+
+/*--------------------------------------------------------------------------------------------------
+Problem page
+--------------------------------------------------------------------------------------------------*/
+    function editProblem() {
+        var id = (window.location.hash || "#").substr(1);
+        problem = {id: id};
+        problem.title       = $("#problem-title").val();
+        problem.description = $("#problem-description").val();
+        problem.statement   = mdEditors[0].value();
+        problem.input       = mdEditors[1].value();
+        problem.output      = mdEditors[2].value();
+        problem.constraints = mdEditors[3].value();
+        problem.samples     = $("#problem-samples").val();
+
+        $.post("/editProblem", problem, id => {
+            window.location.hash = id;
+        });
+    }
+
+    var mdEditors = [];
+    function setupProblemPage() {
+        $(".rich-text textarea").each((_, elem) => {
+            mdEditors.push(new SimpleMDE({ element: elem }));
+        });
+        if (window.location.hash) {
+            $.post("/getProblem", {id: window.location.hash.substr(1)}, problem => {
+                $("#problem-title").val(problem.title);
+                $("#problem-description").val(problem.description);
+                mdEditors[0].value(problem.statement);
+                mdEditors[1].value(problem.input);
+                mdEditors[2].value(problem.output);
+                mdEditors[3].value(problem.constraints);
+                $("#problem-samples").val(problem.samples);
+            });
+        }
+        $(":input").keyup(editProblem);
     }
