@@ -30,3 +30,36 @@ register.post("/editContest", "admin", async (params) => {
 
     return contest.id;
 });
+
+register.post("/addContestProblem", "admin", async (params) => {
+    const contestId = params.contest;
+    const problemId = params.problem;
+    
+    let contest = await Contest.construct(contestId);
+    contest.problems.push(problemId);
+    contest.save();
+
+    return "ok";
+});
+
+register.post("/deleteContestProblem", "admin", async (params) => {
+    const contestId = params.contest;
+    const problemId = params.problem;
+    
+    let contest = await Contest.construct(contestId);
+    contest.problems = contest.problems.filter(id => id != problemId);
+    contest.save();
+
+    return "ok";
+});
+
+register.post("/setContestOrder", "admin", async (params) => {
+    const contestId = params.contest;
+    const order = JSON.parse(params.order);
+    
+    let contest = await Contest.construct(contestId);
+    contest.problems = order;
+    contest.save();
+
+    return "ok";
+});

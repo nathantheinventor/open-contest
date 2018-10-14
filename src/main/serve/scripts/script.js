@@ -300,6 +300,7 @@ Contest page
         });
     }
 
+    var problemsHere = {};
     function setupContestPage() {
         if (window.location.hash) {
             $.post("/getContest", {id: window.location.hash.substr(1)}, contest => {
@@ -311,36 +312,86 @@ Contest page
                 var end = new Date(parseInt(contest.end) - timezone);
                 $("#contest-end-date").val(end.toJSON().slice(0, 10));
                 $("#contest-end-time").val(end.toJSON().slice(11, 19));
+                for (var problem of contest.problems) {
+                    createProblemCard(problem, true);
+                    problemsHere[problem.id] = true;
+                }
             });
         }
-        $("#contest-name").keyup(editContest);
-        $("#contest-start-date").keyup(editContest);
-        $("#contest-start-time").keyup(editContest);
-        $("#contest-end-date").keyup(editContest);
-        $("#contest-end-time").keyup(editContest);
+        $(".contest-details input").keyup(editContest);
+        $("button.choose-problem").click(function() {
+            $.post("/getProblems", {}, problems => {
+                $("select.problem-choice option[value]").remove();
+                for (var problem of problems) {
+                    if (!problemsHere[problem.id]) {
+                        $("select.problem-choice").append(`<option value="${problem.id}">${problem.title}</option>`);
+                    }
+                }
+                $("div.modal").modal();
+            });
+        });
+        $("button.add-problem").click(function() {
+            if ($("select.problem-choice").val() != "-") {
+                if (!window.location.hash) {
+                    alert("You must fill in the contest details before you add a problem");
+                }
+                var contest = window.location.hash.substr(1);
+                var problem = $("select.problem-choice").val();
+                $.post("/addContestProblem", {contest: contest, problem: problem}, result => {
+                    if (result == "ok") {
+                        problemsHere[problem] = true;
+                        $.post("/getProblem", {id: problem}, problem => {
+                            createProblemCard(problem, true);
+                            $("div.modal").modal("hide");
+                        });
+                    }
+                });
+            }
+        })
     }
 
 /*--------------------------------------------------------------------------------------------------
 Problems page
 --------------------------------------------------------------------------------------------------*/
-    function createProblemCard(problem) {
-        $("div.problem-cards").append(`<a href="/static/problem.html#${problem.id}" class="card-link">
-            <div class="card" data-problem="${problem.id}" data-title="${problem.title}">
-                <div class="card-header">
-                    <h2 class="card-title">${problem.title}</h2>
-                    <div class="delete-link"><i class="material-icons">clear</i></div>
-                </div>
-                <div class="card-contents">
-                    ${problem.description}
-                </div>
+    function createProblemCard(problem, contestPage=false) {
+        $("div.problem-cards").append(`<div class="card" data-problem="${problem.id}" data-title="${problem.title}">
+            <div class="card-header">
+                <h2 class="card-title">${problem.title}</h2>
+                <div class="delete-link"><i class="material-icons">clear</i></div>
             </div>
-        </a>`);
+            <div class="card-contents">
+                ${problem.description}
+            </div>
+        </div>`);
+        if (contestPage) {
+            $("div.problem-cards").sortable({
+                placeholder: "ui-state-highlight",
+                forcePlaceholderSize: true,
+                stop: _ => {
+                    var order = [];
+                    $("div.card").each((_, item) => {
+                        if ($(item).data("problem")) {
+                            order.push($(item).data("problem"));
+                        }
+                    });
+                    $.post("/setContestOrder", {contest: window.location.hash.substr(1), order: JSON.stringify(order)});
+                }
+            });
+        }
+        $("div.card[data-problem]").click(a => {
+            window.location = "/static/problem.html#" + $(a.currentTarget).data("problem");
+        });
         $(`div[data-problem="${problem.id}"] div.delete-link`).click(function() {
             var card = $(this).parents(".card");
             var problem = card.data("problem");
             var title = card.data("title");
             if (confirm(`Are you sure you want to delete ${title}?`)) {
-                $.post("/deleteProblem", {id: problem}, data => {
+                var url = contestPage ? "/deleteContestProblem": "/deleteProblem";
+                var params = contestPage ? {problem: problem, contest: window.location.hash.substr(1)}: {id: problem};
+                if (contestPage) {
+                    delete problemsHere[problem];
+                }
+                $.post(url, params, data => {
                     if (data == "ok") {
                         card.remove(); // Bad practice, but I'm not completely sure how to do it right
                     }

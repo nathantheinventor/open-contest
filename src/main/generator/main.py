@@ -58,6 +58,24 @@ def generateContestsPage():
         div(cls="contest-cards")
     ))
 
+class Modal(UIElement):
+    def __init__(self, title, body, footer):
+        # taken from https://getbootstrap.com/docs/4.1/components/modal/
+        self.html = div(cls="modal", role="dialog", contents=[
+            div(cls="modal-dialog", role="document", contents=[
+                div(cls="modal-content", contents=[
+                    div(cls="modal-header", contents=[
+                        h.h5(title, cls="modal-title"),
+                        h.button(**{"type": "button", "class": "close", "data-dismiss": "modal", "arial-label": "close"}, contents=[
+                            h.span("&times;", **{"aria-hidden": "true"})
+                        ])
+                    ]),
+                    div(body, cls="modal-body"),
+                    div(footer, cls="modal-footer")
+                ])
+            ])
+        ])
+
 def generateContestPage():
     generate("contest.html", Page(
         h2("Contest", cls="page-title"),
@@ -88,6 +106,16 @@ def generateContestPage():
                 ])
             ])
         ])),
+        Modal(
+            "Choose Problem",
+            h.select(cls="form-control problem-choice", contents=[
+                h.option("-")
+            ]),
+            div(
+                h.button("Cancel", **{"type":"button", "class": "button button-white", "data-dismiss": "modal"}),
+                h.button("Add Problem", **{"type":"button", "class": "button add-problem"})
+            )
+        ),
         div(cls="problem-cards")
     ))
 
