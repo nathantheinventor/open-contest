@@ -95,7 +95,7 @@ Problem page
     }
 
     function createResultsCard() {
-        if ($(".card.result").length == 0) {
+        if ($(".card.results").length == 0) {
             $(".main-content").append(`<div class="results card">
                 <div class="card-header">
                     <h2 class="card-title">Results</h2>
@@ -105,6 +105,67 @@ Problem page
             </div>`);
         }
         $(".results.card .card-contents").html(`<div class="results-pending"><i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i></div>`);
+    }
+
+    var icons = {
+        "ok": "check",
+        "wrong_answer": "times",
+        "tle": "clock",
+        "runtime_error": "exclamation-triangle"
+    };
+
+    function showResults(sub) {
+        if (sub.results == "compile_error") {
+            $(".results.card .card-contents").html(`
+                <h3>Compile Error</h3>
+                <code>${sub.compile}</code>
+            `);
+        } else if (sub.type == "test") {
+            var tabs = "";
+            var results = "";
+            var samples = sub.results.length;
+            for (var i = 0; i < samples; i ++) {
+                var res = sub.results[i];
+                var icon = icons[res];
+                tabs += `<li><a href="#tabs-${i}"><i class="fa fa-${icon}" aria-hidden="true"></i> Sample #${i}</a></li>`;
+
+                var input = sub.inputs[i];
+                var output = sub.outputs[i];
+                var error = sub.errors[i];
+                var answer = sub.answers[i];
+                var errorStr = `<div class="col-12">
+                    <h4>Stderr Output</h4>
+                    <code>${error}</code>
+                </div>`;
+                if (!error) {
+                    errorStr = "";
+                }
+                results += `<div id="tabs-${i}">
+                    <div class="row">
+                        <div class="col-12">
+                            <h4>Input</h4>
+                            <code>${input}</code>
+                        </div>
+                        <div class="col-6">
+                            <h4>Your Output</h4>
+                            <code>${output}</code>
+                        </div>
+                        <div class="col-6">
+                            <h4>Correct Answer</h4>
+                            <code>${answer}</code>
+                        </div>
+                        ${errorStr}
+                    </div>
+                </div>`;
+            }
+            $(".results.card .card-contents").html(`<div id="result-tabs">
+                <ul>
+                    ${tabs}
+                </ul>
+                ${results}
+            </div>`);
+            $("#result-tabs").tabs();
+        }
     }
 
     async function setupAceEditor() {
@@ -141,17 +202,19 @@ Problem page
 
         // When you click the submit button, submit the code to the server
         $("button.submit-problem").click(_ => {
+            createResultsCard();
             var code = editor.getValue();
             $.post("/submit", {problem: thisProblem, language: language, code: code, type: "submit"}, results => {
-                addResultsCard(results);
+                showResults(results);
             });
         });
 
         // When you click the test code button, test the code
         $("button.test-samples").click(_ => {
+            createResultsCard();
             var code = editor.getValue();
             $.post("/submit", {problem: thisProblem, language: language, code: code, type: "test"}, results => {
-                addResultsCard(results);
+                showResults(results);
             });
         });
     }

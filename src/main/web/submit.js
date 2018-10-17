@@ -28,7 +28,11 @@ const exts = {
 };
 
 async function readFile(filename) {
-    return (await util.files.readFile(filename)).toString();
+    try {
+        return (await util.files.readFile(filename)).toString();
+    } catch(err) {
+        return undefined;
+    }
 }
 
 async function runCode(sub) {
@@ -49,9 +53,9 @@ async function runCode(sub) {
     }
     await util.files.writeFile(`/tmp/${sub.id}/out/tmp`, ""); // Create the "out" directory
     return new Promise((res, rej) => {
-        exec(`docker run --network=none -m 256MB -v /tmp/${sub.id}/:/source nathantheinventor/open-contest-dev-${sub.language}-runner ${tests} 5`, async (err, stdin, stderr) => {
+        exec(`docker run --network=none -m 256MB -v /tmp/${sub.id}/:/source nathantheinventor/open-contest-dev-${sub.language}-runner ${tests} 5`, async (err, stdout, stderr) => {
             if (err) rej(err);
-            if (stdin) console.log(stdin);
+            if (stdout) console.log(stdout);
             if (stderr) console.error(stderr);
             let inputs = [];
             let outputs = [];
@@ -74,7 +78,7 @@ async function runCode(sub) {
                 }
                 results.push(res);
             }
-            if (stdin == "compile_error") {
+            if (stdout == "compile_error\n") {
                 sub.results = "compile_error";
                 sub.compile = await readFile(`/tmp/${sub.id}/out/compile_error.txt`);
             } else {
@@ -86,6 +90,7 @@ async function runCode(sub) {
                 }
                 sub.results = results;
             }
+            sub.save();
             res(sub);
         });
     });

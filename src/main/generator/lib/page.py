@@ -42,7 +42,7 @@ class Page(UIElement):
         self.html = h.html(
             head(
                 title("Example Page"),
-                # h.link(rel="stylesheet", href="https://fonts.googleapis.com/icon?family=Material+Icons", type="text/css"),
+                h.link(rel="stylesheet", href="/static/lib/fontawesome/css/all.css", type="text/css"),
                 h.link(rel="stylesheet", href="/static/lib/bootstrap/css/bootstrap.min.css", type="text/css"),
                 h.link(rel="stylesheet", href="/static/lib/jqueryui/jquery-ui.min.css", type="text/css"),
                 h.link(rel="stylesheet", href="/static/lib/simplemde/simplemde.min.css", type="text/css"),

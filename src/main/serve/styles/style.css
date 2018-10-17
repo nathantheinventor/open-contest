@@ -227,6 +227,63 @@ Problem Page
             display: none;
         }
     }
+    /*-------------------------------------------------
+    Results Card
+    -------------------------------------------------*/
+        .card.results {
+            margin-top: 20px;
+        }
+        .card.results .results-pending {
+            text-align: center;
+            color: #093;
+        }
+        .card.results h4 {
+            font-size: 1em;
+            font-weight: 900;
+            margin-top: 5px;
+        }
+        ul.ui-tabs-nav.ui-corner-all.ui-helper-reset.ui-helper-clearfix.ui-widget-header {
+            background: white;
+            border: none;
+            border-bottom: 1px solid #ccc;
+            border-radius: 0px;
+            padding: 0px;
+        }
+        
+        div#result-tabs {
+            border: none;
+            padding: 0px;
+        }
+        
+        .ui-tabs .ui-tabs-panel {
+            padding: 0px;
+        }
+        
+        li.ui-tabs-tab.ui-corner-top.ui-state-default.ui-tab {
+            border-radius: 0px;
+            background: #eee;
+            border-color: #ccc;
+        }
+        
+        li.ui-tabs-tab.ui-corner-top.ui-state-default.ui-tab a {
+            color: #888;
+        }
+        
+        li.ui-tabs-tab.ui-corner-top.ui-state-default.ui-tab.ui-tabs-active.ui-state-active {
+            border-radius: 0px;
+            background: #00993325;
+            border-color: #00993350;
+        }
+        
+        li.ui-tabs-tab.ui-corner-top.ui-state-default.ui-tab.ui-tabs-active.ui-state-active a {
+            color: #093;
+        }
+        .fa-check {
+            color: #093;
+        }
+        .fa-times, .fa-clock, .fa-exclamation-triangle {
+            color: #f24;
+        }
 /*--------------------------------------------------------------------------------------------------
 Login Page
 --------------------------------------------------------------------------------------------------*/
