@@ -64,7 +64,7 @@ Problem page
                 res();
             } else {
                 $.post("/static/languages.json", {}, data => {
-                    localStorage.languages = data;
+                    localStorage.languages = JSON.stringify(data);
                     languages = JSON.parse(localStorage.languages);
                     res();
                 });
@@ -118,7 +118,7 @@ Problem page
         if (sub.results == "compile_error") {
             $(".results.card .card-contents").html(`
                 <h3>Compile Error</h3>
-                <code>${sub.compile}</code>
+                <code>${sub.compile.replace(/\n/g, "<br/>").replace(/ /g, "&nbsp;")}</code>
             `);
         } else if (sub.type == "test") {
             var tabs = "";
@@ -135,7 +135,7 @@ Problem page
                 var answer = sub.answers[i];
                 var errorStr = `<div class="col-12">
                     <h4>Stderr Output</h4>
-                    <code>${error}</code>
+                    <code>${error.replace(/\n/g, "<br/>").replace(/ /g, "&nbsp;")}</code>
                 </div>`;
                 if (!error) {
                     errorStr = "";
@@ -144,15 +144,15 @@ Problem page
                     <div class="row">
                         <div class="col-12">
                             <h4>Input</h4>
-                            <code>${input}</code>
+                            <code>${input.replace(/\n/g, "<br/>").replace(/ /g, "&nbsp;")}</code>
                         </div>
                         <div class="col-6">
                             <h4>Your Output</h4>
-                            <code>${output}</code>
+                            <code>${output.replace(/\n/g, "<br/>").replace(/ /g, "&nbsp;")}</code>
                         </div>
                         <div class="col-6">
                             <h4>Correct Answer</h4>
-                            <code>${answer}</code>
+                            <code>${answer.replace(/\n/g, "<br/>").replace(/ /g, "&nbsp;")}</code>
                         </div>
                         ${errorStr}
                     </div>

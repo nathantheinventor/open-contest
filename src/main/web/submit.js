@@ -91,6 +91,7 @@ async function runCode(sub) {
                 sub.results = results;
             }
             sub.save();
+            await util.files.deleteFile(`/tmp/${sub.id}`);
             res(sub);
         });
     });

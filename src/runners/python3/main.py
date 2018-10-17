@@ -11,6 +11,10 @@ testCases = int(sys.argv[1])
 timeLimit = int(sys.argv[2])
 
 def runCode(timeout):
+    if os.system("python3 -m py_compile /source/code.py > /source/out/compile_out.txt 2> /source/out/compile_error.txt") != 0:
+        print("compile_error")
+        timeout.cancel()
+        exit(1)
     for i in range(testCases):
         result = "ok"
         if os.system("python3 /source/code.py < /source/in{0}.txt > /source/out/out{0}.txt 2> /source/out/err{0}.txt".format(i)) != 0:
