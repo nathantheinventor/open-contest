@@ -94,6 +94,19 @@ Problem page
         });
     }
 
+    function createResultsCard() {
+        if ($(".card.result").length == 0) {
+            $(".main-content").append(`<div class="results card">
+                <div class="card-header">
+                    <h2 class="card-title">Results</h2>
+                </div>
+                <div class="card-contents">
+                </div>
+            </div>`);
+        }
+        $(".results.card .card-contents").html(`<div class="results-pending"><i class="fa fa-spinner fa-pulse fa-3x fa-fw"></i></div>`);
+    }
+
     async function setupAceEditor() {
         await getLanguages();
         // Get problem ID
@@ -129,10 +142,16 @@ Problem page
         // When you click the submit button, submit the code to the server
         $("button.submit-problem").click(_ => {
             var code = editor.getValue();
-            $.post("/submit", {problem: thisProblem, language: language, code: code}, data => {
-                if (data != "ok") {
-                    alert(data);
-                }
+            $.post("/submit", {problem: thisProblem, language: language, code: code, type: "submit"}, results => {
+                addResultsCard(results);
+            });
+        });
+
+        // When you click the test code button, test the code
+        $("button.test-samples").click(_ => {
+            var code = editor.getValue();
+            $.post("/submit", {problem: thisProblem, language: language, code: code, type: "test"}, results => {
+                addResultsCard(results);
             });
         });
     }

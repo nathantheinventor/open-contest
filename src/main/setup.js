@@ -2,7 +2,7 @@ const http = require("http");
 const fs = require("fs");
 const path = require("path");
 const util = require("./util");
-const web = require("./web");
+require("./web");
 const { exec } = require("child_process");
 const url2 = require("url");
 

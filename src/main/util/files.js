@@ -2,6 +2,7 @@ const fs = require("fs");
 const path = require("path");
 
 exports.writeFile = async (filename, contents) => {
+    exports.ensureExists(filename);
     return new Promise((res, rej) => {
         fs.writeFile(filename, contents, err => {
             if (err) {
