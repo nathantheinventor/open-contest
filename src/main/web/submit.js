@@ -62,6 +62,7 @@ async function runCode(sub) {
             let answers = [];
             let errors = [];
             let results = [];
+            let result = "ok";
             for (var i = 0; i < tests; i ++) {
                 inputs.push(await readFile(`/tmp/${sub.id}/in${i}.txt`));
                 errors.push(await readFile(`/tmp/${sub.id}/out/err${i}.txt`));
@@ -70,14 +71,18 @@ async function runCode(sub) {
                 let res = await readFile(`/tmp/${sub.id}/out/result${i}.txt`);
                 outputs.push(out);
                 answers.push(ans);
-                if (res == "ok" && ans != out) {
+                if (res == "ok" && ans.trim() != out.trim()) {
                     res = "wrong_answer";
                 }
                 if (res == undefined) {
                     res = "tle";
                 }
                 results.push(res);
+                if (res != "ok" && result == "ok") {
+                    result = res;
+                }
             }
+            sub.result = result;
             if (stdout == "compile_error\n") {
                 sub.results = "compile_error";
                 sub.compile = await readFile(`/tmp/${sub.id}/out/compile_error.txt`);

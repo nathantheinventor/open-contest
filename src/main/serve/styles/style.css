@@ -77,6 +77,7 @@ General page code
                 box-shadow: 0 5px 15px 0 rgba(120,120,120,.5);
                 margin-bottom: 20px;
                 padding: 0px;
+                font-size: initial;
             }
             div.card-header {
                 background: #00993325;
@@ -102,6 +103,7 @@ General page code
             a.card-link, a.card-link:hover {
                 color: initial;
                 text-decoration: none;
+                font-size: 0px;
             }
         /*-------------------------------------------------
         Buttons
@@ -283,6 +285,9 @@ Problem Page
         }
         .fa-times, .fa-clock, .fa-exclamation-triangle {
             color: #f24;
+        }
+        div.pad {
+            padding: 15px;
         }
 /*--------------------------------------------------------------------------------------------------
 Login Page

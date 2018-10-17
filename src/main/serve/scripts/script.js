@@ -113,6 +113,12 @@ Problem page
         "tle": "clock",
         "runtime_error": "exclamation-triangle"
     };
+    var verdict_name = {
+        "ok": "Accepted",
+        "wrong_answer": "Wrong Answer",
+        "tle": "Time Limit Exceeded",
+        "runtime_error": "Runtime Error"
+    };
 
     function showResults(sub) {
         if (sub.results == "compile_error") {
@@ -127,7 +133,7 @@ Problem page
             for (var i = 0; i < samples; i ++) {
                 var res = sub.results[i];
                 var icon = icons[res];
-                tabs += `<li><a href="#tabs-${i}"><i class="fa fa-${icon}" aria-hidden="true"></i> Sample #${i}</a></li>`;
+                tabs += `<li><a href="#tabs-${i}"><i class="fa fa-${icon}" title="${verdict_name[res]}"></i> Sample #${i}</a></li>`;
 
                 var input = sub.inputs[i];
                 var output = sub.outputs[i];
@@ -165,6 +171,19 @@ Problem page
                 ${results}
             </div>`);
             $("#result-tabs").tabs();
+        } else {
+            var results = "";
+            for (var i = 0; i < sub.results.length; i ++) {
+                var res = sub.results[i];
+                var icon = icons[res];
+                results += `<div class="col-2"><i class="fa fa-${icon}" title="${verdict_name[res]}"></i> Case #${i}</div>`;
+            }
+            $(".results.card .card-contents").html(`<div class="pad">
+                <h2>Result: ${verdict_name[sub.result]}</h2>
+                <div class="row">
+                    ${results}
+                </div>
+            </div>`);
         }
     }
 
