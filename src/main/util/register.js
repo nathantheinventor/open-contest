@@ -54,7 +54,7 @@ exports.handleRequest = async (req, res) => {
             const params = qs.parse(body);
             res.statusCode = 200;
             const user = await auth.getUser(req);
-            endpoint.callback(params, req.headers, (header, value) => res.setHeader(header, value), user)
+            endpoint.callback(params, (header, value) => res.setHeader(header, value), user)
                 .then(result => {
                     if (typeof result == "string") {
                         res.setHeader("Content-Type", "text/plain");

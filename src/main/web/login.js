@@ -1,7 +1,7 @@
 const util = require("../util");
 const register = require("../util/register");
 
-register.post("/login", "any", async (params, headers, setHeader) => {
+register.post("/login", "any", async (params, setHeader) => {
     const username = params.username;
     const password = params.password;
     const user = await util.auth.checkPassword(username, password);
