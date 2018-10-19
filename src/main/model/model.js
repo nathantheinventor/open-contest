@@ -27,13 +27,12 @@ class Model {
         return this.id;
     }
     static async all() {
-        console.log(this.folder);
         const ids = await util.db.listSubKeys(this.folder);
         let items = [];
         for (var id of ids) {
             items.push(await this.construct(id));
         }
-        return items
+        return items;
     }
     static async allJSON() {
         const all = await this.all();

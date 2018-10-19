@@ -87,6 +87,9 @@ General page code
             div.card.blue div.card-header {
                 background: #00669925;
             }
+            div.card.red div.card-header {
+                background: #ff224425;
+            }
             h2.card-title {
                 margin: 0px;
                 font-size: 1.2em;
@@ -95,6 +98,9 @@ General page code
             }
             div.card.blue h2.card-title {
                 color: #069;
+            }
+            div.card.red h2.card-title {
+                color: #f24;
             }
             div.card-contents {
                 padding: 15px;

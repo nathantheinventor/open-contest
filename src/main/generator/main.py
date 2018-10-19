@@ -1,6 +1,6 @@
-from .lib import Problem, Page, Card
+from .lib import Problem, Page, Card, SubmissionDisplay
 from .lib.htmllib import *
-from .db import listSubKeys, ensureExists
+from .db import listSubKeys, ensureExists, getKey, setKey, deleteKey
 
 def generate(path, contents):
     ensureExists("/code/serve/" + path)
@@ -170,7 +170,7 @@ def generateProblemMgmtPage():
 def generateStatic():
     generateLogin()
     generateSetup()
-    generateInitialProblems()
+    # generateInitialProblems()
     generateInitialLeaderboard()
     generateUsersPage()
     generateContestsPage()
@@ -196,8 +196,32 @@ def generateProblems():
         problemList = curProblems
         generateProblemsPage()
 
+def getSubmissionInfo():
+    return getKey("/submissionInfo.json") or {}
+
+submissionInfo = getSubmissionInfo()
+
+def generateSubmissionsPage():
+    usersToGenerate = {"286030a0-c74a-11e8-9e2c-83267e901a62"}
+    for submission in listSubKeys("/newSubmissions"):
+        sub = getKey("/submissions/{}/submission.json".format(submission))
+        user = sub["user"]
+        usersToGenerate.add(user)
+        if user not in submissionInfo:
+            submissionInfo[user] = []
+        submissionInfo[user].append(sub)
+        deleteKey("/newSubmissions/" + submission)
+    setKey("/submissionInfo.json", submissionInfo)
+    for user in usersToGenerate:
+        subs = submissionInfo[user]
+        subs = sorted(subs, key=lambda sub: int(sub["timestamp"]), reverse=True)
+        generate("submissions/{}.html".format(user), Page(
+            h2("Your Submissions", cls="page-title"),
+            *map(SubmissionDisplay, subs)
+        ))
+
 # Generate dynamic files that change occasionally, such as problem statements
 # Called once per second
 def generateDynamic():
     generateProblems()
-    
+    generateSubmissionsPage()

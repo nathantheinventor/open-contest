@@ -64,10 +64,10 @@ async function runCode(sub) {
             let results = [];
             let result = "ok";
             for (var i = 0; i < tests; i ++) {
-                inputs.push(await readFile(`/tmp/${sub.id}/in${i}.txt`));
-                errors.push(await readFile(`/tmp/${sub.id}/out/err${i}.txt`));
-                let out = await readFile(`/tmp/${sub.id}/out/out${i}.txt`);
-                let ans = await readFile(`/db/problems/${prob.id}/output/out${i}.txt`);
+                inputs.push((await readFile(`/tmp/${sub.id}/in${i}.txt`)) || "");
+                errors.push((await readFile(`/tmp/${sub.id}/out/err${i}.txt`)) || "");
+                let out = (await readFile(`/tmp/${sub.id}/out/out${i}.txt`)) || "";
+                let ans = (await readFile(`/db/problems/${prob.id}/output/out${i}.txt`)) || "";
                 let res = await readFile(`/tmp/${sub.id}/out/result${i}.txt`);
                 outputs.push(out);
                 answers.push(ans);
@@ -87,13 +87,16 @@ async function runCode(sub) {
                 sub.results = "compile_error";
                 sub.compile = await readFile(`/tmp/${sub.id}/out/compile_error.txt`);
             } else {
+                sub.results = results;
                 if (sub.type == "test") {
                     sub.inputs = inputs;
                     sub.outputs = outputs;
                     sub.answers = answers;
                     sub.errors = errors;
+                } else {
+                    // Save this submission to the database to be factored into the scoreboard and submissions page
+                    util.db.setKey(`/newSubmissions/${sub.id}`, "");
                 }
-                sub.results = results;
             }
             sub.save();
             await util.files.deleteFile(`/tmp/${sub.id}`);

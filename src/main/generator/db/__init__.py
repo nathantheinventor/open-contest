@@ -31,3 +31,6 @@ def setKey(key: str, value):
 def listSubKeys(key: str) -> list:
     ensureExists("/db" + key + "/file.json")
     return os.listdir("/db" + key)
+
+def deleteKey(key: str):
+    os.unlink("/db" + key)

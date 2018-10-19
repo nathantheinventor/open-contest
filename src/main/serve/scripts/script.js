@@ -31,6 +31,7 @@ General page code
         setupMenu();
         setupLoginButton();
         setupHeaderDiv();
+        fixFormatting();
         if ($("#ace-editor").length > 0) {
             setupAceEditor();
             setupSortability();
@@ -50,7 +51,6 @@ General page code
             setupProblemPage();
         }
     });
-
 /*--------------------------------------------------------------------------------------------------
 Problem page
 --------------------------------------------------------------------------------------------------*/
@@ -553,4 +553,24 @@ Problem page
             });
         }
         $(":input").keyup(editProblem);
+    }
+
+/*--------------------------------------------------------------------------------------------------
+General
+--------------------------------------------------------------------------------------------------*/
+    async function fixFormatting() {
+        $("span.time-format").each((_, span) => {
+            var timestamp = $(span).text();
+            var d = new Date(parseInt(timestamp));
+            $(span).text(d.toLocaleString());
+        });
+        await getLanguages();
+        $("span.language-format").each((_, span) => {
+            var lang = $(span).text();
+            $(span).text(languages[lang].name);
+        });
+        $("span.result-format").each((_, span) => {
+            var result = $(span).text();
+            $(span).text(verdict_name[result]);
+        });
     }
