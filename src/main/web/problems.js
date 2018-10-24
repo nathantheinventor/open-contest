@@ -29,6 +29,7 @@ register.post("/editProblem", "admin", async (params) => {
     problem.output      = params.output;
     problem.constraints = params.constraints;
     problem.samples     = params.samples;
+    problem.tests       = 0;
 
     await problem.save();
 

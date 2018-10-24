@@ -384,3 +384,23 @@ Problem Edit Page
     span[cm-text] {
         font-size: 0px;
     }
+/*--------------------------------------------------------------------------------------------------
+Leaderboard Page
+--------------------------------------------------------------------------------------------------*/
+    table {
+        width: 100%;
+        border-bottom: 2px solid black;
+    }
+    thead {
+        border-top: 2px solid black;
+        border-bottom: 2px solid black;
+    }
+    tr {
+        border-bottom: 1px solid #ccc;
+    }
+    td, th {
+        padding: 5px;
+    }
+    td.center, th.center {
+        text-align: center;
+    }

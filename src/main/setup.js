@@ -88,9 +88,11 @@ server.listen(port, '0.0.0.0', _ => {
     console.log(`Server started at 0.0.0.0:${port}`);
 });
 
-setInterval(_ => {
+function runPython() {
     exec("python3 /code/setup.py", (_, stdout, stderr) => {
         if (stdout) { console.log(stdout); }
         if (stderr) { console.log(stderr); }
+        setTimeout(runPython, 1000);
     });    
-}, 1000);
+}
+runPython();
