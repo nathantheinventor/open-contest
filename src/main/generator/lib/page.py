@@ -7,8 +7,10 @@ def uuid():
 
 class Header(UIElement):
     def __init__(self):
-        self.html = div(cls="header", contents=[
-            h1("OpenContest")
+        self.html = div(cls="top", contents=[
+            div(cls="header", contents=[
+                h1("OpenContest")
+            ])
         ])
 
 class MenuItem(UIElement):
@@ -34,7 +36,12 @@ class Menu(UIElement):
 class Footer(UIElement):
     def __init__(self):
         self.html = div(cls="footer", contents=[
-            h2("Copyright &copy; {} by Nathan Collins".format(datetime.now().year))
+            h2('Copyright &copy; {} by <a href="https://nathantheinventor.com" target="_blank">Nathan Collins</a>'.format(datetime.now().year)),
+            div(cls="footer-links", contents=[
+                h.span(h.a("Privacy Policy", href="/static/privacy.html", target="_blank")),
+                h.span(h.a("About", href="https://github.com/nathantheinventor/open-contest/", target="_blank")),
+                h.span(h.a("Instructions", href="/static/instructions.html", target="_blank"))
+            ])
         ])
 
 class Page(UIElement):

@@ -18,9 +18,10 @@ exports.readFile = async filename => {
     return new Promise((res, rej) => {
         fs.readFile(filename, (err, data) => {
             if (err) {
+                console.error(err);
                 rej(err);
             } else {
-                res(data);
+                res(data.toString());
             }
         });
     });

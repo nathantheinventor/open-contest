@@ -7,6 +7,7 @@ General page code
         body {
             margin: 0%;
             font-family: sans-serif;
+            background-color: #e9e9e9;
         }
         @media print {
             .header, .menu, .footer {
@@ -15,10 +16,16 @@ General page code
             * {
                 font-family: serif;
             }
+            body {
+                background: none;
+            }
         }
     /*-------------------------------------------------
     Header
     -------------------------------------------------*/
+        div.top {
+            background: white;
+        }
         div.header {
             width: 960px;
             margin-right: auto;
@@ -74,13 +81,14 @@ General page code
         Cards
         -------------------------------------------------*/
             div.card {
-                box-shadow: 0 5px 15px 0 rgba(120,120,120,.5);
+                box-shadow: 0 2px 10px 0 rgba(0,0,0,.2);
                 margin-bottom: 20px;
                 padding: 0px;
                 font-size: initial;
+                border-radius: 0px;
             }
             div.card-header {
-                background: #00993325;
+                background: #dcf0e2;
                 padding: 10px;
                 display: inline-block;
             }
@@ -105,6 +113,7 @@ General page code
             div.card-contents {
                 padding: 15px;
                 font-size: 0.8em;
+                font-family: serif;
             }
             a.card-link, a.card-link:hover {
                 color: initial;
@@ -115,7 +124,7 @@ General page code
         Buttons
         -------------------------------------------------*/
             button.button {
-                border: 1px solid #093;
+                border: none;
                 background: #093;
                 color: white;
                 box-shadow: 0 2px 5px 0 rgba(120,120,120,.4);
@@ -129,7 +138,6 @@ General page code
             }
             button.button-blue {
                 background: #069;
-                border-color: #069;
             }
         /*-------------------------------------------------
         General Stuff
@@ -159,6 +167,25 @@ General page code
         div.footer h2 {
             margin: 0px;
             font-size: 12px;
+            display: inline;
+        }
+        div.footer a {
+            color: white;
+        }
+        div.footer-links {
+            float: right;
+            font-size: 12px;
+            line-height: 1.2em;
+        }
+        div.footer-links span {
+            margin-left: 10px;
+        }
+        div.footer-links span::before {
+            margin-right: 10px;
+            content: '|';
+        }
+        div.footer-links span:first-child::before {
+            content: '';
         }
     /*-------------------------------------------------
     Material Icons
@@ -194,6 +221,8 @@ Problem Page
         color: black;
         display: block;
         padding: 10px;
+        max-height: 305px;
+        overflow: auto;
     }
     div.samples div.col-6:first-child {
         padding-left: 10px;
@@ -207,7 +236,7 @@ Problem Page
     .ui-state-highlight {
         margin-bottom: 20px;
         border: 1px solid #093;
-        background: repeating-linear-gradient(135deg, #00993312 0%, #00993312 5px, #00993325 5px, #00993325 10px);
+        background: repeating-linear-gradient(135deg, #eef8f1 0%, #eef8f1 5px, #dcf0e2 5px, #dcf0e2 10px);
         border-radius: 5px;
     }
     div.problem-description div.card-header {
@@ -231,6 +260,19 @@ Problem Page
     Print view
     -------------------------------------------------*/
     @media print {
+        div.card {
+            border: none;
+        }
+        div.card-header {
+            padding: 0px;
+        }
+        div.card-contents {
+            padding: 0px;
+        }
+        div.samples div.card-contents {
+            padding-left: 5px;
+            padding-right: 5px;
+        }
         div.code-editor {
             display: none;
         }
@@ -279,8 +321,8 @@ Problem Page
         
         li.ui-tabs-tab.ui-corner-top.ui-state-default.ui-tab.ui-tabs-active.ui-state-active {
             border-radius: 0px;
-            background: #00993325;
-            border-color: #00993350;
+            background: #dcf0e2;
+            border-color: #b4e0c0;
         }
         
         li.ui-tabs-tab.ui-corner-top.ui-state-default.ui-tab.ui-tabs-active.ui-state-active a {
@@ -299,11 +341,12 @@ Problem Page
 Login Page
 --------------------------------------------------------------------------------------------------*/
     .login-box {
+        box-shadow: 0 2px 10px 0 rgba(0,0,0,.2);
         margin-top: 100px;
         margin-left: auto;
         margin-right: auto;
         max-width: 300px;
-        background: #00993325;
+        background: #dcf0e2;
         padding: 30px;
     }
     .login-header {
@@ -352,7 +395,7 @@ Users Page
         .card h2, div.card.blue h2.card-title {
             color: black;
         }
-        div.delete-user {
+        div.delete-link {
             display: none;
         }
         .username-hidden {
@@ -368,6 +411,7 @@ Users Page
             margin: -3px;
         }
     }
+
 /*--------------------------------------------------------------------------------------------------
 Problem Edit Page
 --------------------------------------------------------------------------------------------------*/
@@ -384,23 +428,44 @@ Problem Edit Page
     span[cm-text] {
         font-size: 0px;
     }
+
 /*--------------------------------------------------------------------------------------------------
 Leaderboard Page
 --------------------------------------------------------------------------------------------------*/
     table {
+        box-shadow: 0 2px 10px 0 rgba(0,0,0,.2);
         width: 100%;
-        border-bottom: 2px solid black;
+        background-color: white;
     }
     thead {
-        border-top: 2px solid black;
-        border-bottom: 2px solid black;
+        border-bottom: 2px solid #b4e0c0;
+        background-color: #dcf0e2;
+        color: #093;
     }
     tr {
         border-bottom: 1px solid #ccc;
     }
+    tr:nth-child(2n) {
+        background-color: #f4f4f4;
+    }
     td, th {
-        padding: 5px;
+        padding: 15px;
     }
     td.center, th.center {
         text-align: center;
+    }
+
+/*--------------------------------------------------------------------------------------------------
+Leaderboard Page
+--------------------------------------------------------------------------------------------------*/
+    h1.center {
+        width: 100%;
+        text-align: center;
+        color: #093;
+    }
+    h1.jumbotron {
+        font-size: 300px;
+        background: none;
+        padding-bottom: 0px;
+        line-height: 300px;
     }

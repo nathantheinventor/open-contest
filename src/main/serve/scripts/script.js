@@ -265,18 +265,32 @@ Problem page
 /*--------------------------------------------------------------------------------------------------
 Login page
 --------------------------------------------------------------------------------------------------*/
-    function setupLoginButton() {
-        $(".login-button").click(_ => {
-            var username = $("input[name=username]").val();
-            var password = $("input[name=password]").val();
-            $.post("/login", {username: username, password: password}, data => {
-                if (data == "ok") {
-                    window.location = "/static/problems.html";
-                } else {
-                    alert(data);
-                }
-            });
+    function login() {
+        var username = $("input[name=username]").val();
+        var password = $("input[name=password]").val();
+        $.post("/login", {username: username, password: password}, data => {
+            if (data == "ok") {
+                window.location = "/static/problems.html";
+            } else {
+                alert(data);
+            }
         });
+    }
+
+    function loginIfEnter(event) {
+        if (event.keyCode == 13) {
+            // the user pressed the enter key
+            login();
+        }
+    }
+
+    function setupLoginButton() {
+        if ($("input[name=username]").length > 0) {
+            $(".login-button").click(login);
+            $("input[name=username]").focus();
+            $("input[name=username]").keypress(loginIfEnter);
+            $("input[name=password]").keypress(loginIfEnter);
+        }
     }
 
 /*--------------------------------------------------------------------------------------------------

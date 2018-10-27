@@ -51,11 +51,11 @@ class Problem:
         return Card("Sample {}".format(n), div(cls="row", contents=[
             div(cls="col-6", contents=[
                 h.p("Input:", cls="no-margin"),
-                h.code(inp)
+                h.code(inp.replace("\n", "<br/>").replace(" ", "&nbsp;"))
             ]),
             div(cls="col-6", contents=[
                 h.p("Output:", cls="no-margin"),
-                h.code(outp)
+                h.code(outp.replace("\n", "<br/>").replace(" ", "&nbsp;"))
             ])
         ]))
 

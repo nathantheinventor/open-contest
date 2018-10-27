@@ -5,8 +5,12 @@ exports.getKey = async key => {
     const file = path.join("/db", key);
     try {
         const contents = await files.readFile(file);
-        return JSON.parse(contents);
+        if (contents.startsWith("{") || contents.startsWith("[")) {
+            return JSON.parse(contents);
+        }
+        return contents;
     } catch (err) {
+        console.error(`Error with file ${file}: ${err}`)
         return undefined;
     }
 }
