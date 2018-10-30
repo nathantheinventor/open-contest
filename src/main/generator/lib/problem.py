@@ -53,7 +53,7 @@ class Problem:
     def getSample(self, n: int) -> Card:
         inp = getKey("/problems/{}/input/in{}.txt".format(self.guid, n))
         outp = getKey("/problems/{}/output/out{}.txt".format(self.guid, n))
-        return Card("Sample {}".format(n), div(cls="row", contents=[
+        return Card("Sample #{}".format(n), div(cls="row", contents=[
             div(cls="col-6", contents=[
                 h.p("Input:", cls="no-margin"),
                 h.code(inp.replace("\n", "<br/>").replace(" ", "&nbsp;"))

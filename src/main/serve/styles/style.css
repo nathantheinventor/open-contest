@@ -152,6 +152,9 @@ General page code
                 float: right;
                 margin-top: -48px;
             }
+            p:last-child {
+                margin-bottom: 0px;
+            }
     /*-------------------------------------------------
     Footer
     -------------------------------------------------*/
@@ -223,6 +226,7 @@ Problem Page
         padding: 10px;
         max-height: 305px;
         overflow: auto;
+        white-space: nowrap;
     }
     div.samples div.col-6:first-child {
         padding-left: 10px;
@@ -268,6 +272,7 @@ Problem Page
         }
         div.card-contents {
             padding: 0px;
+            font-size: 13pt;
         }
         div.samples div.card-contents {
             padding-left: 5px;
