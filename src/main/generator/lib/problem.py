@@ -1,6 +1,11 @@
 from .htmllib import *
 from .page import Card, Page
 from ..db import getKey
+import markdown2
+
+def formatMD(md: str) -> str:
+    """ Convert Markdown to HTML """
+    return markdown2.markdown(md)
 
 # languages = [
 #     ("C", "c"),
@@ -64,10 +69,10 @@ class Problem:
             h.input(type="hidden", id="problem-id", value=self.guid),
             h2(self.title, cls="page-title"),
             div(cls="problem-description", contents=[
-                Card("Problem Statement", self.statement, cls="stmt"),
-                Card("Input Format", self.input, cls="inp"),
-                Card("Output Format", self.output, cls="outp"),
-                Card("Constraints", self.constraints, cls="constraints"),
+                Card("Problem Statement", formatMD(self.statement), cls="stmt"),
+                Card("Input Format", formatMD(self.input), cls="inp"),
+                Card("Output Format", formatMD(self.output), cls="outp"),
+                Card("Constraints", formatMD(self.constraints), cls="constraints"),
                 div(cls="samples", contents=list(map(self.getSample, range(self.samples))))
             ]),
             CodeEditor(),
