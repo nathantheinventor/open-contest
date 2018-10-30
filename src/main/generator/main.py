@@ -186,7 +186,7 @@ def generatePrivacyPolicy():
     # Real Privacy Policy
     generate("privacy.html", Page(
         h2("Privacy Policy", cls="page-title"),
-        Card("TL;DR", "OpenContest as an organization does not collect any data from this app. " +
+        Card("TL;DR", "OpenContest as an organization is too lazy to steal your data (and we wouldn't know what to do with it). " +
             "However, the organizers of your contest may collect any data you submit, " +
             "including your name (which the organizers provide) and any code submissions."),
         Card("Data collected", 
