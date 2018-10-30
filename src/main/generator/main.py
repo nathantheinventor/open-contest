@@ -131,6 +131,9 @@ def generateProblemsMgmtPage():
 def generateProblemMgmtPage():
     generate("problem.html", Page(
         h2("Problem", cls="page-title"),
+        div(cls="actions", contents=[
+            h.button("+ Create Test Data", cls="button create-test-data")
+        ]),
         Card("Problem Details", div(cls="problem-details", contents=[
             h.form(cls="row", contents=[
                 div(cls="form-group col-12", contents=[
@@ -162,7 +165,21 @@ def generateProblemMgmtPage():
                     h.input(cls="form-control", type="number", name="problem-samples", id="problem-samples")
                 ]),
             ])
-        ]))
+        ])),
+        Modal(
+            "Create Test Data",
+            div(
+                h2("Input"),
+                h.textarea(cls="test-data-input"),
+                h2("Ouput"),
+                h.textarea(cls="test-data-output")
+            ),
+            div(
+                h.button("Cancel", **{"type":"button", "class": "button button-white", "data-dismiss": "modal"}),
+                h.button("Add Test Data", **{"type":"button", "class": "button add-test-data"})
+            )
+        ),
+        div(cls="test-data-cards")
     ))
 
 def generatePrivacyPolicy():

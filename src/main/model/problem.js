@@ -11,7 +11,7 @@ class Datum {
     toJSON() {
         return {
             input: this.input,
-            output: this.output
+            output: this.answer
         }
     }
 }
@@ -40,6 +40,12 @@ class Problem extends Model {
         let json = super.toJSON();
         const sampleData = await this.getSampleData();
         json.sampleData = sampleData.map(datum => datum.toJSON());
+        return json;
+    }
+    async toJSONFull() {
+        let json = super.toJSON();
+        const testData = await this.getTestData();
+        json.testData = testData.map(datum => datum.toJSON());
         return json;
     }
 };

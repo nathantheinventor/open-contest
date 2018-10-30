@@ -550,6 +550,27 @@ Problem page
         });
     }
 
+    function createTestDataCard(testData, isSample, dataNum) {
+        $("div.test-data-cards").append(`<div class="card ${isSample ? "blue" : ""}" data-problem="${dataNum}">
+            <div class="card-header">
+                <h2 class="card-title">${isSample ? "Sample" : "Test"} Data #${dataNum}</h2>
+                <div class="delete-link"><i class="material-icons">clear</i></div>
+            </div>
+            <div class="card-contents">
+                <div class="row">
+                    <div class="col-6">
+                        <p class="no-margin">Input:</p>
+                        <code>${testData.input.replace(/ /g, "&nbsp;").replace(/\n/g, "<br/>")}</code>
+                    </div>
+                    <div class="col-6">
+                        <p class="no-margin">Output:</p>
+                        <code>${testData.output.replace(/ /g, "&nbsp;").replace(/\n/g, "<br/>")}</code>
+                    </div>
+                </div>
+            </div>
+        </div>`);
+    }
+    
     var mdEditors = [];
     function setupProblemPage() {
         $(".rich-text textarea").each((_, elem) => {
@@ -564,6 +585,8 @@ Problem page
                 mdEditors[2].value(problem.output);
                 mdEditors[3].value(problem.constraints);
                 $("#problem-samples").val(problem.samples);
+                var i = -1;
+                problem.testData.forEach(datum => createTestDataCard(datum, ++i < problem.samples, i));
             });
         }
         $(":input").keyup(editProblem);

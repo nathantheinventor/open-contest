@@ -9,7 +9,7 @@ register.post("/getProblems", "admin", async _ => {
 register.post("/getProblem", "admin", async (params) => {
     const id = params.id;
     var problem = await Problem.construct(id);
-    return await problem.toJSON();
+    return await problem.toJSONFull();
 });
 
 register.post("/deleteProblem", "admin", async (params) => {

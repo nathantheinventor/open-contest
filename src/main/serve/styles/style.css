@@ -373,8 +373,11 @@ Users Page
         color: #093;
         cursor: pointer;
     }
-    div.card.blue div.delete-user {
+    div.card.blue div.delete-link {
         color: #069;
+    }
+    div.card.red div.delete-link {
+        color: #f24;
     }
     .username-hidden {
         display: none;
