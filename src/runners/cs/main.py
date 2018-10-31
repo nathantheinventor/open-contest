@@ -11,7 +11,7 @@ testCases = int(sys.argv[1])
 timeLimit = int(sys.argv[2])
 
 def runCode(timeout):
-    if os.system("csc /source/code.cs > /source/out/compile_out.txt 2> /source/out/compile_error.txt") != 0:
+    if os.system("csc /source/code.cs -out:/source/code.exe > /source/out/compile_out.txt 2> /source/out/compile_error.txt") != 0:
         print("compile_error")
         timeout.cancel()
         exit(1)
