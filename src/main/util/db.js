@@ -18,7 +18,10 @@ exports.getKey = async key => {
 exports.setKey = async (key, value) => {
     files.ensureExists(path.join("/db", key));
     const file = path.join("/db", key);
-    return await files.writeFile(file, JSON.stringify(value));
+    if (typeof value != "string") {
+        value = JSON.stringify(value);
+    }
+    return await files.writeFile(file, value);
 }
 
 exports.deleteKey = async key => {

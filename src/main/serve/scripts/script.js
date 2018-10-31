@@ -399,6 +399,19 @@ Contests page
 /*--------------------------------------------------------------------------------------------------
 Contest page
 --------------------------------------------------------------------------------------------------*/
+    function createContestProblemCard(problem) {
+        $("div.problem-cards").append(`
+        <div class="card" data-problem="${problem.id}" data-title="${problem.title}">
+            <div class="card-header">
+                <a href="/static/problem.html#${problem.id}"><h2 class="card-title">${problem.title}</h2></a>
+                <div class="delete-link" onclick="deleteContestProblem('${problem.id}')"><i class="material-icons">clear</i></div>
+            </div>
+            <div class="card-contents">
+                ${problem.description}
+            </div>
+        </div>`);
+    }
+
     function editContest() {
         var id = (window.location.hash || "#").substr(1);
         var name = $("#contest-name").val();
@@ -407,10 +420,20 @@ Contest page
         var endDate = $("#contest-end-date").val();
         var endTime = $("#contest-end-time").val();
 
-        var start = new Date(`${startDate} ${startTime}`);
-        var end = new Date(`${endDate} ${endTime}`);
+        var start = new Date(`${startDate} ${startTime}`).getTime();
+        var end = new Date(`${endDate} ${endTime}`).getTime();
 
-        $.post("/editContest", {id: id, name: name, start: start.getTime(), end: end.getTime()}, id => {
+        if (end <= start) {
+            alert("The end of the contest must be after the start.");
+            return;
+        }
+
+        var problems = [];
+        $(".problem-cards .card").each((_, card) => {
+            problems.push($(card).data("problem"));
+        });
+
+        $.post("/editContest", {id: id, name: name, start: start, end: end, problems: JSON.stringify(problems)}, id => {
             window.location.hash = id;
         });
     }
@@ -428,98 +451,81 @@ Contest page
                 $("#contest-end-date").val(end.toJSON().slice(0, 10));
                 $("#contest-end-time").val(end.toJSON().slice(11, 19));
                 for (var problem of contest.problems) {
-                    createProblemCard(problem, true);
+                    createContestProblemCard(problem, true);
                     problemsHere[problem.id] = true;
                 }
+                $("div.problem-cards").sortable({
+                    placeholder: "ui-state-highlight",
+                    forcePlaceholderSize: true,
+                    stop: editContest
+                });
             });
         }
-        $(".contest-details input").keyup(editContest);
-        $("button.choose-problem").click(function() {
-            $.post("/getProblems", {}, problems => {
-                $("select.problem-choice option[value]").remove();
-                for (var problem of problems) {
-                    if (!problemsHere[problem.id]) {
-                        $("select.problem-choice").append(`<option value="${problem.id}">${problem.title}</option>`);
-                    }
+        
+    }
+    function deleteContestProblem(id) {
+        $(`.card[data-problem=${id}]`).remove();
+        delete problemsHere[id];
+        editContest();
+    }
+    function chooseProblemDialog() {
+        $.post("/getProblems", {}, problems => {
+            $("select.problem-choice option[value]").remove();
+            for (var problem of problems) {
+                if (!problemsHere[problem.id]) {
+                    $("select.problem-choice").append(`<option value="${problem.id}">${problem.title}</option>`);
                 }
-                $("div.modal").modal();
-            });
-        });
-        $("button.add-problem").click(function() {
-            if ($("select.problem-choice").val() != "-") {
-                if (!window.location.hash) {
-                    alert("You must fill in the contest details before you add a problem");
-                }
-                var contest = window.location.hash.substr(1);
-                var problem = $("select.problem-choice").val();
-                $.post("/addContestProblem", {contest: contest, problem: problem}, result => {
-                    if (result == "ok") {
-                        problemsHere[problem] = true;
-                        $.post("/getProblem", {id: problem}, problem => {
-                            createProblemCard(problem, true);
-                            $("div.modal").modal("hide");
-                        });
-                    }
-                });
             }
-        })
+            $("div.modal").modal();
+        });
+    }
+    function chooseProblem() {
+        if ($("select.problem-choice").val() != "-") {
+            if (!window.location.hash) {
+                alert("You must fill in the contest details before you add a problem");
+            }
+            var problem = $("select.problem-choice").val();
+            problemsHere[problem] = true;
+            $.post("/getProblem", {id: problem}, problem => {
+                createContestProblemCard(problem, true);
+                editContest();
+                $("div.modal").modal("hide");
+            });
+        }
     }
 
 /*--------------------------------------------------------------------------------------------------
 Problems page
 --------------------------------------------------------------------------------------------------*/
-    function createProblemCard(problem, contestPage=false) {
-        $("div.problem-cards").append(`<div class="card" data-problem="${problem.id}" data-title="${problem.title}">
+function createProblemCard(problem) {
+    $("div.problem-cards").append(`<a href="/static/problem.html#${problem.id}" class="card-link">
+        <div class="card" data-problem="${problem.id}" data-title="${problem.title}">
             <div class="card-header">
                 <h2 class="card-title">${problem.title}</h2>
-                <div class="delete-link"><i class="material-icons">clear</i></div>
+                <div class="delete-link" onclick="deleteProblem('${problem.id}')"><i class="material-icons">clear</i></div>
             </div>
             <div class="card-contents">
                 ${problem.description}
             </div>
-        </div>`);
-        if (contestPage) {
-            $("div.problem-cards").sortable({
-                placeholder: "ui-state-highlight",
-                forcePlaceholderSize: true,
-                stop: _ => {
-                    var order = [];
-                    $("div.card").each((_, item) => {
-                        if ($(item).data("problem")) {
-                            order.push($(item).data("problem"));
-                        }
-                    });
-                    $.post("/setContestOrder", {contest: window.location.hash.substr(1), order: JSON.stringify(order)});
-                }
-            });
-        }
-        $("div.card[data-problem]").click(a => {
-            window.location = "/static/problem.html#" + $(a.currentTarget).data("problem");
-        });
-        $(`div[data-problem="${problem.id}"] div.delete-link`).click(function() {
-            var card = $(this).parents(".card");
-            var problem = card.data("problem");
-            var title = card.data("title");
-            if (confirm(`Are you sure you want to delete ${title}?`)) {
-                var url = contestPage ? "/deleteContestProblem": "/deleteProblem";
-                var params = contestPage ? {problem: problem, contest: window.location.hash.substr(1)}: {id: problem};
-                if (contestPage) {
-                    delete problemsHere[problem];
-                }
-                $.post(url, params, data => {
-                    if (data == "ok") {
-                        card.remove(); // Bad practice, but I'm not completely sure how to do it right
-                    }
-                });
-            }
-            return false;
-        });
+        </div></a>`);
+        $("div.delete-link").click(_ => false);
     }
 
     function displayExistingProblems() {
         $.post("/getProblems", {}, problems => {
             for (var problem of problems) {
                 createProblemCard(problem);
+            }
+        });
+    }
+    function deleteProblem(id) {
+        var title = $(`div.card[data-problem=${id}]`).data("title");
+        if (!confirm(`Are you sure you want to delete ${title}?`)) {
+            return;
+        }
+        $.post("/deleteProblem", {id: id}, data => {
+            if (data == "ok") {
+                $(`div.card[data-problem=${id}]`).remove(); // Bad practice, but I'm not completely sure how to do it right
             }
         });
     }
@@ -534,9 +540,37 @@ Problems page
 /*--------------------------------------------------------------------------------------------------
 Problem page
 --------------------------------------------------------------------------------------------------*/
-    function editProblem() {
+    function viewProblem() {
         var id = (window.location.hash || "#").substr(1);
-        problem = {id: id};
+        if (id != "") {
+            window.location = `/static/problems/${id}.html`;
+        } else {
+            alert("You have not saved this problem yet.");
+        }
+    }
+
+    function createTestDataDialog() {
+        $("div.modal").modal();
+    }
+
+    function createTestData() {
+        var input = $(".test-data-input").val();
+        var output = $(".test-data-output").val();
+        createTestDataCard({input: input, output: output}, false, 0);
+        editProblem();
+    }
+
+    var handlingClick = false;
+    function editProblem() {
+        // Eliminate double-click problem
+        if (handlingClick) {
+            // User has already clicked the button recently and the request isn't done
+            return;
+        }
+        handlingClick = true;
+
+        var id = (window.location.hash || "#").substr(1);
+        var problem = {id: id};
         problem.title       = $("#problem-title").val();
         problem.description = $("#problem-description").val();
         problem.statement   = mdEditors[0].value();
@@ -544,17 +578,42 @@ Problem page
         problem.output      = mdEditors[2].value();
         problem.constraints = mdEditors[3].value();
         problem.samples     = $("#problem-samples").val();
+        testData = [];
+        $(".test-data-cards .card").each((_, card) => {
+            var input = $(card).find("code:eq(0)").text();
+            var output = $(card).find("code:eq(1)").text();
+            testData.push({input: input, output: output});
+        });
+        problem.testData = JSON.stringify(testData);
+        
+        if (problem.samples > testData.length) {
+            alert("You have set the number of samples beyond the number of tests available.");
+            return;
+        }
 
         $.post("/editProblem", problem, id => {
             window.location.hash = id;
+            window.location.reload();
+            // Tell it we're done handling this request, so it's safe to start another
+            handlingClick = false;
         });
+        return false;
+    }
+
+    function deleteTestData(dataNum) {
+        if ($(".test-data-cards .card").length == $("#problem-samples").val()) {
+            alert("Deleting this item would make the number of sample cases invalid.");
+            return;
+        }
+        $(`.card[data-num=${dataNum}]`).remove();
+        editProblem();
     }
 
     function createTestDataCard(testData, isSample, dataNum) {
-        $("div.test-data-cards").append(`<div class="card ${isSample ? "blue" : ""}" data-problem="${dataNum}">
+        $("div.test-data-cards").append(`<div class="card ${isSample ? "blue" : ""}" data-num="${dataNum}">
             <div class="card-header">
                 <h2 class="card-title">${isSample ? "Sample" : "Test"} Data #${dataNum}</h2>
-                <div class="delete-link"><i class="material-icons">clear</i></div>
+                <div class="delete-link" onclick="deleteTestData(${dataNum})"><i class="material-icons">clear</i></div>
             </div>
             <div class="card-contents">
                 <div class="row">
@@ -587,9 +646,13 @@ Problem page
                 $("#problem-samples").val(problem.samples);
                 var i = -1;
                 problem.testData.forEach(datum => createTestDataCard(datum, ++i < problem.samples, i));
+                $("div.test-data-cards").sortable({
+                    placeholder: "ui-state-highlight",
+                    forcePlaceholderSize: true,
+                    stop: editProblem
+                });
             });
         }
-        $(":input").keyup(editProblem);
     }
 
 /*--------------------------------------------------------------------------------------------------

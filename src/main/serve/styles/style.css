@@ -155,6 +155,12 @@ General page code
             p:last-child {
                 margin-bottom: 0px;
             }
+            .monospace {
+                font-family: monospace;
+            }
+            .margin-bottom {
+                margin-bottom: .5rem;
+            }
     /*-------------------------------------------------
     Footer
     -------------------------------------------------*/

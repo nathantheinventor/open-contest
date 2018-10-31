@@ -28,8 +28,12 @@ register.post("/editProblem", "admin", async (params) => {
     problem.input       = params.input;
     problem.output      = params.output;
     problem.constraints = params.constraints;
-    problem.samples     = params.samples;
-    problem.tests       = 0;
+    problem.samples     = params.samples || "0";
+    
+    testData            = JSON.parse(params.testData);
+    console.log(testData);
+    problem.testData    = testData
+    problem.tests       = testData.length;
 
     await problem.save();
 

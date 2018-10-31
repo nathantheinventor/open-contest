@@ -36,6 +36,17 @@ class Problem extends Model {
         }
         return tests;
     }
+    async save() {
+        super.save();
+        var i = 0;
+        for (var datum of this.testData) {
+            console.error("input");
+            console.log(datum.input);
+            await util.db.setKey(`/problems/${this.id}/input/in${i}.txt`, datum.input);
+            await util.db.setKey(`/problems/${this.id}/output/out${i}.txt`, datum.output);
+            i ++;
+        }
+    }
     async toJSON() {
         let json = super.toJSON();
         const sampleData = await this.getSampleData();

@@ -80,7 +80,7 @@ def generateContestPage():
     generate("contest.html", Page(
         h2("Contest", cls="page-title"),
         div(cls="actions", contents=[
-            h.button("+ Choose Problem", cls="button choose-problem")
+            h.button("+ Choose Problem", cls="button", onclick="chooseProblemDialog()")
         ]),
         Card("Contest Details", div(cls="contest-details", contents=[
             h.form(cls="row", contents=[
@@ -104,6 +104,9 @@ def generateContestPage():
                     h.label(**{"for": "contest-end-time", "contents":"End Time"}),
                     h.input(cls="form-control", name="contest-end-time", id="contest-end-time", type="time")
                 ])
+            ]),
+            div(cls="align-right col-12", contents=[
+                h.button("Save", cls="button", onclick="editContest()")
             ])
         ])),
         Modal(
@@ -113,7 +116,7 @@ def generateContestPage():
             ]),
             div(
                 h.button("Cancel", **{"type":"button", "class": "button button-white", "data-dismiss": "modal"}),
-                h.button("Add Problem", **{"type":"button", "class": "button add-problem"})
+                h.button("Add Problem", **{"type":"button", "class": "button", "onclick": "chooseProblem()"})
             )
         ),
         div(cls="problem-cards")
@@ -132,7 +135,8 @@ def generateProblemMgmtPage():
     generate("problem.html", Page(
         h2("Problem", cls="page-title"),
         div(cls="actions", contents=[
-            h.button("+ Create Test Data", cls="button create-test-data")
+            h.button("View Problem", cls="button", onclick="viewProblem()"),
+            h.button("+ Create Test Data", cls="button", onclick="createTestDataDialog()")
         ]),
         Card("Problem Details", div(cls="problem-details", contents=[
             h.form(cls="row", contents=[
@@ -162,21 +166,24 @@ def generateProblemMgmtPage():
                 ]),
                 div(cls="form-group col-12", contents=[
                     h.label(**{"for": "problem-samples", "contents":"Number of Sample Cases"}),
-                    h.input(cls="form-control", type="number", name="problem-samples", id="problem-samples")
+                    h.input(cls="form-control", type="number", name="problem-samples", id="problem-samples", value="0")
                 ]),
+            ]),
+            div(cls="align-right col-12", contents=[
+                h.button("Save", cls="button", onclick="editProblem()")
             ])
-        ])),
+          ])),
         Modal(
             "Create Test Data",
             div(
-                h2("Input"),
-                h.textarea(cls="test-data-input"),
-                h2("Ouput"),
-                h.textarea(cls="test-data-output")
+                h.h5("Input"),
+                h.textarea(rows="5", cls="test-data-input col-12 monospace margin-bottom"),
+                h.h5("Output"),
+                h.textarea(rows="5", cls="test-data-output col-12 monospace")
             ),
             div(
                 h.button("Cancel", **{"type":"button", "class": "button button-white", "data-dismiss": "modal"}),
-                h.button("Add Test Data", **{"type":"button", "class": "button add-test-data"})
+                h.button("Add Test Data", **{"type":"button", "class": "button", "onclick": "createTestData()"})
             )
         ),
         div(cls="test-data-cards")
@@ -186,9 +193,9 @@ def generatePrivacyPolicy():
     # Real Privacy Policy
     generate("privacy.html", Page(
         h2("Privacy Policy", cls="page-title"),
-        Card("TL;DR", "OpenContest as an organization is too lazy to steal your data (and we wouldn't know what to do with it). " +
+        Card("TL;DR", "OpenContest as an organization is too lazy to steal your data (we're busy enough keeping track of our own). " +
             "However, the organizers of your contest may collect any data you submit, " +
-            "including your name (which the organizers provide) and any code submissions."),
+            "including your name (which the organizers provide) and any code submissions, which they may use for any purpose."),
         Card("Data collected", 
             div(
                 h.span("OpenContest collects the following data:"),
@@ -210,7 +217,7 @@ def generatePrivacyPolicy():
                     h.li("Anyone in the world, though we have tried to eliminate this possibility")
                 ),
                 h.span("Any data collected in OpenContest is stored in plain text on the server that OpenContest is running on. " +
-                    "No data is not sent to the developers of OpenContest")
+                    "No data is not sent to the developers of OpenContest.")
             )
         )
     ))
