@@ -17,7 +17,8 @@ def getKey(key: str) -> dict:
             if s[0] in ("[", "{"):
                 return json.loads(s)
             return s
-    except:
+    except Exception as e:
+        print(e)
         return None
 
 def setKey(key: str, value):
@@ -30,7 +31,7 @@ def setKey(key: str, value):
 
 def listSubKeys(key: str) -> list:
     ensureExists("/db" + key + "/file.json")
-    return os.listdir("/db" + key)
+    return [x for x in os.listdir("/db" + key) if not x.startswith(".")]
 
 def deleteKey(key: str):
     os.unlink("/db" + key)

@@ -580,8 +580,8 @@ Problem page
         problem.samples     = $("#problem-samples").val();
         testData = [];
         $(".test-data-cards .card").each((_, card) => {
-            var input = $(card).find("code:eq(0)").text();
-            var output = $(card).find("code:eq(1)").text();
+            var input = $(card).find("code:eq(0)").html().replace(/<br>/g, "\n").replace(/<br\/>/g, "\n").replace(/&nbsp;/g, " ");
+            var output = $(card).find("code:eq(1)").html().replace(/<br>/g, "\n").replace(/<br\/>/g, "\n").replace(/&nbsp;/g, " ");
             testData.push({input: input, output: output});
         });
         problem.testData = JSON.stringify(testData);
