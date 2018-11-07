@@ -31,18 +31,3 @@ register.post("/getContests", "loggedin", getContests)
 register.post("/getContest", "loggedin", getContest)
 register.post("/deleteContest", "loggedin", deleteContest)
 register.post("/editContest", "loggedin", editContest)
-
-
-# register.post("/editContest", "admin", async (params) => {
-#     const id = params.id;
-#     let contest = id ? await Contest.construct(id): new Contest();
-    
-#     contest.name     = params.name;
-#     contest.start    = params.start;
-#     contest.end      = params.end;
-#     contest.problems = JSON.parse(params.problems);
-    
-#     await contest.save();
-
-#     return contest.id;
-# });

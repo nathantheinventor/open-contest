@@ -1,6 +1,7 @@
 import json
 import os
 import logging
+import shutil
 
 def ensureExists(file: str, isDir: bool = False):
     cur = "/"
@@ -35,4 +36,4 @@ def listSubKeys(key: str) -> list:
     return [x for x in os.listdir("/db" + key) if not x.startswith(".")]
 
 def deleteKey(key: str):
-    os.unlink("/db" + key)
+    shutil.rmtree("/db" + key, ignore_errors=True)

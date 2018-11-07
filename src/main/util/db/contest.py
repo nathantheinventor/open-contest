@@ -1,12 +1,13 @@
 from code.util.db import getKey, setKey, listSubKeys, deleteKey, Problem
 from uuid import uuid4
+import logging
 
 contests = {}
 
 class Contest:
     def __init__(self, id=None):
         if id != None:
-            details = getKey(f"/contests/{id}/contests.json")
+            details       = getKey(f"/contests/{id}/contest.json")
             self.id       = details["id"]
             self.name     = details["name"]
             self.start    = int(details["start"])
@@ -41,6 +42,7 @@ class Contest:
     
     def delete(self):
         deleteKey(f"/contests/{self.id}")
+        del contests[self.id]
     
     def toJSON(self):
         return {
