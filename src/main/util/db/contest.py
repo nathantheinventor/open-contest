@@ -1,17 +1,25 @@
-from code.util.db import getKey, setKey, listSubKeys, Problem
+from code.util.db import getKey, setKey, listSubKeys, deleteKey, Problem
+from uuid import uuid4
 
 contests = {}
 
 class Contest:
-    def __init__(self, id):
-        details = getKey(f"/problems/{id}/problems.json")
-        self.id       = details["id"]
-        self.name     = details["name"]
-        self.start    = int(details["start"])
-        self.end      = int(details["end"])
-        self.problems = [Problem.construct(id) for id in details["problems"]]
+    def __init__(self, id=None):
+        if id != None:
+            details = getKey(f"/contests/{id}/contests.json")
+            self.id       = details["id"]
+            self.name     = details["name"]
+            self.start    = int(details["start"])
+            self.end      = int(details["end"])
+            self.problems = [Problem.get(id) for id in details["problems"]]
+        else:
+            self.id = None
+            self.name = None
+            self.start = None
+            self.end = None
+            self.problems = None
 
-    def construct(id: str):
+    def get(id: str):
         if id in contests:
             return contests[id]
         return None
@@ -26,9 +34,15 @@ class Contest:
         }
 
     def save(self):
-        setKey(f"/problems/{self.id}/problem.json", self.toJSONSimple())
+        if self.id == None:
+            self.id = str(uuid4())
+            contests[self.id] = self
+        setKey(f"/contests/{self.id}/contest.json", self.toJSONSimple())
     
-    def toJSON():
+    def delete(self):
+        deleteKey(f"/contests/{self.id}")
+    
+    def toJSON(self):
         return {
             "id": self.id,
             "name": self.name,

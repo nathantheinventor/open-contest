@@ -1,4 +1,4 @@
-from code.util.db import getKey, setKey, listSubKeys
+from code.util.db import getKey, setKey, listSubKeys, deleteKey
 
 problems = {}
 
@@ -7,7 +7,7 @@ class Datum:
         self.input = input
         self.output = output
     
-    def construct(id: str, num: int):
+    def get(id: str, num: int):
         input = getKey(f"/problems/{id}/input/in{num}.txt")
         output = getKey(f"/problems/{id}/output/out{num}.txt")
         return Datum(input, output)
@@ -30,8 +30,8 @@ class Problem:
         self.constraints = details["constraints"]
         self.samples     = int(details["samples"])
         self.tests       = int(details["tests"])
-        self.sampleData  = [Datum.construct(id, i) for i in range(self.samples)]
-        self.testData    = [Datum.construct(id, i) for i in range(self.tests)]
+        self.sampleData  = [Datum.get(id, i) for i in range(self.samples)]
+        self.testData    = [Datum.get(id, i) for i in range(self.tests)]
 
     def get(id: str):
         if id in problems:
@@ -56,6 +56,9 @@ class Problem:
         for i, datum in enumerate(self.testData):
             setKey(f"/problems/{self.id}/input/in{i}.txt", datum["input"])
             setKey(f"/problems/{self.id}/output/out{i}.txt", datum["output"])
+    
+    def delete(self):
+        deleteKey(f"/problems/{self.id}")
         
     def toJSON(self):
         json = self.toJSONSimple()

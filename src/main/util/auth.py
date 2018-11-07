@@ -19,9 +19,9 @@ def generatePassword():
 
 def checkPassword(username, password):
     user = User.getByName(username)
-    if not user:
+    if not user or password != user.password:
         return False
-    return password == user.password
+    return user
 
 def getUser(cookie):
     if cookie == None:

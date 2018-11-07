@@ -1,31 +1,37 @@
 from code.util import register
 from code.util.db import Contest
+import json
 
 def getContests(params, setHeader, user):
-    # return Contest.allJSON()
     return Contest.allJSON()
 
+def getContest(params, setHeader, user):
+    id = params["id"]
+    return Contest.get(id).toJSON()
+
+def deleteContest(params, setHeader, user):
+    id = params["id"]
+    Contest.get(id).delete()
+    return "ok"
+
+def editContest(params, setHeader, user):
+    id = params.get("id")
+    contest = Contest.get(id) or Contest()
+
+    contest.name     = params["name"]
+    contest.start    = params["start"]
+    contest.end      = params["end"]
+    contest.problems = [Problem.get(id) for id in json.loads(params["problems"])]
+
+    contest.save()
+
+    return contest.id
+
 register.post("/getContests", "loggedin", getContests)
+register.post("/getContest", "loggedin", getContest)
+register.post("/deleteContest", "loggedin", deleteContest)
+register.post("/editContest", "loggedin", editContest)
 
-# const util = require("../util");
-# const register = require("../util/register");
-# const Contest = require("../model").Contest;
-
-# register.post("/getContests", "admin", async _ => {
-#     return await Contest.allJSON();
-# });
-
-# register.post("/getContest", "admin", async (params) => {
-#     const id = params.id;
-#     var contest = await Contest.construct(id);
-#     return await contest.toJSON();
-# });
-
-# register.post("/deleteContest", "admin", async (params) => {
-#     const id = params.id;
-#     await util.db.deleteKey(`/contests/${id}`);
-#     return "ok";
-# });
 
 # register.post("/editContest", "admin", async (params) => {
 #     const id = params.id;

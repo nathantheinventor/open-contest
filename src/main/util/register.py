@@ -4,6 +4,8 @@ import json
 import os
 import mimetypes
 from code.util import auth
+from urllib.parse import parse_qs
+import traceback
 import logging
 logging.basicConfig(level=logging.DEBUG)
 
@@ -61,6 +63,8 @@ def serveStatic(self, path):
         self.end_headers()
         self.wfile.write(b"Not authorized")
 
+def setHeader(headers, name, value):
+    headers.append((name, value))
 
 class Server(BaseHTTPRequestHandler):
     def handleRequest(self, method):
@@ -69,9 +73,7 @@ class Server(BaseHTTPRequestHandler):
         url = url.split("#")[0]
         logging.info("Call to {}".format(url))
 
-        headers = {
-            "Content-type": "text/html"
-        }
+        headers = []
         statusCode = 200
         response = ""
 
@@ -85,44 +87,47 @@ class Server(BaseHTTPRequestHandler):
             if not fits(self.headers["Cookie"], endpoint.userType):
                 if method == "POST":
                     statusCode = 403
-                    headers["Content-type"] = "text/plain"
+                    headers.append(("Content-type", "text/plain"))
                     response = f"Not authorized: {url}"
                 else:
                     statusCode = 302
-                    headers["Location"] = "/static/login.html"
+                    headers.append(("Location", "/static/login.html"))
             else:
-                content_length = int(self.headers['Content-Length'])
-                f = self.rfile.read(content_length)
-                params = {} if f == b"" else json.loads(f)
+                content_length = int(self.headers['Content-Length'] or 0)
+                f = self.rfile.read(content_length).decode("utf-8")
+                params = parse_qs(f)
+                for param in params:
+                    if len(params[param]) == 1:
+                        params[param] = params[param][0]
                 user = auth.getUser(self.headers["Cookie"])
                 try:
-                    result = endpoint.callback(params, self.send_header, user)
+                    result = endpoint.callback(params, lambda x, y: setHeader(headers, x, y), user)
                     logging.info(result)
                     if isinstance(result, str):
-                        headers["Content-type"] = "text/plain"
+                        headers.append(("Content-type", "text/plain"))
                         response = result
                     elif isinstance(result, int):
                         statusCode = result
                     elif isinstance(result, dict) or isinstance(result, list):
-                        headers["Content-type"] = "application/json"
+                        headers.append(("Content-type", "application/json"))
                         response = json.dumps(result)
                     else:
-                        headers["Content-type"] = "application/json"
+                        headers.append(("Content-type", "application/json"))
                         response = "" # TODO: util.toString(result)
-                    logging.info(result)
-                    logging.info(response)
                 except Exception as e:
+                    exc = traceback.format_exc()
+                    logging.error(exc)
                     statusCode = 500
-                    headers["Content-type"] = "text/plain"
+                    headers.append(("Content-type", "text/plain"))
                     response = f"Internal Error: {e}"
         else:
             statusCode = 404
-            headers["Content-type"] = "text/plain"
+            headers.append(("Content-type", "text/plain"))
             response = f"Not found: {url}"
 
         self.send_response(statusCode)
-        for header in headers:
-            self.send_header(header, headers[header])
+        for header, value in headers:
+            self.send_header(header, value)
         self.end_headers()
         self.wfile.write(bytes(response, "utf-8"))
 
