@@ -13,12 +13,22 @@ To run OpenContest,
 OpenContest runs inside a Docker container and starts other containers on the host machine to run submissions. The explanation for the Docker flags used above is shown below:
 ```bash
 docker run
-    -v /tmp:/tmp # Maps the /tmp directory on the Docker image to the /tmp directory on the real machine This is needed for running the submitted code, since submissions go into the /tmp directory.
-    -v /<db-path>:/db # Maps the path that you want to hold the database on the physical machine to the /db directory on the container. Allows the database to persist between runs of the container.
-    -v /var/run/docker.sock:/var/run/docker.sock # Maps the Docker daemon socket to the image, allowing OpenContest to run submissions in Docker containers.
-    -p 0.0.0.0:8000:8000/tcp # Maps port 8000 inside the container to port 8000 outside the container. You can change the IP so that OpenContest listens only on a particular network interface, and you can also change the port that OpenContest listens on.
+    -v /tmp:/tmp # Maps the /tmp directory on the Docker image to the /tmp directory on the real machine
+                 # This is needed for running the submitted code, since submissions go
+                 # into the /tmp directory.
+    -v /<db-path>:/db # Maps the path that you want to hold the database on the physical machine
+                      # to the /db directory on the container.
+                      # Allows the database to persist between runs of the container.
+    -v /var/run/docker.sock:/var/run/docker.sock # Maps the Docker daemon socket to the image,
+                                                 # allowing OpenContest to run submissions
+                                                 # in Docker containers.
+    -p 0.0.0.0:8000:8000/tcp # Maps port 8000 inside the container to port 8000 outside the container.
+                             # You can change the IP so that OpenContest listens only on a particular
+                             # network interface, and you can also change the port 
+                             # on which OpenContest listens.
     nathantheinventor/open-contest # DockerHub address of the production version
-    "<Yourname>" # The name of the first admin user. This user will be given admin rights, and a password will be printed at the beginning of the log.
+    "<Yourname>" # The name of the first admin user. This user will be given admin rights,
+                 # and a password will be generated and printed at the beginning of the log.
     8000 # Port number inside the container.
 ```
 
