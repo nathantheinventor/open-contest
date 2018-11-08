@@ -32,3 +32,5 @@ docker run
     8000 # Port number inside the container.
 ```
 
+## Development Information
+See the [Developer Guide]() for more information about adding features to OpenContest.
