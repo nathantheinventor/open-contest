@@ -20,6 +20,7 @@ class Datum:
         }
 
 class Problem:
+    saveCallbacks = []
     def __init__(self, id=None):
         if id != None:
             details = getKey(f"/problems/{id}/problem.json")
@@ -73,6 +74,8 @@ class Problem:
         for i, datum in enumerate(self.testData):
             setKey(f"/problems/{self.id}/input/in{i}.txt", datum.input)
             setKey(f"/problems/{self.id}/output/out{i}.txt", datum.output)
+        for callback in Problem.saveCallbacks:
+            callback(self)
     
     def delete(self):
         deleteKey(f"/problems/{self.id}")
@@ -90,6 +93,13 @@ class Problem:
     
     def allJSON():
         return [problems[id].toJSONSimple() for id in problems]
+    
+    def forEach(callback: callable):
+        for id in problems:
+            callback(problems[id])
+    
+    def onSave(callback: callable):
+        Problem.saveCallbacks.append(callback)
 
 for id in listSubKeys("/problems"):
     problems[id] = Problem(id)

@@ -4,6 +4,7 @@ from uuid import uuid4
 submissions = {}
 
 class Submission:
+    saveCallbacks = []
     def __init__(self, id=None):
         if id != None:
             details = getKey(f"/submissions/{id}/submission.json")
@@ -62,6 +63,8 @@ class Submission:
             self.id = str(uuid4())
             submissions[self.id] = self
         setKey(f"/submissions/{self.id}/submission.json", self.toJSONSimple())
+        for callback in Submission.saveCallbacks:
+            callback(self)
     
     def delete(self):
         deleteKey(f"/submissions/{self.id}")
@@ -83,6 +86,13 @@ class Submission:
             "answers":   self.answers[:self.problem.samples],
             "result":    self.result
         }
+
+    def forEach(callback: callable):
+        for id in submissions:
+            callback(submissions[id])
+    
+    def onSave(callback: callable):
+        Submission.saveCallbacks.append(callback)
 
 for id in listSubKeys("/submissions"):
     submissions[id] = Submission(id)

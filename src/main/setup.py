@@ -7,8 +7,13 @@ from code.util.register import Server
 from http.server import HTTPServer
 import code.web
 import sys
+from code.generator.pages.static import generateStatic
+from code.generator.pages.dynamic import generateDynamic
 import logging
 logging.basicConfig(level=logging.DEBUG)
+
+generateStatic()
+generateDynamic()
 
 user = sys.argv[1]
 port = int(sys.argv[2])
