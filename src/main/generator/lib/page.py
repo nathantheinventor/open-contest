@@ -6,10 +6,10 @@ def uuid():
     return str(uuid4())
 
 class Header(UIElement):
-    def __init__(self):
+    def __init__(self, title):
         self.html = div(cls="top", contents=[
             div(cls="header", contents=[
-                h1("OpenContest")
+                h1(title)
             ])
         ])
 
@@ -45,6 +45,7 @@ class Footer(UIElement):
         ])
 
 class Page(UIElement):
+    title = "OpenContest"
     def __init__(self, *bodyData):
         self.html = h.html(
             head(
@@ -62,12 +63,17 @@ class Page(UIElement):
                 h.script(src="/static/scripts/script.js?" + uuid())
             ),
             body(
-                Header(),
+                Header(Page.title),
                 Menu(),
                 div(*bodyData, cls="main-content"),
                 Footer()
             )
         )
+    
+    def setTitle(title):
+        Page.title = title
+        from code.generator.pages.static import generateStatic
+        generateStatic()
 
 class Card(UIElement):
     def __init__(self, title, contents, link=None, cls=None):

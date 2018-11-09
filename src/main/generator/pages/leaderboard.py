@@ -2,8 +2,13 @@ from code.util.db import Submission, User
 from .static import generate
 from code.generator.lib.htmllib import *
 from code.generator.lib.page import *
+import logging
 
 contestStart = 1500000000
+
+def setContestStart(start):
+    global contestStart
+    contestStart = start
 
 submissions = {}
 leaderboard = {}
@@ -85,6 +90,7 @@ def score(submissions: list) -> tuple:
                 # The first successful submission adds a penalty point for each
                 #     minute since the beginning of the contest
                 # The timestamp is in millis
+                logging.error(f"{sub.timestamp} {contestStart}")
                 points += (sub.timestamp - contestStart) // 60
                 solved = True
                 break

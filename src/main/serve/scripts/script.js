@@ -32,6 +32,7 @@ General page code
         setupLoginButton();
         setupHeaderDiv();
         fixFormatting();
+        showCountdown();
         if ($("#ace-editor").length > 0) {
             setupAceEditor();
             setupSortability();
@@ -54,6 +55,27 @@ General page code
 /*--------------------------------------------------------------------------------------------------
 Problem page
 --------------------------------------------------------------------------------------------------*/
+    function showCountdown() {
+        if ($(".countdown").length == 0) {
+            return;
+        }
+        var contestStart = parseInt($(".countdown").text() || "0");
+        var updateTime = _ => {
+            var diff = Math.floor((contestStart - new Date().getTime()) / 1000);
+            if (diff <= 0) {
+                window.location.reload();
+            }
+            var seconds = diff % 60;
+            var minutes = Math.floor(diff / 60) % 60;
+            var hours = Math.floor(diff / 3600);
+            if (seconds < 10) seconds = "0" + seconds;
+            if (minutes < 10) minutes = "0" + minutes;
+            $(".countdown").text(`${hours}:${minutes}:${seconds}`)
+        };
+        window.setInterval(updateTime, 1000);
+        updateTime();
+    }
+
     var languages;
     var language;
 

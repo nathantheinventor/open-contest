@@ -1,5 +1,5 @@
 from code.util import register
-from code.util.db import Contest
+from code.util.db import Contest, Problem
 import json
 
 def getContests(params, setHeader, user):
@@ -19,8 +19,8 @@ def editContest(params, setHeader, user):
     contest = Contest.get(id) or Contest()
 
     contest.name     = params["name"]
-    contest.start    = params["start"]
-    contest.end      = params["end"]
+    contest.start    = int(params["start"])
+    contest.end      = int(params["end"])
     contest.problems = [Problem.get(id) for id in json.loads(params["problems"])]
 
     contest.save()

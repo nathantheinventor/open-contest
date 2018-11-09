@@ -5,6 +5,7 @@ import logging
 contests = {}
 
 class Contest:
+    saveCallbacks = []
     def __init__(self, id=None):
         if id != None:
             details       = getKey(f"/contests/{id}/contest.json")
@@ -39,6 +40,8 @@ class Contest:
             self.id = str(uuid4())
             contests[self.id] = self
         setKey(f"/contests/{self.id}/contest.json", self.toJSONSimple())
+        for callback in Contest.saveCallbacks:
+            callback(self)
     
     def delete(self):
         deleteKey(f"/contests/{self.id}")
@@ -55,6 +58,13 @@ class Contest:
     
     def allJSON():
         return [contests[id].toJSON() for id in contests]
+    
+    def forEach(callback: callable):
+        for id in contests:
+            callback(contests[id])
+    
+    def onSave(callback: callable):
+        Contest.saveCallbacks.append(callback)
 
 for id in listSubKeys("/contests"):
     contests[id] = Contest(id)
