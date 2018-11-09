@@ -95,7 +95,7 @@ def runCode(sub):
 
     sub.save()
 
-    shutil.rmtree(f"/tmp/{sub.id}")
+    shutil.rmtree(f"/tmp/{sub.id}", ignore_errors=True)
 
 def submit(params, setHeader, user):
     probId = params["problem"]
