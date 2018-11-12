@@ -189,6 +189,15 @@ def generateProblemMgmtPage():
         div(cls="test-data-cards")
     ))
 
+class FAQ(UIElement):
+    def __init__(self, q, a):
+        id = str(uuid())
+        self.html = div(
+            h.h4(q, cls="qa-question collapsed", **{"data-toggle": "collapse", "data-target": f"#qa-{id}"}),
+            div(a, id=f"qa-{id}", cls="collapse"),
+            cls="faq"
+        )
+
 def generatePrivacyPolicy():
     # Real Privacy Policy
     generate("privacy.html", Page(
@@ -230,10 +239,66 @@ def generatePrivacyPolicy():
     ))
 
     # Instructions about using OpenContest
-    generate("Instructions.html", Page(
-        h2("Instructions", cls="page-title"),
-        h1("DON'T", cls="jumbotron center"),
-        h1("Just Don't", cls="center")
+    generate("faqs.html", Page(
+        h2("FAQs", cls="page-title"),
+        FAQ("What is a programming contest?", """A programming contest is a contest where programmers 
+            attempt to solve problems by writing programs. These problems are typically posed as a 
+            problem statement to describe the problem, input that the program must process, and 
+            output that the program must produce. The goal of solving the problem is to write a 
+            program that produces the same output for a given input as the judge's solution."""),
+        FAQ("What happens when I submit to a problem?", """When you submit code to a problem, 
+            your code is automatically run against secret test data and judged based on the output
+            it produces. Your code can recieve the following verdicts:
+            <ul><li><i>Accepted</i>: Your code produced the correct output for all test cases.</li>
+                <li><i>Wrong Answer</i>: Your code produced incorrect output for some test case.</li>
+                <li><i>Runtime Error</i>: Your code threw an exception and exited with a non-zero exit code.</li>
+                <li><i>Time Limit Exceeded</i>: Your code ran longer than the time allowed.</li></ul>
+            """),
+        FAQ("How does scoring work?", """Your score is determined by two factors: the number of problems 
+            you solve and the number of penalty points you accrue. Contestants are ranked first on 
+            problems solved, so a contestant who solves 5 problems will always rank higher than a 
+            contestant who solves 4 problems, without regard to the penalty points, but two contestants 
+            who each solve 4 problems will be ranked against each other by penalty points.<br/><br/>
+            Penalty points are determined by the time it takes you to solve the problems and the number 
+            of incorrect submissions that you make. When you solve a problem, you accrue 1 penalty point 
+            for each minute that it has been from the beginning of the contest and 20 penalty points 
+            for each incorrect submission you made to that problem. For example, if you solve a problem 
+            137 minutes into the contest after making 2 incorrect submissions, you will accrue 177 
+            penalty points. You do not accrue penalty points for incorrect submissions to a problem 
+            if you never solve that problem.<br/><br/>
+            For example, if Jim and Bob solve problems at the following times:<br/><br/>
+            <table>
+                <thead><tr><th>Problem</th>
+                    <th class="center">1</th><th class="center">2</th><th class="center">3</th>
+                    <th class="center">4</th><th class="center">5</th></tr></thead>
+                <tbody>
+                    <tr><td>Jim</td>
+                        <td class="center">37 minutes,<br/>1 wrong<br/>57 points</td>
+                        <td class="center">14 minutes,<br/>2 wrong<br/>54 points</td>
+                        <td class="center">43 minutes,<br/>0 wrong<br/>43 points</td>
+                        <td class="center"><br/>5 wrong<br/>0 points</td>
+                        <td class="center">59 minutes,<br/>1 wrong<br/>79 points</td>
+                    </tr>
+                    <tr><td>Bob</td>
+                        <td class="center">7 minutes,<br/>0 wrong<br/>7 points</td>
+                        <td class="center">23 minutes,<br/>1 wrong<br/>43 points</td>
+                        <td class="center"><br/><br/>0 points</td>
+                        <td class="center">53 minutes,<br/>2 wrong<br/>93 points</td>
+                        <td class="center">41 minutes,<br/>1 wrong<br/>61 points</td>
+                    </tr>
+                </tbody>
+            </table><br/>
+            Jim will receive a total of 233 points, and Bob will receive a total of 204 points,
+            so Bob, having fewer penalty points, will rank above Jim.
+            """),
+        FAQ("Why am I getting Runtime Error?", """Here are a few tips:
+            <ul><li>Check for anywhere that your code could divide by zero.</li>
+                <li>Check for the index being out of bounds on an array.</li>
+                <li>Check for excessive recursion in Python. Python allows only a small number of
+                    recursive calls to a function</li>
+                <li>Check that your program's exit code is zero. In C/C++, the main function should
+                    return 0.</li>
+                </ul>"""),
     ))
 
 # Generate static files that don't change during the contest

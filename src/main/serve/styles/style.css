@@ -483,3 +483,18 @@ Leaderboard Page
         padding-bottom: 0px;
         line-height: 300px;
     }
+
+/*--------------------------------------------------------------------------------------------------
+FAQ Page
+--------------------------------------------------------------------------------------------------*/
+    .qa-question::before {
+        font-family: "Font Awesome 5 Free";
+        font-weight: 900;
+        content: "\f0d7  ";
+    }
+    .qa-question.collapsed::before {
+        content: "\f0da  ";
+    }
+    .faq {
+        padding-bottom: 10px;
+    }

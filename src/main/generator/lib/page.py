@@ -40,7 +40,7 @@ class Footer(UIElement):
             div(cls="footer-links", contents=[
                 h.span(h.a("Privacy Policy", href="/static/privacy.html", target="_blank")),
                 h.span(h.a("About", href="https://github.com/nathantheinventor/open-contest/", target="_blank")),
-                h.span(h.a("Instructions", href="/static/instructions.html", target="_blank"))
+                h.span(h.a("FAQs", href="/static/faqs.html", target="_blank"))
             ])
         ])
 
