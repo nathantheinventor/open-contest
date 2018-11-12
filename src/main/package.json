@@ -1,8 +1,0 @@
-{
-    "name": "open-contest",
-    "version": "0.1",
-    "description": "An open source programming contest management system",
-    "dependencies": {
-    },
-    "author": "Nathan Collins"
-}

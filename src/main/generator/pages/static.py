@@ -1,6 +1,6 @@
-from .lib import Problem, Page, Card, SubmissionDisplay
-from .lib.htmllib import *
-from .db import listSubKeys, ensureExists, getKey, setKey, deleteKey
+from code.generator.lib.htmllib import *
+from code.generator.lib.page import *
+from code.util.db.simple import *
 
 def generate(path, contents):
     ensureExists("/code/serve/" + path)
@@ -236,146 +236,15 @@ def generatePrivacyPolicy():
         h1("Just Don't", cls="center")
     ))
 
-# Generate static files needed for overall functioning
+# Generate static files that don't change during the contest
 def generateStatic():
     generateLogin()
     generateSetup()
-    # generateInitialProblems()
-    # generateInitialLeaderboard()
+    generateInitialProblems()
+    generateInitialLeaderboard()
     generateUsersPage()
     generateContestsPage()
     generateContestPage()
     generateProblemsMgmtPage()
     generateProblemMgmtPage()
     generatePrivacyPolicy()
-
-def generateProblemsPage(problemList):
-    for problem in problemList:
-        generate("problems/{}.html".format(problem.guid), problem.descriptionPage())
-    generate("problems.html", Page(
-        h.h2("Problems", cls="page-title"),
-        *map(lambda x: x.listElem(), problemList)
-    ))
-
-def generateProblems():
-    problemIds = listSubKeys("/problems")
-    problems = [Problem(id) for id in problemIds]
-    generateProblemsPage(problems)
-
-def getSubmissionInfo():
-    return getKey("/submissionInfo.json") or {}
-
-def getLeaderboardInfo():
-    return getKey("/leaderboardInfo.json") or {}
-
-submissionInfo = getSubmissionInfo()
-leaderboardInfo = getLeaderboardInfo()
-contestStart = 1500000000
-
-def score(submissions: list) -> tuple:
-    """ Given a list of submissions by a particular user, calculate that user's score.
-        Calculates score in ACM format. """
-    
-    solvedProbs = 0
-    penPoints = 0
-
-    # map from problems to list of submissions
-    probs = {}
-
-    # Put the submissions into the probs list
-    for sub in submissions:
-        probId = sub["problem"]
-        if probId not in probs:
-            probs[probId] = []
-        probs[probId].append(sub)
-    
-    # For each problem, calculate how much it adds to the score
-    for prob in probs:
-        # Sort the submissions by time
-        subs = sorted(probs[prob], key=lambda sub: int(sub["timestamp"]))
-        # Penalty points for this problem
-        points = 0
-        solved = False
-        
-        for sub in subs:
-            if sub["result"] != "ok":
-                # Unsuccessful submissions count for 20 penalty points
-                # But only if the problem is eventually solved
-                points += 20
-            else:
-                # The first successful submission adds a penalty point for each
-                #     minute since the beginning of the contest
-                # The timestamp is in millis
-                points += (int(sub["timestamp"]) - contestStart) // 60000
-                solved = True
-                break
-        
-        # A problem affects the score only if it was successfully solved
-        if solved:
-            solvedProbs += 1
-            penPoints += points
-    
-    # The user's score is dependent on the number of solved problems and the number of penalty points
-    return solvedProbs, penPoints
-
-class User:
-    def __init__(self, id):
-        self.user = getKey("/users/{}".format(id))
-        self.name = self.user["username"]
-
-def generateSubmissionsPage():
-    usersToGenerate = set() # {"286030a0-c74a-11e8-9e2c-83267e901a62"}
-    for submission in listSubKeys("/newSubmissions"):
-        sub = getKey("/submissions/{}/submission.json".format(submission))
-        user = sub["user"]
-        usersToGenerate.add(user)
-        if user not in submissionInfo:
-            submissionInfo[user] = []
-        submissionInfo[user].append(sub)
-        deleteKey("/newSubmissions/" + submission)
-    setKey("/submissionInfo.json", submissionInfo)
-    for user in usersToGenerate:
-        subs = submissionInfo[user]
-        leaderboardInfo[user] = score(subs)
-        subs = sorted(subs, key=lambda sub: int(sub["timestamp"]), reverse=True)
-        generate("submissions/{}.html".format(user), Page(
-            h2("Your Submissions", cls="page-title"),
-            *map(SubmissionDisplay, subs)
-        ))
-    setKey("/leaderboardInfo.json", leaderboardInfo)
-    l = leaderboardInfo
-    userRank = sorted(leaderboardInfo, key=lambda x: l[x][0] * 1000000000 - l[x][1], reverse=True)
-    ranks = [i + 1 for i in range(len(userRank))]
-    for i in range(1, len(userRank)):
-        if l[userRank[i]] == l[userRank[i - 1]]:
-            ranks[i] = ranks[i - 1]
-    scores = []
-    for user, rank in zip(userRank, ranks):
-        scores.append(h.tr(
-            h.td(User(user).name),
-            h.td(l[user][0], cls="center"),
-            h.td(l[user][1], cls="center"),
-            h.td(rank, cls="center")
-        ))
-    generate("leaderboard.html", Page(
-        h2("Leaderboard", cls="page-title"),
-        h.table(
-            h.thead(
-                h.tr(
-                    h.th("User"),
-                    h.th("Problems Solved", cls="center"),
-                    h.th("Penalty Points", cls="center"),
-                    h.th("Rank", cls="center")
-                )
-            ),
-            h.tbody(
-                *scores
-            )
-        )
-    ))
-
-# Generate dynamic files that change occasionally, such as problem statements
-# Called once per second
-def generateDynamic():
-    generateProblems()
-    generateSubmissionsPage()

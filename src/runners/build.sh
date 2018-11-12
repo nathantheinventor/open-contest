@@ -1,4 +1,6 @@
 #!/bin/bash
+export USER=nathantheinventor
+export OC_PROJECT_NAME=open-contest
 
 # Build Docker images
 docker build c/       -t $USER/$OC_PROJECT_NAME-c-runner
