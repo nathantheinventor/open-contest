@@ -59,4 +59,4 @@ OpenContest formats problems for printing so that you can print and distribute p
 From the user list page, you can print the page with Ctrl+P for a list of usernames and passwords. You can then cut the paper and deliver these sheets to the contestants.
 
 ## Development Information
-See the [Developer Guide](https://github.com/nathantheinventor/open-contest/wiki) for more information about adding features to OpenContest.
+See the [Wiki](https://github.com/nathantheinventor/open-contest/wiki) for more information about how OpenContest works and how to add features.
