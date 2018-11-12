@@ -40,7 +40,7 @@ To create a problem, follow these steps:
 3. Choose Problems.
 ![](https://contests-dev.nathantheinventor.com/images/Screen%20Shot%202018-11-11%20at%208.50.13%20PM.png "Choose Problems")
 4. Click *Create Problem*.
-![](https://contests-dev.nathantheinventor.com/images/Screen%20Shot%202018-11-11%20at%208.53.25%20PM.png "Create Problem")
+![](https://contests-dev.nathantheinventor.com/images/Screen%20Shot%202018-11-11%20at%209.02.14%20PM.png "Create Problem")
 5. Enter the details of the problem. You may use Markdown formatting for the Problem Statement, Input Format, Output Format, and Constraints.  
     **Note**: The Description is the text shown under the problem title in the list of all problems.
 6. After saving the problem details, create test data.
