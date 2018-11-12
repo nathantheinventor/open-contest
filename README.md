@@ -14,8 +14,8 @@ OpenContest runs inside a Docker container and starts other containers on the ho
 ```bash
 docker run
     -v /tmp:/tmp # Maps the /tmp directory on the Docker image to the /tmp directory on the real machine
-                 # This is needed for running the submitted code, since submissions go
-                 # into the /tmp directory.
+                 # This is needed for running the submitted code, since submissions are processed
+                 # in the /tmp directory.
     -v /<db-path>:/db # Maps the path that you want to hold the database on the physical machine
                       # to the /db directory on the container.
                       # Allows the database to persist between runs of the container.
