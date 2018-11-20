@@ -266,7 +266,7 @@ def generatePrivacyPolicy():
             137 minutes into the contest after making 2 incorrect submissions, you will accrue 177 
             penalty points. You do not accrue penalty points for incorrect submissions to a problem 
             if you never solve that problem.<br/><br/>
-            For example, if Jim and Bob solve problems at the following times:<br/><br/>
+            For example, if Jim and Bob solve problems at the following times,<br/><br/>
             <table>
                 <thead><tr><th>Problem</th>
                     <th class="center">1</th><th class="center">2</th><th class="center">3</th>

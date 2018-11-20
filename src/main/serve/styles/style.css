@@ -491,10 +491,14 @@ FAQ Page
         font-family: "Font Awesome 5 Free";
         font-weight: 900;
         content: "\f0d7  ";
+        cursor: pointer;
     }
     .qa-question.collapsed::before {
         content: "\f0da  ";
     }
     .faq {
         padding-bottom: 10px;
+    }
+    .qa-question {
+        cursor: pointer;
     }
