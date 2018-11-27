@@ -7,16 +7,30 @@
 /*--------------------------------------------------------------------------------------------------
 General page code
 --------------------------------------------------------------------------------------------------*/
+    // from https://www.quirksmode.org/js/cookies.html
+    function readCookie(name) {
+        var nameEQ = name + "=";
+        var ca = document.cookie.split(';');
+        for(var i=0;i < ca.length;i++) {
+            var c = ca[i];
+            while (c.charAt(0)==' ') c = c.substring(1,c.length);
+            if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+        }
+        return null;
+    }    
+
     function setupHeaderDiv() {
         $("div.header").click(_ => {
             window.location = "/";
         });
     }
 
+    var userType = "";
+    var user = "";
     function setupMenu() {
-        var userType = "";
         if (document.cookie) {
-            userType = document.cookie.split("=")[1];
+            userType = readCookie("userType");
+            user = readCookie("user");
         }
         $("div.menu-item").each(function() {
             var perms = $(this).attr("role");
@@ -716,11 +730,23 @@ Messages Page
             }
         });
     }
+    function sendMessageAdmin() {
+        var text = $("textarea.message").val();
+        var recipient = $("select.recipient").val();
+        $.post("/sendMessage", {to: recipient, message: text}, result => {
+            if (result == "ok") {
+                $("div.modal").modal("hide");
+            } else {
+                alert(result);
+            }
+        });
+    }
 
     function showMessage(msg) {
         $("div.message-cards").append(`<div class="card">
             <div class="card-header">
                 <h2 class="card-title">Message from ${msg.from.username} at ${new Date(msg.timestamp * 1000).toLocaleTimeString()}</h2>
+                ${userType == "admin" ? `<div class="delete-link" onclick="reply('${msg.from.id}')">Reply</div>` : ""}
             </div>
             <div class="card-contents">
                 ${msg.message}
@@ -728,7 +754,17 @@ Messages Page
         </div>`)
     }
 
+    function reply(user) {
+        $("select.recipient").val(user);
+        createMessage();
+    }
+
     function showMessages() {
+        $.post("/getUsers", {}, users => {
+            for (var user of users) {
+                $(".recipient").append(`<option value=${user.id}>${user.username}</option>`)
+            }
+        });
         $.post("/getMessages", {timestamp: 0}, messages => {
             for (message of messages.messages) {
                 showMessage(message);
@@ -751,7 +787,7 @@ Messages Page
         $.post("/getMessages", {timestamp: lastChecked}, messages => {
             lastChecked = messages.timestamp
             for (message of messages.messages) {
-                if (message.id in seenMessages) {
+                if (message.id in seenMessages || message.from.id == user) {
                     continue;
                 }
                 showIncomingMessage(message);

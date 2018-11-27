@@ -13,7 +13,7 @@ def login(params, setHeader, user):
     password = params["password"]
     user = auth.checkPassword(username, password)
     if user:
-        setHeader("Set-Cookie", f"user={user.id}; HttpOnly")
+        setHeader("Set-Cookie", f"user={user.id}")
         setHeader("Set-Cookie", f"userType={user.type}")
         return "ok"
     else:

@@ -6,7 +6,7 @@ def getMessages(params, setHeader, user):
     timestamp = float(params["timestamp"])
     newTime = time.time()
     messages = Message.messagesSince(timestamp)
-    applicable = [message.toJSON() for message in messages if (message.toUser and message.toUser.id == user.id) or message.isGeneral or (message.isAdmin and user.isAdmin())]
+    applicable = [message.toJSON() for message in messages if (message.toUser and message.toUser.id == user.id) or message.isGeneral or (message.isAdmin and user.isAdmin()) or message.fromUser.id == user.id]
     applicable = sorted(applicable, key=lambda msg: msg["timestamp"], reverse=True)
     return {
         "messages": applicable,

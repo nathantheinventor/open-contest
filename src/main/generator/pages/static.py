@@ -317,6 +317,28 @@ def generateMessagesPage():
         ),
         div(cls="message-cards"),
     ))
+    generate("messagesAdmin.html", Page(
+        h2("Messages", cls="page-title"),
+        div(cls="actions", contents=[
+            h.button("+ Send Message", cls="button create-message", onclick="createMessage()")
+        ]),
+        Modal(
+            "Send Message",
+            h.div(
+                h.h5("To"),
+                h.select(cls="form-control recipient", contents=[
+                    h.option("general")
+                ]),
+                h.h5("Message"),
+                h.textarea(cls="message col-12")
+            ),
+            div(
+                h.button("Cancel", **{"type":"button", "class": "button button-white", "data-dismiss": "modal"}),
+                h.button("Send", **{"type":"button", "class": "button", "onclick": "sendMessageAdmin()"})
+            )
+        ),
+        div(cls="message-cards"),
+    ))
 
 # Generate static files that don't change during the contest
 def generateStatic():
