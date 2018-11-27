@@ -6,8 +6,10 @@ users = {}
 userNames = {}
 
 class User:
-    def __init__(self, id: str, username: str, password: str, type: str):
+    def __init__(self, username: str, password: str, type: str, id: str = None):
         self.id = id
+        if username in userNames:
+            self.id = userNames[username].id
         self.username = username
         self.password = password
         self.type = type
@@ -23,6 +25,7 @@ class User:
         return None
     
     def save(self):
+        logging.info(f"saving {self.username}")
         if self.id == None:
             self.id = str(uuid4())
             users[self.id] = self
@@ -45,9 +48,12 @@ class User:
         del users[self.id]
         del userNames[self.username]
         self.save()
+    
+    def isAdmin(self) -> bool:
+        return self.type == "admin"
 
 usrs = getKey("/users.json") or []
 for usr in usrs:
-    user = User(usr["id"], usr["username"], usr["password"], usr["type"])
+    user = User(usr["username"], usr["password"], usr["type"], usr["id"])
     users[usr["id"]] = user
     userNames[usr["username"]] = user

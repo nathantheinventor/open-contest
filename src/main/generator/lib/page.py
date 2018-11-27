@@ -28,6 +28,8 @@ class Menu(UIElement):
                 MenuItem("/static/problems.html", "Problems"),
                 MenuItem("/static/leaderboard.html", "Leaderboard"),
                 MenuItem("/submissions", "My Submissions", role="participant"),
+                MenuItem("/static/messages.html", "Messages", role="participant"),
+                MenuItem("/static/messagesAdmin.html", "Messages", role="admin"),
                 MenuItem("/static/setup.html", "Setup", role="admin"),
                 MenuItem("/logout", "Logout")
             ])
@@ -65,6 +67,7 @@ class Page(UIElement):
             body(
                 Header(Page.title),
                 Menu(),
+                div(cls="message-alerts"),
                 div(*bodyData, cls="main-content"),
                 Footer()
             )

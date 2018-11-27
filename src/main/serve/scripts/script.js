@@ -33,6 +33,7 @@ General page code
         setupHeaderDiv();
         fixFormatting();
         showCountdown();
+        displayIncomingMessages();
         if ($("#ace-editor").length > 0) {
             setupAceEditor();
             setupSortability();
@@ -50,6 +51,8 @@ General page code
             setupProblemButton();
         } else if (pageName == "Problem") {
             setupProblemPage();
+        } else if (pageName == "Messages") {
+            showMessages();
         }
     });
 /*--------------------------------------------------------------------------------------------------
@@ -695,4 +698,66 @@ General
             var result = $(span).text();
             $(span).text(verdict_name[result]);
         });
+    }
+/*--------------------------------------------------------------------------------------------------
+Messages Page
+--------------------------------------------------------------------------------------------------*/
+    function createMessage() {
+        $("div.modal").modal();
+    }
+
+    function sendMessage() {
+        var text = $("textarea.message").val();
+        $.post("/sendMessage", {message: text}, result => {
+            if (result == "ok") {
+                $("div.modal").modal("hide");
+            } else {
+                alert(result);
+            }
+        });
+    }
+
+    function showMessage(msg) {
+        $("div.message-cards").append(`<div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Message from ${msg.from.username} at ${new Date(msg.timestamp * 1000).toLocaleTimeString()}</h2>
+            </div>
+            <div class="card-contents">
+                ${msg.message}
+            </div>
+        </div>`)
+    }
+
+    function showMessages() {
+        $.post("/getMessages", {timestamp: 0}, messages => {
+            for (message of messages.messages) {
+                showMessage(message);
+            }
+        });
+    }
+
+    function showIncomingMessage(msg) {
+        $("div.message-alerts").append(`<div class="alert alert-warning alert-dismissible fade show" role="alert">
+            ${msg.message}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>`);
+    }
+
+    var lastChecked = 0;
+    var seenMessages = JSON.parse(localStorage.seenMessages || "{}");
+    function displayIncomingMessages() {
+        $.post("/getMessages", {timestamp: lastChecked}, messages => {
+            lastChecked = messages.timestamp
+            for (message of messages.messages) {
+                if (message.id in seenMessages) {
+                    continue;
+                }
+                showIncomingMessage(message);
+                seenMessages[message.id] = message;
+            }
+            localStorage.seenMessages = JSON.stringify(seenMessages);
+        });
+        window.setTimeout(displayIncomingMessages, 5000);
     }

@@ -301,6 +301,23 @@ def generatePrivacyPolicy():
                 </ul>"""),
     ))
 
+def generateMessagesPage():
+    generate("messages.html", Page(
+        h2("Messages", cls="page-title"),
+        div(cls="actions", contents=[
+            h.button("+ Send Message", cls="button create-message", onclick="createMessage()")
+        ]),
+        Modal(
+            "Send Message",
+            h.textarea(cls="message col-12"),
+            div(
+                h.button("Cancel", **{"type":"button", "class": "button button-white", "data-dismiss": "modal"}),
+                h.button("Send", **{"type":"button", "class": "button", "onclick": "sendMessage()"})
+            )
+        ),
+        div(cls="message-cards"),
+    ))
+
 # Generate static files that don't change during the contest
 def generateStatic():
     generateLogin()
@@ -313,3 +330,4 @@ def generateStatic():
     generateProblemsMgmtPage()
     generateProblemMgmtPage()
     generatePrivacyPolicy()
+    generateMessagesPage()

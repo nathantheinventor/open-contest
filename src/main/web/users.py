@@ -9,7 +9,6 @@ def getUsers(params, setHeader, user):
 def createUser(params, setHeader, user):
     newPassword = generatePassword()
     user = User(
-        None,
         params["username"],
         newPassword,
         params["type"]
