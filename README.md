@@ -19,9 +19,9 @@ Reading state information... Done
 
 $> docker pull nathantheinventor/open-contest
 Using default tag: latest
-latest: Pulling from nathantheinventor/open-contest-dev
+latest: Pulling from nathantheinventor/open-contest
 Digest: sha256:9f65996f196f8780956cd08b9ed53d84f4e26c5e8456fe50c6487e8a5f316948
-Status: Image is up to date for nathantheinventor/open-contest-dev:latest
+Status: Image is up to date for nathantheinventor/open-contest:latest
 
 $> docker run -v /tmp:/tmp -v /home/user/db:/db -v /var/run/docker.sock:/var/run/docker.sock -p 0.0.0.0:
 8000:8000/tcp nathantheinventor/open-contest "John Smith" 8000
