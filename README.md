@@ -79,14 +79,25 @@ To create a problem, follow these steps:
 
 ## Contest Information
 OpenContest allows you to create multiple contests that run at different times. The most common use case for this feature is to allow for a practice round before an actual contest. To create a contest, go to Setup > Contest > Create Contest and enter the contest details. 
+![](https://contests-dev.nathantheinventor.com/images/contestdetails.png)
 
-Before the contest begins, the problems page will show a countdown to the beginning of the contest, and after the last contest ends, the final leaderboard for the last will be visible.
+After creating the contest, you can choose problems to go into the contest.
+![](https://contests-dev.nathantheinventor.com/images/chooseproblem.png)
 
-## How to Print a Problem
+Before the contest begins, the home page will show a countdown to the beginning of the contest.
+![](https://contests-dev.nathantheinventor.com/images/countdown.png)
+During the contest, the home page will show a list of problems in the contest.
+![](https://contests-dev.nathantheinventor.com/images/homepageproblems.png)
+After the contest ends, the final leaderboard for the most recent contest will be visible.
+![](https://contests-dev.nathantheinventor.com/images/leaderboard.png)
+
+## How To Print a Problem
 OpenContest formats problems for printing so that you can print and distribute problem statement packets to contestants. To print a problem, go to the edit page for the problem, click *View Problem*, and print the page with Ctrl+P.
+![](https://contests-dev.nathantheinventor.com/images/printproblem.png)
 
-## How to Print the User Login Information
+## How To Print the User Login Information
 From the user list page, you can print the page with Ctrl+P for a list of usernames and passwords. You can then cut the paper and deliver these sheets to the contestants.
+![](https://contests-dev.nathantheinventor.com/images/printusers.png)
 
 ## Development Information
 See the [Wiki](https://github.com/nathantheinventor/open-contest/wiki) for more information about how OpenContest works and how to add features.
