@@ -93,6 +93,9 @@ class Submission:
     
     def onSave(callback: callable):
         Submission.saveCallbacks.append(callback)
+    
+    def all():
+        return [submissions[id] for id in submissions]
 
 for id in listSubKeys("/submissions"):
     submissions[id] = Submission(id)

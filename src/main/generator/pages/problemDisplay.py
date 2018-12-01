@@ -1,8 +1,9 @@
-from code.util.db import Problem
+from code.util.db import Problem, Contest
 from .static import generate
 from code.generator.lib.htmllib import *
 from code.generator.lib.page import *
 import markdown2
+from code.util import register
 
 def formatMD(md: str) -> str:
     """ Convert Markdown to HTML """
@@ -34,8 +35,9 @@ def getSample(datum, num: int) -> Card:
         ])
     ]))
 
-def generateProblem(problem: Problem):
-    generate(f"/problems/{problem.id}.html", Page(
+def viewProblem(params, _, __, ___):
+    problem = Problem.get(params[0])
+    return Page(
         h.input(type="hidden", id="problem-id", value=problem.id),
         h2(problem.title, cls="page-title"),
         div(cls="problem-description", contents=[
@@ -50,8 +52,42 @@ def generateProblem(problem: Problem):
             h.button("Test Code", cls="button test-samples button-white"),
             h.button("Submit Code", cls="button submit-problem")
         ])
-    ))
+    )
 
 def generateProblems():
     Problem.forEach(generateProblem)
     Problem.onSave(generateProblem)
+
+def listProblems(_, __, ___, ____):
+    if Contest.getCurrent():
+        contest = Contest.getCurrent()
+        probCards = []
+        for prob in contest.problems:
+            probCards.append(Card(
+                prob.title,
+                prob.description,
+                f"/problems/{prob.id}"
+            ))
+        return Page(
+            h2("Problems", cls="page-title"),
+            *probCards
+        )
+    elif Contest.getFuture():
+        contest = Contest.getFuture()
+        return Page(
+            h1("&nbsp;"),
+            h1("Contest Starts in", cls="center"),
+            h1(contest.start, cls="countdown jumbotron center")
+        )
+    elif Contest.getPast():
+        return Page(
+            h1("&nbsp;"),
+            h1("Contest is Over", cls="jumbotron center")
+        )
+    return Page(
+        h1("&nbsp;"),
+        h1("No Contest Created", cls="jumbotron center")
+    )
+
+register.web("/problems$", "loggedin", listProblems)
+register.web("/problems/([0-9a-f-]+)", "loggedin", viewProblem)

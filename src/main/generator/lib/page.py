@@ -25,12 +25,11 @@ class Menu(UIElement):
     def __init__(self):
         self.html = div(cls="menu", contents=[
             div(cls="menu-items", contents=[
-                MenuItem("/static/problems.html", "Problems"),
-                MenuItem("/static/leaderboard.html", "Leaderboard"),
+                MenuItem("/problems", "Problems"),
+                MenuItem("/leaderboard", "Leaderboard"),
                 MenuItem("/submissions", "My Submissions", role="participant"),
-                MenuItem("/static/messages.html", "Messages", role="participant"),
-                MenuItem("/static/messagesAdmin.html", "Messages", role="admin"),
-                MenuItem("/static/setup.html", "Setup", role="admin"),
+                MenuItem("/messages", "Messages"),
+                MenuItem("/setup", "Setup", role="admin"),
                 MenuItem("/logout", "Logout")
             ])
         ])
@@ -40,9 +39,9 @@ class Footer(UIElement):
         self.html = div(cls="footer", contents=[
             h2('Copyright &copy; {} by <a href="https://nathantheinventor.com" target="_blank">Nathan Collins</a>'.format(datetime.now().year)),
             div(cls="footer-links", contents=[
-                h.span(h.a("Privacy Policy", href="/static/privacy.html", target="_blank")),
+                h.span(h.a("Privacy Policy", href="/privacy", target="_blank")),
                 h.span(h.a("About", href="https://github.com/nathantheinventor/open-contest/", target="_blank")),
-                h.span(h.a("FAQs", href="/static/faqs.html", target="_blank"))
+                h.span(h.a("FAQs", href="/faqs", target="_blank"))
             ])
         ])
 
@@ -51,7 +50,7 @@ class Page(UIElement):
     def __init__(self, *bodyData):
         self.html = h.html(
             head(
-                title("Example Page"),
+                title("OpenContest"),
                 h.link(rel="stylesheet", href="/static/lib/fontawesome/css/all.css", type="text/css"),
                 h.link(rel="stylesheet", href="/static/lib/bootstrap/css/bootstrap.min.css", type="text/css"),
                 h.link(rel="stylesheet", href="/static/lib/jqueryui/jquery-ui.min.css", type="text/css"),
@@ -92,3 +91,21 @@ class Card(UIElement):
         ])
         if link != None:
             self.html = h.a(self.html, href=link, cls="card-link")
+
+class Modal(UIElement):
+    def __init__(self, title, body, footer):
+        # taken from https://getbootstrap.com/docs/4.1/components/modal/
+        self.html = div(cls="modal", role="dialog", contents=[
+            div(cls="modal-dialog", role="document", contents=[
+                div(cls="modal-content", contents=[
+                    div(cls="modal-header", contents=[
+                        h.h5(title, cls="modal-title"),
+                        h.button(**{"type": "button", "class": "close", "data-dismiss": "modal", "arial-label": "close"}, contents=[
+                            h.span("&times;", **{"aria-hidden": "true"})
+                        ])
+                    ]),
+                    div(body, cls="modal-body"),
+                    div(footer, cls="modal-footer")
+                ])
+            ])
+        ])

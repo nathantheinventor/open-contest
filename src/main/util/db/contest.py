@@ -1,6 +1,7 @@
 from code.util.db import getKey, setKey, listSubKeys, deleteKey, Problem
 from uuid import uuid4
 import logging
+import time
 
 contests = {}
 
@@ -65,6 +66,28 @@ class Contest:
     
     def onSave(callback: callable):
         Contest.saveCallbacks.append(callback)
+    
+    def getCurrent():
+        for id in contests:
+            if contests[id].start <= time.time() * 1000 <= contests[id].end:
+                return contests[id]
+        return None
+    
+    def getFuture():
+        contest = None
+        for id in contests:
+            if contests[id].start > time.time() * 1000:
+                if not contest or contest[id].start < contest.start:
+                    contest = contests[id]
+        return contest
+
+    def getPast():
+        contest = None
+        for id in contests:
+            if contests[id].end < time.time() * 1000:
+                if not contest or contest[id].end > contest.end:
+                    contest = contests[id]
+        return contest
 
 for id in listSubKeys("/contests"):
     contests[id] = Contest(id)

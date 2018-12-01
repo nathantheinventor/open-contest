@@ -27,7 +27,7 @@ def editContest(params, setHeader, user):
 
     return contest.id
 
-register.post("/getContests", "loggedin", getContests)
-register.post("/getContest", "loggedin", getContest)
-register.post("/deleteContest", "loggedin", deleteContest)
-register.post("/editContest", "loggedin", editContest)
+register.post("/getContests", "admin", getContests)
+register.post("/getContest", "admin", getContest)
+register.post("/deleteContest", "admin", deleteContest)
+register.post("/editContest", "admin", editContest)

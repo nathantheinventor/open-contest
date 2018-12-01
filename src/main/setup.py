@@ -6,21 +6,20 @@
 from code.util.register import Server
 from http.server import HTTPServer
 import code.web
+import code.generator.pages
 import sys
-from code.generator.pages.static import generateStatic
-from code.generator.pages.dynamic import generateDynamic
 import logging
 from code.util.db import User
 logging.basicConfig(level=logging.DEBUG)
 
-generateStatic()
-generateDynamic()
-
 user = sys.argv[1]
 port = int(sys.argv[2])
 
-usr = User(user, "presently description kirk died", "admin")
+password = "presently description kirk died"
+usr = User(user, password, "admin")
 usr.save()
+logging.info(f"Admin username is '{user}'")
+logging.info(f"Admin password is '{password}'")
 
 server_address = ('0.0.0.0', port)
 httpd = HTTPServer(server_address, Server)

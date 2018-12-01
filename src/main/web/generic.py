@@ -25,7 +25,6 @@ def logout(params, setHeader, user):
     setHeader("Set-Cookie", "userType=deleted; expires=Thu, 01 Jan 1970 00:00:00 GMT")
     return 302
 
-register.get("/submissions", "loggedin", submissions)
 register.get("/", "loggedin", root)
 register.post("/login", "any", login)
 register.get("/logout", "any", logout)

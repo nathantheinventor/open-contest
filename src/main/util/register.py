@@ -7,6 +7,7 @@ from code.util import auth
 from urllib.parse import parse_qs
 import traceback
 import logging
+import re
 logging.basicConfig(level=logging.DEBUG)
 
 
@@ -28,6 +29,9 @@ def post(url: str, userType: str, callback: callable):
 def get(url: str, userType: str, callback: callable):
     paths[url + "|GET"] = endpoint(url, "GET", userType, callback)
 
+webEndpoints = []
+def web(url: str, userType: str, callback: callable):
+    webEndpoints.append((url, userType, callback))
 
 def fits(cookie, userType: str) -> bool:
     logging.debug(f"Checking cookie {cookie} against userType {userType}")
@@ -41,6 +45,42 @@ def fits(cookie, userType: str) -> bool:
         return auth.isParticipant(cookie)
     return False
 
+def HTMLMatches(url):
+    for (u, _, __) in webEndpoints:
+        if re.match(u, url):
+            return True
+    return False
+
+def serveHTML(self, url):
+    endpoint = None
+    for (u, t, c) in webEndpoints:
+        x = re.match(u, url)
+        if x:
+            endpoint = (u, t, c, x)
+            break
+    
+    logging.info(endpoint)
+    _, userType, callback, x = endpoint
+    urlParams = x.groups()
+    queryParams = parse_qs((url + "?").split("?")[1])
+    user = auth.getUser(self.headers["Cookie"])
+
+    statusCode = 200
+    headers = [("Content-type", "text/html")]
+    if not fits(self.headers["Cookie"], userType):
+        statusCode = 302
+        headers = [("Location", "/")]
+        response = ""
+        return statusCode, headers, response
+    
+    try:
+        response = callback(urlParams, queryParams, user, lambda n, v: setHeader(headers, n, v))
+    except Exception as e:
+        exc = traceback.format_exc()
+        logging.error(exc)
+        statusCode = 500
+        response = "Internal error" 
+    return statusCode, headers, response
 
 def serveStatic(self, path):
     path = "/code/serve" + path
@@ -120,6 +160,8 @@ class Server(BaseHTTPRequestHandler):
                     statusCode = 500
                     headers.append(("Content-type", "text/plain"))
                     response = f"Internal Error: {e}"
+        elif HTMLMatches(url):
+            statusCode, headers, response = serveHTML(self, url)
         else:
             statusCode = 404
             headers.append(("Content-type", "text/plain"))
@@ -129,7 +171,7 @@ class Server(BaseHTTPRequestHandler):
         for header, value in headers:
             self.send_header(header, value)
         self.end_headers()
-        self.wfile.write(bytes(response, "utf-8"))
+        self.wfile.write(bytes(str(response), "utf-8"))
 
     def do_GET(self):
         return self.handleRequest("GET")

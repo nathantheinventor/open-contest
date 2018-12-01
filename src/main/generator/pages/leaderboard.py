@@ -1,25 +1,26 @@
-from code.util.db import Submission, User
-from .static import generate
+from code.util.db import Submission, User, Contest
 from code.generator.lib.htmllib import *
 from code.generator.lib.page import *
 import logging
+from code.util import register
 
-contestStart = 1500000000
+def leaderboard(_, __, ___, ____):
+    contest = Contest.getCurrent() or contest.getPast()
+    start = contest.start
+    end = contest.end
 
-def setContestStart(start):
-    global contestStart
-    contestStart = start
+    subs = {}
+    for sub in Submission.all():
+        subs[sub.user.id] = subs.get(sub.user.id) or []
+        subs[sub.user.id].append(sub)
 
-submissions = {}
-leaderboard = {}
-
-def displayLeaderboard():
     scores = []
-    for user in leaderboard:
+    for user in subs:
+        scor = score(subs[user])
         scores.append((
             User.get(user).username,
-            leaderboard[user][0],
-            leaderboard[user][1]
+            scor[0],
+            scor[1]
         ))
     scores = sorted(scores, key=lambda score: score[1] * 1000000000 - score[1], reverse=True)
     
@@ -39,7 +40,7 @@ def displayLeaderboard():
             h.td(rank, cls="center")
         ))
 
-    generate("leaderboard.html", Page(
+    return Page(
         h2("Leaderboard", cls="page-title"),
         h.table(
             h.thead(
@@ -54,7 +55,7 @@ def displayLeaderboard():
                 *scoresDisplay
             )
         )
-    ))
+    )
 
 def score(submissions: list) -> tuple:
     """ Given a list of submissions by a particular user, calculate that user's score.
@@ -103,18 +104,4 @@ def score(submissions: list) -> tuple:
     # The user's score is dependent on the number of solved problems and the number of penalty points
     return solvedProbs, penPoints
 
-def addSubmission(sub: Submission):
-    # Add submission to the list of submissions for this user
-    user = sub.user.id
-    if user not in submissions:
-        submissions[user] = {sub}
-    submissions[user].add(sub)
-
-    # Sort the submissions from newest to oldest
-    subs = sorted(submissions[user], key=lambda sub: sub.timestamp, reverse=True)
-    leaderboard[user] = score(subs)
-    displayLeaderboard()
-
-def generateLeaderboard():
-    Submission.forEach(addSubmission)
-    Submission.onSave(addSubmission)
+register.web("/leaderboard", "loggedin", leaderboard)

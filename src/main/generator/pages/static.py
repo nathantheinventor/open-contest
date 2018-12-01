@@ -1,14 +1,19 @@
 from code.generator.lib.htmllib import *
 from code.generator.lib.page import *
 from code.util.db.simple import *
+from code.util import register
 
 def generate(path, contents):
     ensureExists("/code/serve/" + path)
     with open("/code/serve/" + path, "w") as f:
         f.write(str(contents))
 
-def generateLogin():
-    generate("login.html", Page(
+def test(_, __, user, ___):
+    return f"Hello, {user.username}"
+
+register.web("/index", "any", test)
+
+register.web("/login", "any", lambda x,y,z,w: Page(
         div(cls="login-box", contents=[
             h2("Login", cls="login-header"),
             h.label("Username", cls="form-label"),
@@ -21,22 +26,12 @@ def generateLogin():
         ])
     ))
 
-def generateSetup():
-    generate("setup.html", Page(
+
+register.web("/setup", "any", lambda x,y,z,w: Page(
         h2("Setup", cls="page-title"),
-        Card("Problems", "Create problems to go in the contests", "/static/problems_mgmt.html"),
-        Card("Contests", "Create contests", "/static/contests.html"),
-        Card("Users", "Create users who will participate in contests, as well as other admin users who can create and judge contests and problems", "/static/users.html")
-    ))
-
-def generateInitialProblems():
-    generate("problems.html", Page(
-        h1("No problems available yet")
-    ))
-
-def generateInitialLeaderboard():
-    generate("leaderboard.html", Page(
-        h1("Leaderboard not available yet")
+        Card("Problems", "Create problems to go in the contests", "/problems_mgmt"),
+        Card("Contests", "Create contests", "/contests"),
+        Card("Users", "Create users who will participate in contests, as well as other admin users who can create and judge contests and problems", "/users")
     ))
 
 def generateUsersPage():
@@ -58,23 +53,6 @@ def generateContestsPage():
         div(cls="contest-cards")
     ))
 
-class Modal(UIElement):
-    def __init__(self, title, body, footer):
-        # taken from https://getbootstrap.com/docs/4.1/components/modal/
-        self.html = div(cls="modal", role="dialog", contents=[
-            div(cls="modal-dialog", role="document", contents=[
-                div(cls="modal-content", contents=[
-                    div(cls="modal-header", contents=[
-                        h.h5(title, cls="modal-title"),
-                        h.button(**{"type": "button", "class": "close", "data-dismiss": "modal", "arial-label": "close"}, contents=[
-                            h.span("&times;", **{"aria-hidden": "true"})
-                        ])
-                    ]),
-                    div(body, cls="modal-body"),
-                    div(footer, cls="modal-footer")
-                ])
-            ])
-        ])
 
 def generateContestPage():
     generate("contest.html", Page(
@@ -198,9 +176,7 @@ class FAQ(UIElement):
             cls="faq"
         )
 
-def generatePrivacyPolicy():
-    # Real Privacy Policy
-    generate("privacy.html", Page(
+register.web("/privacy", "any", lambda x,y,z,w: Page(
         h2("Privacy Policy", cls="page-title"),
         Card("TL;DR", "OpenContest as an organization is too lazy to steal your data (we're busy enough keeping track of our own). " +
             "However, the organizers of your contest may collect any data you submit, " +
@@ -232,21 +208,21 @@ def generatePrivacyPolicy():
     ))
 
     # Fake privacy policy for laughs
-    generate("privacy2.html", Page(
+register.web("/privacy2", "any", lambda x,y,z,w: Page(
         h2("Privacy Policy", cls="page-title"),
         h1("LOL", cls="jumbotron center"),
         h1("After all, you use Facebook", cls="center")
     ))
 
     # Instructions about using OpenContest
-    generate("faqs.html", Page(
+register.web("/faqs", "any", lambda x,y,z,w: Page(
         h2("FAQs", cls="page-title"),
         FAQ("What is a programming contest?", """A programming contest is a contest where programmers 
             attempt to solve problems by writing programs. These problems are typically posed as a 
             problem statement to describe the problem, input that the program must process, and 
             output that the program must produce. The goal of solving the problem is to write a 
             program that produces the same output for a given input as the judge's solution."""),
-        FAQ("What happens when I submit to a problem?", """When you submit code to a problem, 
+        FAQ("What happens when I submit code for a problem?", """When you submit code for a problem, 
             your code is automatically run against secret test data and judged based on the output
             it produces. Your code can recieve the following verdicts:
             <ul><li><i>Accepted</i>: Your code produced the correct output for all test cases.</li>
@@ -256,12 +232,12 @@ def generatePrivacyPolicy():
             """),
         FAQ("How does scoring work?", """Your score is determined by two factors: the number of problems 
             you solve and the number of penalty points you accrue. Contestants are ranked first on 
-            problems solved, so a contestant who solves 5 problems will always rank higher than a 
-            contestant who solves 4 problems, without regard to the penalty points, but two contestants 
+            problems solved and then on penalty points. A contestant who solves 5 problems will always
+            rank higher than a contestant who solves 4 problems, but two contestants 
             who each solve 4 problems will be ranked against each other by penalty points.<br/><br/>
             Penalty points are determined by the time it takes you to solve the problems and the number 
             of incorrect submissions that you make. When you solve a problem, you accrue 1 penalty point 
-            for each minute that it has been from the beginning of the contest and 20 penalty points 
+            for each minute that has elapsed from the beginning of the contest and 20 penalty points 
             for each incorrect submission you made to that problem. For example, if you solve a problem 
             137 minutes into the contest after making 2 incorrect submissions, you will accrue 177 
             penalty points. You do not accrue penalty points for incorrect submissions to a problem 
@@ -288,16 +264,33 @@ def generatePrivacyPolicy():
                     </tr>
                 </tbody>
             </table><br/>
-            Jim will receive a total of 233 points, and Bob will receive a total of 204 points,
-            so Bob, having fewer penalty points, will rank above Jim.
+            Jim will receive a total of 233 points, and Bob will receive a total of 204 points.
+            Since Bob has fewer penalty points, he will rank above Jim.
             """),
-        FAQ("Why am I getting Runtime Error?", """Here are a few tips:
-            <ul><li>Check for anywhere that your code could divide by zero.</li>
-                <li>Check for the index being out of bounds on an array.</li>
-                <li>Check for excessive recursion in Python. Python allows only a small number of
-                    recursive calls to a function</li>
-                <li>Check that your program's exit code is zero. In C/C++, the main function should
-                    return 0.</li>
+        FAQ("Where can I find information about my language?", """There is language documentation available for the following languages:
+            <ul><li><a target="_blank" href="https://en.cppreference.com/w/c/language">C</a></li>
+                <li><a target="_blank" href="https://en.cppreference.com/w/">C++</a></li>
+                <li><a target="_blank" href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/">C#</a></li>
+                <li><a target="_blank" href="https://docs.oracle.com/javase/8/docs/api/">Java</a></li>
+                <li><a target="_blank" href="https://docs.python.org/2/library/">Python 2</a></li>
+                <li><a target="_blank" href="https://docs.python.org/3/library/">Python 3</a></li>
+                <li><a target="_blank" href="https://ruby-doc.org/stdlib-2.5.3/">Ruby</a></li>
+                </ul>"""),
+        FAQ("What compiler flags are being used?", """The following languages are compiled with non-default compiler flags:
+            <ul><li>C: -std=c11 -O2</li>
+                <li>C++: -std=c++17 -O2</li>
+                </ul>"""),
+        FAQ("Why am I getting the Wrong Answer verdict?", """There are several reasons you could be getting Wrong Answer, but here are the two of the most common:
+            <ul><li>Your output formatting does not match the judge's. Output formatting must exactly match.</li>
+                <li>Your method of solving the problem is incorrect.</li>
+                </ul>"""),
+        FAQ("Why am I getting the Runtime Error verdict?", """There are several reasons you could be getting Runtime Error, but here are a few of the most common:
+            <ul><li>Your code divided by zero or took the square root of a negative number.</li>
+                <li>Your code read or wrote to an array at an index that was out of bounds.</li>
+                <li>Your C/C++ code dereferenced an invalid pointer, such as nullptr or a pointer to an object that had been deleted.</li>
+                <li>Your Java code called a method on a null object.</li>
+                <li>Your Python code exceeded Python's recursion depth limit. Python allows only a few hundred recursive calls to a function.</li>
+                <li>Your C/C++ code failed to return 0 from the main function.</li>
                 </ul>"""),
     ))
 
@@ -339,17 +332,3 @@ def generateMessagesPage():
         ),
         div(cls="message-cards"),
     ))
-
-# Generate static files that don't change during the contest
-def generateStatic():
-    generateLogin()
-    generateSetup()
-    generateInitialProblems()
-    generateInitialLeaderboard()
-    generateUsersPage()
-    generateContestsPage()
-    generateContestPage()
-    generateProblemsMgmtPage()
-    generateProblemMgmtPage()
-    generatePrivacyPolicy()
-    generateMessagesPage()

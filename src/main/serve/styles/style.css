@@ -478,10 +478,10 @@ Leaderboard Page
         color: #093;
     }
     h1.jumbotron {
-        font-size: 300px;
+        font-size: 200px;
         background: none;
         padding-bottom: 0px;
-        line-height: 300px;
+        line-height: 200px;
     }
 
 /*--------------------------------------------------------------------------------------------------

@@ -1,7 +1,8 @@
 from code.util.db import Submission
-from .static import generate
 from code.generator.lib.htmllib import *
 from code.generator.lib.page import *
+from code.util import register
+import logging
 
 class SubmissionDisplay(UIElement):
     def __init__(self, submission: Submission):
@@ -18,23 +19,16 @@ class SubmissionDisplay(UIElement):
             h.code(submission.code.replace("\n", "<br/>").replace(" ", "&nbsp;"))
         ], cls=cls)
 
-submissions = {}
-
-def generateSubmission(sub):
-    # Add submission to the list of submissions for this user
-    user = sub.user.id
-    if user not in submissions:
-        submissions[user] = {sub}
-    submissions[user].add(sub)
-
-    # Sort the submissions from newest to oldest
-    subs = sorted(submissions[user], key=lambda sub: sub.timestamp, reverse=True)
-
-    generate(f"/submissions/{user}.html", Page(
+def getSubmissions(_, __, user, ___):
+    submissions = []
+    Submission.forEach(lambda x: submissions.append(x) if x.user.id == user.id else None)
+    if len(submissions) == 0:
+        return Page(
+            h2("No Submissions Yet", cls="page-title"),
+        )
+    return Page(
         h2("Your Submissions", cls="page-title"),
-        *map(SubmissionDisplay, subs)
-    ))
+        *map(SubmissionDisplay, submissions)
+    )
 
-def generateSubmissions():
-    Submission.forEach(generateSubmission)
-    Submission.onSave(generateSubmission)
+register.web("/submissions", "loggedin", getSubmissions)
