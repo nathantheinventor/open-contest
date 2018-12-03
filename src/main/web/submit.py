@@ -12,7 +12,7 @@ def addSubmission(probId, lang, code, user, type):
     sub.code = code
     sub.result = "pending"
     sub.user = user
-    sub.timestamp = time.time()
+    sub.timestamp = time.time() * 1000
     sub.type = type
     sub.save()
     return sub

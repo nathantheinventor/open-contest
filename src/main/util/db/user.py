@@ -51,6 +51,9 @@ class User:
     
     def isAdmin(self) -> bool:
         return self.type == "admin"
+    
+    def all():
+        return [users[id] for id in users]
 
 usrs = getKey("/users.json") or []
 for usr in usrs:

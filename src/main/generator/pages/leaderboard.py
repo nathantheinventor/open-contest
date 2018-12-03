@@ -5,18 +5,19 @@ import logging
 from code.util import register
 
 def leaderboard(_, __, ___, ____):
-    contest = Contest.getCurrent() or contest.getPast()
+    contest = Contest.getCurrent() or Contest.getPast()
     start = contest.start
     end = contest.end
 
     subs = {}
     for sub in Submission.all():
-        subs[sub.user.id] = subs.get(sub.user.id) or []
-        subs[sub.user.id].append(sub)
-
+        if start <= sub.timestamp <= end:
+            subs[sub.user.id] = subs.get(sub.user.id) or []
+            subs[sub.user.id].append(sub)
+    
     scores = []
     for user in subs:
-        scor = score(subs[user])
+        scor = score(subs[user], start)
         scores.append((
             User.get(user).username,
             scor[0],
@@ -57,7 +58,7 @@ def leaderboard(_, __, ___, ____):
         )
     )
 
-def score(submissions: list) -> tuple:
+def score(submissions: list, contestStart) -> tuple:
     """ Given a list of submissions by a particular user, calculate that user's score.
         Calculates score in ACM format. """
     
@@ -91,8 +92,7 @@ def score(submissions: list) -> tuple:
                 # The first successful submission adds a penalty point for each
                 #     minute since the beginning of the contest
                 # The timestamp is in millis
-                logging.error(f"{sub.timestamp} {contestStart}")
-                points += (sub.timestamp - contestStart) // 60
+                points += (sub.timestamp - contestStart) // 60000
                 solved = True
                 break
         
@@ -102,6 +102,6 @@ def score(submissions: list) -> tuple:
             penPoints += points
     
     # The user's score is dependent on the number of solved problems and the number of penalty points
-    return solvedProbs, penPoints
+    return solvedProbs, int(penPoints)
 
 register.web("/leaderboard", "loggedin", leaderboard)

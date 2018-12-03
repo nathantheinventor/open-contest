@@ -2,11 +2,12 @@ from code.generator.lib.htmllib import *
 from code.generator.lib.page import *
 from code.util import register
 from code.util.db import Problem
+from html import escape
 import logging
 
 class ProblemCard(UIElement):
     def __init__(self, prob: Problem):
-        self.html = Card(prob.title, prob.description, f"/problems/{prob.id}/edit")
+        self.html = Card(prob.title, prob.description, link=f"/problems/{prob.id}/edit", delete=f"deleteProblem('{prob.id}')", cls=prob.id)
 
 def listProblems(_, __, ___, ____):
     problems = []
@@ -14,7 +15,7 @@ def listProblems(_, __, ___, ____):
     return Page(
         h2("Problems", cls="page-title"),
         div(cls="actions", contents=[
-            h.button("+ Create Problem", cls="button create-problem")
+            h.button("+ Create Problem", cls="button create-problem", onclick="window.location='/problems/new'")
         ]),
         div(cls="problem-cards", contents=problems)
     )
@@ -22,11 +23,9 @@ def listProblems(_, __, ___, ____):
 class TestDataCard(UIElement):
     def __init__(self, x):
         num, testData, samples = x
-        logging.info("----------------------------------------------------")
-        logging.error(testData)
-        logging.info("----------------------------------------------------")    
         isSample = num < samples
         title = f"Sample Data #{num}" if isSample else f"Test Data #{num}"
+        cls = "blue" if isSample else ""
         self.html = Card(title, div(cls="row", contents=[
             div(cls="col-6", contents=[
                 p("Input:", cls="no-margin"),
@@ -36,15 +35,17 @@ class TestDataCard(UIElement):
                 p("Output:", cls="no-margin"),
                 h.code(testData.output.replace(" ", "&nbsp;").replace("\n", "<br/>"))
             ])
-        ]))
+        ]), cls=cls, delete=f"deleteTestData({num})")
 
 def editProblem(params, _, __, ___):
     probId = params[0]
     prob = Problem.get(probId)
     return Page(
+        h.input(type="hidden", id="prob-id", value=probId),
+        h.input(type="hidden", id="pageId", value="Problem"),
         h2(prob.title, cls="page-title"),
         div(cls="actions", contents=[
-            h.button("View Problem", cls="button", onclick="viewProblem()"),
+            h.button("View Problem", cls="button", onclick=f"window.location='/problems/{probId}'"),
             h.button("+ Create Test Data", cls="button", onclick="createTestDataDialog()")
         ]),
         Card("Problem Details", div(cls="problem-details", contents=[
@@ -55,23 +56,23 @@ def editProblem(params, _, __, ___):
                 ]),
                 div(cls="form-group col-12", contents=[
                     h.label(**{"for": "problem-description", "contents":"Description"}),
-                    h.textarea(cls="form-control", name="problem-description", id="problem-description", contents=prob.description)
+                    h.textarea(cls="form-control", name="problem-description", id="problem-description", contents=escape(prob.description))
                 ]),
                 div(cls="form-group col-12 rich-text", contents=[
                     h.label(**{"for": "problem-statement", "contents":"Problem Statement"}),
-                    h.textarea(cls="form-control", name="problem-statement", id="problem-statement", contents=prob.statement)
+                    h.textarea(cls="form-control", name="problem-statement", id="problem-statement", contents=escape(prob.statement))
                 ]),
                 div(cls="form-group col-12 rich-text", contents=[
                     h.label(**{"for": "problem-input", "contents":"Input Format"}),
-                    h.textarea(cls="form-control", name="problem-input", id="problem-input", contents=prob.input)
+                    h.textarea(cls="form-control", name="problem-input", id="problem-input", contents=escape(prob.input))
                 ]),
                 div(cls="form-group col-12 rich-text", contents=[
                     h.label(**{"for": "problem-output", "contents":"Output Format"}),
-                    h.textarea(cls="form-control", name="problem-output", id="problem-output", contents=prob.output)
+                    h.textarea(cls="form-control", name="problem-output", id="problem-output", contents=escape(prob.output))
                 ]),
                 div(cls="form-group col-12 rich-text", contents=[
                     h.label(**{"for": "problem-constraints", "contents":"Constraints"}),
-                    h.textarea(cls="form-control", name="problem-constraints", id="problem-constraints", contents=prob.constraints)
+                    h.textarea(cls="form-control", name="problem-constraints", id="problem-constraints", contents=escape(prob.constraints))
                 ]),
                 div(cls="form-group col-12", contents=[
                     h.label(**{"for": "problem-samples", "contents":"Number of Sample Cases"}),
@@ -98,5 +99,47 @@ def editProblem(params, _, __, ___):
         div(cls="test-data-cards", contents=list(map(TestDataCard, zip(range(prob.tests), prob.testData, [prob.samples] * prob.tests))))
     )
 
+def newProblem(_, __, ___, ____):
+    return Page(
+        h.input(type="hidden", id="prob-id", value=""),
+        h.input(type="hidden", id="pageId", value="Problem"),
+        h2("New Problem", cls="page-title"),
+        Card("Problem Details", div(cls="problem-details", contents=[
+            h.form(cls="row", contents=[
+                div(cls="form-group col-12", contents=[
+                    h.label(**{"for": "problem-title", "contents":"Title"}),
+                    h.input(cls="form-control", name="problem-title", id="problem-title", value="Title")
+                ]),
+                div(cls="form-group col-12", contents=[
+                    h.label(**{"for": "problem-description", "contents":"Description"}),
+                    h.textarea(cls="form-control", name="problem-description", id="problem-description", contents="Text for list of problems")
+                ]),
+                div(cls="form-group col-12 rich-text", contents=[
+                    h.label(**{"for": "problem-statement", "contents":"Problem Statement"}),
+                    h.textarea(cls="form-control", name="problem-statement", id="problem-statement", contents="Problem Statement")
+                ]),
+                div(cls="form-group col-12 rich-text", contents=[
+                    h.label(**{"for": "problem-input", "contents":"Input Format"}),
+                    h.textarea(cls="form-control", name="problem-input", id="problem-input", contents="Input Format")
+                ]),
+                div(cls="form-group col-12 rich-text", contents=[
+                    h.label(**{"for": "problem-output", "contents":"Output Format"}),
+                    h.textarea(cls="form-control", name="problem-output", id="problem-output", contents="Output Format")
+                ]),
+                div(cls="form-group col-12 rich-text", contents=[
+                    h.label(**{"for": "problem-constraints", "contents":"Constraints"}),
+                    h.textarea(cls="form-control", name="problem-constraints", id="problem-constraints", contents="Input Constraints")
+                ]),
+                div(cls="form-group col-12", contents=[
+                    h.input(cls="form-control", type="hidden", name="problem-samples", id="problem-samples", value=0)
+                ]),
+            ]),
+            div(cls="align-right col-12", contents=[
+                h.button("Save", cls="button", onclick="editProblem()")
+            ])
+          ]))
+    )
+
 register.web("/problems_mgmt", "admin", listProblems)
 register.web("/problems/([0-9a-f-]+)/edit", "admin", editProblem)
+register.web("/problems/new", "admin", newProblem)

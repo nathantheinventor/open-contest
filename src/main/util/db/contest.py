@@ -85,9 +85,12 @@ class Contest:
         contest = None
         for id in contests:
             if contests[id].end < time.time() * 1000:
-                if not contest or contest[id].end > contest.end:
+                if not contest or contests[id].end > contest.end:
                     contest = contests[id]
         return contest
+    
+    def all():
+        return [contests[id] for id in contests]
 
 for id in listSubKeys("/contests"):
     contests[id] = Contest(id)

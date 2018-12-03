@@ -78,19 +78,25 @@ class Page(UIElement):
         generateStatic()
 
 class Card(UIElement):
-    def __init__(self, title, contents, link=None, cls=None):
+    def __init__(self, title, contents, link=None, cls=None, delete=None, reply=None):
         if cls == None:
             cls = "card"
         else:
             cls += " card"
+        deleteLink = ""
+        if delete:
+            deleteLink = div(h.i("clear", cls="material-icons"), cls="delete-link", onclick=delete)
+        elif reply:
+            deleteLink = div("Reply", cls="delete-link", onclick=reply)
         self.html = h.div(cls=cls, contents=[
             div(cls="card-header", contents=[
-                h2(title, cls="card-title")
+                h2(title, cls="card-title"),
+                deleteLink
             ]),
             div(cls="card-contents", contents=contents)
         ])
         if link != None:
-            self.html = h.a(self.html, href=link, cls="card-link")
+            self.html = div(a(href=link, cls="card-link"), self.html, cls="card-link-box")
 
 class Modal(UIElement):
     def __init__(self, title, body, footer):

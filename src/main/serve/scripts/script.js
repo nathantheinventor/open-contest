@@ -41,7 +41,7 @@ General page code
     }
 
     $(document).ready(function() {
-        var pageName = $("h2.page-title").text();
+        var pageName = $("#pageId").val();
         setupMenu();
         setupLoginButton();
         setupHeaderDiv();
@@ -60,13 +60,8 @@ General page code
             setupContestButton();
         } else if (pageName == "Contest") {
             setupContestPage();
-        } else if (pageName == "Problems") {
-            displayExistingProblems();
-            setupProblemButton();
         } else if (pageName == "Problem") {
             setupProblemPage();
-        } else if (pageName == "Messages") {
-            showMessages();
         }
     });
 /*--------------------------------------------------------------------------------------------------
@@ -394,65 +389,22 @@ Users page
 /*--------------------------------------------------------------------------------------------------
 Contests page
 --------------------------------------------------------------------------------------------------*/
-    function createContestCard(contest) {
-        $("div.contest-cards").append(`<a href="/static/contest.html#${contest.id}" class="card-link">
-            <div class="card" data-contest="${contest.id}" data-name="${contest.name}">
-                <div class="card-header">
-                    <h2 class="card-title">${contest.name}</h2>
-                    <div class="delete-link"><i class="material-icons">clear</i></div>
-                </div>
-                <div class="card-contents">
-                    ${new Date(parseInt(contest.start)).toLocaleString()} - ${new Date(parseInt(contest.end)).toLocaleString()}
-                </div>
-            </div>
-        </a>`);
-        $(`div[data-contest="${contest.id}"] div.delete-link`).click(function() {
-            var card = $(this).parents(".card");
-            var contest = card.data("contest");
-            var name = card.data("name");
-            if (confirm(`Are you sure you want to delete ${name}?`)) {
-                $.post("/deleteContest", {id: contest}, data => {
-                    if (data == "ok") {
-                        card.remove(); // Bad practice, but I'm not completely sure how to do it right
-                    }
-                });
-            }
-            return false;
-        });
-    }
-
-    function displayExistingContests() {
-        $.post("/getContests", {}, contests => {
-            for (var contest of contests) {
-                createContestCard(contest);
-            }
-        });
-    }
-
-    function setupContestButton() {
-        $(".create-contest").click(function() {
-            window.location = "/static/contest.html";
-        });
+    function deleteContest(id) {
+        var name = $(`.card.${id} .card-title`).text();
+        if (confirm(`Are you sure you want to delete ${name}?`)) {
+            $.post("/deleteContest", {id: id}, data => {
+                if (data == "ok") {
+                    window.location.reload();
+                }
+            });
+        }
     }
 
 /*--------------------------------------------------------------------------------------------------
 Contest page
 --------------------------------------------------------------------------------------------------*/
-    function createContestProblemCard(problem) {
-        $("div.problem-cards").append(`
-        <div class="card" data-problem="${problem.id}" data-title="${problem.title}">
-            <div class="card-header">
-                <a href="/static/problem.html#${problem.id}"><h2 class="card-title">${problem.title}</h2></a>
-                <div class="delete-link" onclick="deleteContestProblem('${problem.id}')"><i class="material-icons">clear</i></div>
-            </div>
-            <div class="card-contents">
-                ${problem.description}
-            </div>
-        </div>`);
-    }
-
-    function editContest() {
-        var id = (window.location.hash || "#").substr(1);
+    function editContest(newProblem=undefined) {
+        var id = $("#contest-id").val();
         var name = $("#contest-name").val();
         var startDate = $("#contest-start-date").val();
         var startTime = $("#contest-start-time").val();
@@ -468,126 +420,89 @@ Contest page
         }
 
         var problems = [];
+        var uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
         $(".problem-cards .card").each((_, card) => {
-            problems.push($(card).data("problem"));
+            var prob = "";
+            for (var cls of $(card).attr("class").split(" ")) {
+                if (uuid.test(cls)) {
+                    prob = cls;
+                    break;
+                }
+            }
+            problems.push(prob);
         });
+        if (newProblem != undefined) {
+            problems.push(newProblem);
+        }
 
         $.post("/editContest", {id: id, name: name, start: start, end: end, problems: JSON.stringify(problems)}, id => {
-            window.location.hash = id;
+            if (window.location.pathname == "/contests/new") {
+                window.location = `/contests/${id}`;
+            } else {
+                window.location.reload()
+            }
         });
+    }
+
+    function fix(num) {
+        // Fix to 2 decimals
+        if (num < 10) {
+            return "0" + num;
+        }
+        return num;
     }
 
     var problemsHere = {};
     function setupContestPage() {
-        if (window.location.hash) {
-            $.post("/getContest", {id: window.location.hash.substr(1)}, contest => {
-                $("#contest-name").val(contest.name);
-                var timezone = new Date().getTimezoneOffset() * 60000;
-                var start = new Date(parseInt(contest.start) - timezone);
-                $("#contest-start-date").val(start.toJSON().slice(0, 10));
-                $("#contest-start-time").val(start.toJSON().slice(11, 19));
-                var end = new Date(parseInt(contest.end) - timezone);
-                $("#contest-end-date").val(end.toJSON().slice(0, 10));
-                $("#contest-end-time").val(end.toJSON().slice(11, 19));
-                for (var problem of contest.problems) {
-                    createContestProblemCard(problem, true);
-                    problemsHere[problem.id] = true;
-                }
-                $("div.problem-cards").sortable({
-                    placeholder: "ui-state-highlight",
-                    forcePlaceholderSize: true,
-                    stop: editContest
-                });
-            });
-        }
+        var start = new Date(parseInt($("#start").val()));
+        $("#contest-start-date").val(`${start.getFullYear()}-${fix(start.getMonth() + 1)}-${fix(start.getDate())}`);
+        $("#contest-start-time").val(`${fix(start.getHours())}:${fix(start.getMinutes())}`);
         
-    }
-    function deleteContestProblem(id) {
-        $(`.card[data-problem=${id}]`).remove();
-        delete problemsHere[id];
-        editContest();
-    }
-    function chooseProblemDialog() {
-        $.post("/getProblems", {}, problems => {
-            $("select.problem-choice option[value]").remove();
-            for (var problem of problems) {
-                if (!problemsHere[problem.id]) {
-                    $("select.problem-choice").append(`<option value="${problem.id}">${problem.title}</option>`);
-                }
-            }
-            $("div.modal").modal();
+        var end = new Date(parseInt($("#end").val()));
+        $("#contest-end-date").val(`${end.getFullYear()}-${fix(end.getMonth() + 1)}-${fix(end.getDate())}`);
+        $("#contest-end-time").val(`${fix(end.getHours())}:${fix(end.getMinutes())}`);
+
+        $("div.problem-cards").sortable({
+            placeholder: "ui-state-highlight",
+            forcePlaceholderSize: true,
+            stop: _ => editContest()
         });
     }
+
+    function deleteContestProblem(id) {
+        $(`.card.${id}`).remove();
+        editContest();
+    }
+
+    function chooseProblemDialog() {
+        $("div.modal").modal();
+    }
+
     function chooseProblem() {
         if ($("select.problem-choice").val() != "-") {
-            if (!window.location.hash) {
-                alert("You must fill in the contest details before you add a problem");
-            }
             var problem = $("select.problem-choice").val();
-            problemsHere[problem] = true;
-            $.post("/getProblem", {id: problem}, problem => {
-                createContestProblemCard(problem, true);
-                editContest();
-                $("div.modal").modal("hide");
-            });
+            editContest(problem);
         }
     }
 
 /*--------------------------------------------------------------------------------------------------
 Problems page
 --------------------------------------------------------------------------------------------------*/
-function createProblemCard(problem) {
-    $("div.problem-cards").append(`<a href="/static/problem.html#${problem.id}" class="card-link">
-        <div class="card" data-problem="${problem.id}" data-title="${problem.title}">
-            <div class="card-header">
-                <h2 class="card-title">${problem.title}</h2>
-                <div class="delete-link" onclick="deleteProblem('${problem.id}')"><i class="material-icons">clear</i></div>
-            </div>
-            <div class="card-contents">
-                ${problem.description}
-            </div>
-        </div></a>`);
-        $("div.delete-link").click(_ => false);
-    }
-
-    function displayExistingProblems() {
-        $.post("/getProblems", {}, problems => {
-            for (var problem of problems) {
-                createProblemCard(problem);
-            }
-        });
-    }
     function deleteProblem(id) {
-        var title = $(`div.card[data-problem=${id}]`).data("title");
+        var title = $(`div.card.${id}`).find(".card-title").text();
         if (!confirm(`Are you sure you want to delete ${title}?`)) {
             return;
         }
         $.post("/deleteProblem", {id: id}, data => {
             if (data == "ok") {
-                $(`div.card[data-problem=${id}]`).remove(); // Bad practice, but I'm not completely sure how to do it right
+                window.location.reload();
             }
         });
     }
 
-    function setupProblemButton() {
-        $(".create-problem").click(function() {
-            window.location = "/static/problem.html";
-        });
-    }
-
-
 /*--------------------------------------------------------------------------------------------------
 Problem page
 --------------------------------------------------------------------------------------------------*/
-    function viewProblem() {
-        var id = (window.location.hash || "#").substr(1);
-        if (id != "") {
-            window.location = `/static/problems/${id}.html`;
-        } else {
-            alert("You have not saved this problem yet.");
-        }
-    }
-
     function createTestDataDialog() {
         $("div.modal").modal();
     }
@@ -595,12 +510,11 @@ Problem page
     function createTestData() {
         var input = $(".test-data-input").val();
         var output = $(".test-data-output").val();
-        createTestDataCard({input: input, output: output}, false, 0);
-        editProblem();
+        editProblem({input: input, output: output});
     }
 
     var handlingClick = false;
-    function editProblem() {
+    function editProblem(newTest=undefined) {
         // Eliminate double-click problem
         if (handlingClick) {
             // User has already clicked the button recently and the request isn't done
@@ -608,7 +522,7 @@ Problem page
         }
         handlingClick = true;
 
-        var id = (window.location.hash || "#").substr(1);
+        var id = $("#prob-id").val();
         var problem = {id: id};
         problem.title       = $("#problem-title").val();
         problem.description = $("#problem-description").val();
@@ -623,6 +537,9 @@ Problem page
             var output = $(card).find("code:eq(1)").html().replace(/<br>/g, "\n").replace(/<br\/>/g, "\n").replace(/&nbsp;/g, " ");
             testData.push({input: input, output: output});
         });
+        if (newTest != undefined) {
+            testData.push(newTest);
+        }
         problem.testData = JSON.stringify(testData);
         
         if (problem.samples > testData.length) {
@@ -631,42 +548,22 @@ Problem page
         }
 
         $.post("/editProblem", problem, id => {
-            window.location.hash = id;
-            window.location.reload();
-            // Tell it we're done handling this request, so it's safe to start another
-            handlingClick = false;
+            if (window.location.pathname == "/problems/new") {
+                window.location = `/problems/${id}/edit`;
+            } else {
+                window.location.reload();
+            }
         });
         return false;
     }
 
     function deleteTestData(dataNum) {
-        if ($(".test-data-cards .card").length == $("#problem-samples").val()) {
+        if ($(".test-data-cards .card").length <= $("#problem-samples").val()) {
             alert("Deleting this item would make the number of sample cases invalid.");
             return;
         }
-        $(`.card[data-num=${dataNum}]`).remove();
+        $(`.test-data-cards .card:eq(${dataNum})`).remove();
         editProblem();
-    }
-
-    function createTestDataCard(testData, isSample, dataNum) {
-        $("div.test-data-cards").append(`<div class="card ${isSample ? "blue" : ""}" data-num="${dataNum}">
-            <div class="card-header">
-                <h2 class="card-title">${isSample ? "Sample" : "Test"} Data #${dataNum}</h2>
-                <div class="delete-link" onclick="deleteTestData(${dataNum})"><i class="material-icons">clear</i></div>
-            </div>
-            <div class="card-contents">
-                <div class="row">
-                    <div class="col-6">
-                        <p class="no-margin">Input:</p>
-                        <code>${testData.input.replace(/ /g, "&nbsp;").replace(/\n/g, "<br/>")}</code>
-                    </div>
-                    <div class="col-6">
-                        <p class="no-margin">Output:</p>
-                        <code>${testData.output.replace(/ /g, "&nbsp;").replace(/\n/g, "<br/>")}</code>
-                    </div>
-                </div>
-            </div>
-        </div>`);
     }
     
     var mdEditors = [];
@@ -674,24 +571,11 @@ Problem page
         $(".rich-text textarea").each((_, elem) => {
             mdEditors.push(new SimpleMDE({ element: elem }));
         });
-        if (window.location.hash) {
-            $.post("/getProblem", {id: window.location.hash.substr(1)}, problem => {
-                $("#problem-title").val(problem.title);
-                $("#problem-description").val(problem.description);
-                mdEditors[0].value(problem.statement);
-                mdEditors[1].value(problem.input);
-                mdEditors[2].value(problem.output);
-                mdEditors[3].value(problem.constraints);
-                $("#problem-samples").val(problem.samples);
-                var i = -1;
-                problem.testData.forEach(datum => createTestDataCard(datum, ++i < problem.samples, i));
-                $("div.test-data-cards").sortable({
-                    placeholder: "ui-state-highlight",
-                    forcePlaceholderSize: true,
-                    stop: editProblem
-                });
-            });
-        }
+        $("div.test-data-cards").sortable({
+            placeholder: "ui-state-highlight",
+            forcePlaceholderSize: true,
+            stop: _ => editProblem()
+        });
     }
 
 /*--------------------------------------------------------------------------------------------------
@@ -722,16 +606,6 @@ Messages Page
 
     function sendMessage() {
         var text = $("textarea.message").val();
-        $.post("/sendMessage", {message: text}, result => {
-            if (result == "ok") {
-                $("div.modal").modal("hide");
-            } else {
-                alert(result);
-            }
-        });
-    }
-    function sendMessageAdmin() {
-        var text = $("textarea.message").val();
         var recipient = $("select.recipient").val();
         $.post("/sendMessage", {to: recipient, message: text}, result => {
             if (result == "ok") {
@@ -742,34 +616,10 @@ Messages Page
         });
     }
 
-    function showMessage(msg) {
-        $("div.message-cards").append(`<div class="card">
-            <div class="card-header">
-                <h2 class="card-title">Message from ${msg.from.username} at ${new Date(msg.timestamp * 1000).toLocaleTimeString()}</h2>
-                ${userType == "admin" ? `<div class="delete-link" onclick="reply('${msg.from.id}')">Reply</div>` : ""}
-            </div>
-            <div class="card-contents">
-                ${msg.message}
-            </div>
-        </div>`)
-    }
-
     function reply(user) {
         $("select.recipient").val(user);
         createMessage();
-    }
-
-    function showMessages() {
-        $.post("/getUsers", {}, users => {
-            for (var user of users) {
-                $(".recipient").append(`<option value=${user.id}>${user.username}</option>`)
-            }
-        });
-        $.post("/getMessages", {timestamp: 0}, messages => {
-            for (message of messages.messages) {
-                showMessage(message);
-            }
-        });
+        $("textarea.message").focus();
     }
 
     function showIncomingMessage(msg) {

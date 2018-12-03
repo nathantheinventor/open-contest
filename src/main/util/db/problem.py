@@ -100,6 +100,9 @@ class Problem:
     
     def onSave(callback: callable):
         Problem.saveCallbacks.append(callback)
+    
+    def all():
+        return [problems[id] for id in problems]
 
 for id in listSubKeys("/problems"):
     problems[id] = Problem(id)

@@ -82,11 +82,11 @@ def listProblems(_, __, ___, ____):
     elif Contest.getPast():
         return Page(
             h1("&nbsp;"),
-            h1("Contest is Over", cls="jumbotron center")
+            h1("Contest is Over", cls="center")
         )
     return Page(
         h1("&nbsp;"),
-        h1("No Contest Created", cls="jumbotron center")
+        h1("No Contest Created", cls="center")
     )
 
 register.web("/problems$", "loggedin", listProblems)

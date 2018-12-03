@@ -100,73 +100,6 @@ def generateContestPage():
         div(cls="problem-cards")
     ))
 
-def generateProblemsMgmtPage():
-    generate("problems_mgmt.html", Page(
-        h2("Problems", cls="page-title"),
-        div(cls="actions", contents=[
-            h.button("+ Create Problem", cls="button create-problem")
-        ]),
-        div(cls="problem-cards")
-    ))
-
-def generateProblemMgmtPage():
-    generate("problem.html", Page(
-        h2("Problem", cls="page-title"),
-        div(cls="actions", contents=[
-            h.button("View Problem", cls="button", onclick="viewProblem()"),
-            h.button("+ Create Test Data", cls="button", onclick="createTestDataDialog()")
-        ]),
-        Card("Problem Details", div(cls="problem-details", contents=[
-            h.form(cls="row", contents=[
-                div(cls="form-group col-12", contents=[
-                    h.label(**{"for": "problem-title", "contents":"Title"}),
-                    h.input(cls="form-control", name="problem-title", id="problem-title")
-                ]),
-                div(cls="form-group col-12", contents=[
-                    h.label(**{"for": "problem-description", "contents":"Description"}),
-                    h.textarea(cls="form-control", name="problem-description", id="problem-description")
-                ]),
-                div(cls="form-group col-12 rich-text", contents=[
-                    h.label(**{"for": "problem-statement", "contents":"Problem Statement"}),
-                    h.textarea(cls="form-control", name="problem-statement", id="problem-statement")
-                ]),
-                div(cls="form-group col-12 rich-text", contents=[
-                    h.label(**{"for": "problem-input", "contents":"Input Format"}),
-                    h.textarea(cls="form-control", name="problem-input", id="problem-input")
-                ]),
-                div(cls="form-group col-12 rich-text", contents=[
-                    h.label(**{"for": "problem-output", "contents":"Output Format"}),
-                    h.textarea(cls="form-control", name="problem-output", id="problem-output")
-                ]),
-                div(cls="form-group col-12 rich-text", contents=[
-                    h.label(**{"for": "problem-constraints", "contents":"Constraints"}),
-                    h.textarea(cls="form-control", name="problem-constraints", id="problem-constraints")
-                ]),
-                div(cls="form-group col-12", contents=[
-                    h.label(**{"for": "problem-samples", "contents":"Number of Sample Cases"}),
-                    h.input(cls="form-control", type="number", name="problem-samples", id="problem-samples", value="0")
-                ]),
-            ]),
-            div(cls="align-right col-12", contents=[
-                h.button("Save", cls="button", onclick="editProblem()")
-            ])
-          ])),
-        Modal(
-            "Create Test Data",
-            div(
-                h.h5("Input"),
-                h.textarea(rows="5", cls="test-data-input col-12 monospace margin-bottom"),
-                h.h5("Output"),
-                h.textarea(rows="5", cls="test-data-output col-12 monospace")
-            ),
-            div(
-                h.button("Cancel", **{"type":"button", "class": "button button-white", "data-dismiss": "modal"}),
-                h.button("Add Test Data", **{"type":"button", "class": "button", "onclick": "createTestData()"})
-            )
-        ),
-        div(cls="test-data-cards")
-    ))
-
 class FAQ(UIElement):
     def __init__(self, q, a):
         id = str(uuid())
@@ -292,43 +225,4 @@ register.web("/faqs", "any", lambda x,y,z,w: Page(
                 <li>Your Python code exceeded Python's recursion depth limit. Python allows only a few hundred recursive calls to a function.</li>
                 <li>Your C/C++ code failed to return 0 from the main function.</li>
                 </ul>"""),
-    ))
-
-def generateMessagesPage():
-    generate("messages.html", Page(
-        h2("Messages", cls="page-title"),
-        div(cls="actions", contents=[
-            h.button("+ Send Message", cls="button create-message", onclick="createMessage()")
-        ]),
-        Modal(
-            "Send Message",
-            h.textarea(cls="message col-12"),
-            div(
-                h.button("Cancel", **{"type":"button", "class": "button button-white", "data-dismiss": "modal"}),
-                h.button("Send", **{"type":"button", "class": "button", "onclick": "sendMessage()"})
-            )
-        ),
-        div(cls="message-cards"),
-    ))
-    generate("messagesAdmin.html", Page(
-        h2("Messages", cls="page-title"),
-        div(cls="actions", contents=[
-            h.button("+ Send Message", cls="button create-message", onclick="createMessage()")
-        ]),
-        Modal(
-            "Send Message",
-            h.div(
-                h.h5("To"),
-                h.select(cls="form-control recipient", contents=[
-                    h.option("general")
-                ]),
-                h.h5("Message"),
-                h.textarea(cls="message col-12")
-            ),
-            div(
-                h.button("Cancel", **{"type":"button", "class": "button button-white", "data-dismiss": "modal"}),
-                h.button("Send", **{"type":"button", "class": "button", "onclick": "sendMessageAdmin()"})
-            )
-        ),
-        div(cls="message-cards"),
     ))
