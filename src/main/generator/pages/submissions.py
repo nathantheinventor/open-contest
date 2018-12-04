@@ -6,7 +6,7 @@ import logging
 
 class SubmissionDisplay(UIElement):
     def __init__(self, submission: Submission):
-        subTime = submission.timestamp * 1000
+        subTime = submission.timestamp
         probName = submission.problem.title
         cls = "red" if submission.result != "ok" else ""
         self.html = Card("Submission to {} at <span class='time-format'>{}</span>".format(probName, subTime), [
