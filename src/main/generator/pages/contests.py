@@ -17,7 +17,7 @@ class ContestCard(UIElement):
             cls=contest.id
         )
 
-def listContests(_, __, user, ___):
+def listContests(params, user):
     contests = [*map(ContestCard, Contest.all())]
     return Page(
         h2("Contests", cls="page-title"),
@@ -31,7 +31,7 @@ class ProblemCard(UIElement):
     def __init__(self, prob: Problem):
         self.html = Card(prob.title, prob.description, link=f"/problems/{prob.id}/edit", delete=f"deleteContestProblem('{prob.id}')", cls=prob.id)
 
-def editContest(params, _, __, ___):
+def editContest(params, user):
     id = params[0] if params else None
     contest = Contest.get(id)
     

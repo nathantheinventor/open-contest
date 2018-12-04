@@ -61,8 +61,7 @@ def serveHTML(self, url):
     
     logging.info(endpoint)
     _, userType, callback, x = endpoint
-    urlParams = x.groups()
-    queryParams = parse_qs((url + "?").split("?")[1])
+    params = x.groups()
     user = auth.getUser(self.headers["Cookie"])
 
     statusCode = 200
@@ -74,7 +73,7 @@ def serveHTML(self, url):
         return statusCode, headers, response
     
     try:
-        response = callback(urlParams, queryParams, user, lambda n, v: setHeader(headers, n, v))
+        response = callback(params, user)
     except Exception as e:
         exc = traceback.format_exc()
         logging.error(exc)

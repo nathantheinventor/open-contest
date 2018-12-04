@@ -9,7 +9,7 @@ class ProblemCard(UIElement):
     def __init__(self, prob: Problem):
         self.html = Card(prob.title, prob.description, link=f"/problems/{prob.id}/edit", delete=f"deleteProblem('{prob.id}')", cls=prob.id)
 
-def listProblems(_, __, ___, ____):
+def listProblems(params, user):
     problems = []
     Problem.forEach(lambda prob: problems.append(ProblemCard(prob)))
     return Page(
@@ -37,7 +37,7 @@ class TestDataCard(UIElement):
             ])
         ]), cls=cls, delete=f"deleteTestData({num})")
 
-def editProblem(params, _, __, ___):
+def editProblem(params, user):
     probId = params[0]
     prob = Problem.get(probId)
     return Page(
@@ -99,7 +99,7 @@ def editProblem(params, _, __, ___):
         div(cls="test-data-cards", contents=list(map(TestDataCard, zip(range(prob.tests), prob.testData, [prob.samples] * prob.tests))))
     )
 
-def newProblem(_, __, ___, ____):
+def newProblem(params, user):
     return Page(
         h.input(type="hidden", id="prob-id", value=""),
         h.input(type="hidden", id="pageId", value="Problem"),

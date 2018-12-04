@@ -3,17 +3,7 @@ from code.generator.lib.page import *
 from code.util.db.simple import *
 from code.util import register
 
-def generate(path, contents):
-    ensureExists("/code/serve/" + path)
-    with open("/code/serve/" + path, "w") as f:
-        f.write(str(contents))
-
-def test(_, __, user, ___):
-    return f"Hello, {user.username}"
-
-register.web("/index", "any", test)
-
-register.web("/login", "any", lambda x,y,z,w: Page(
+register.web("/login", "any", lambda params, user: Page(
         div(cls="login-box", contents=[
             h2("Login", cls="login-header"),
             h.label("Username", cls="form-label"),
@@ -27,7 +17,7 @@ register.web("/login", "any", lambda x,y,z,w: Page(
     ))
 
 
-register.web("/setup", "admin", lambda x,y,z,w: Page(
+register.web("/setup", "admin", lambda params, user: Page(
         h2("Setup", cls="page-title"),
         Card("Problems", "Create problems to go in the contests", "/problems_mgmt"),
         Card("Contests", "Create contests", "/contests"),
@@ -43,7 +33,7 @@ class FAQ(UIElement):
             cls="faq"
         )
 
-register.web("/privacy", "any", lambda x,y,z,w: Page(
+register.web("/privacy", "any", lambda params, user: Page(
         h2("Privacy Policy", cls="page-title"),
         Card("TL;DR", "OpenContest as an organization is too lazy to steal your data (we're busy enough keeping track of our own). " +
             "However, the organizers of your contest may collect any data you submit, " +
@@ -75,14 +65,14 @@ register.web("/privacy", "any", lambda x,y,z,w: Page(
     ))
 
     # Fake privacy policy for laughs
-register.web("/privacy2", "any", lambda x,y,z,w: Page(
+register.web("/privacy2", "any", lambda params, user: Page(
         h2("Privacy Policy", cls="page-title"),
         h1("LOL", cls="jumbotron center"),
         h1("After all, you use Facebook", cls="center")
     ))
 
     # Instructions about using OpenContest
-register.web("/faqs", "any", lambda x,y,z,w: Page(
+register.web("/faqs", "any", lambda params, user: Page(
         h2("FAQs", cls="page-title"),
         FAQ("What is a programming contest?", """A programming contest is a contest where programmers 
             attempt to solve problems by writing programs. These problems are typically posed as a 

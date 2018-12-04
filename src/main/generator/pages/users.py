@@ -26,7 +26,7 @@ class UserCard(UIElement):
             )
         ])
 
-def getUsers(*_):
+def getUsers(params, user):
     userLists = []
     tmp = []
     

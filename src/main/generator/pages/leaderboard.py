@@ -4,7 +4,7 @@ from code.generator.lib.page import *
 import logging
 from code.util import register
 
-def leaderboard(_, __, ___, ____):
+def leaderboard(params, user):
     contest = Contest.getCurrent() or Contest.getPast()
     start = contest.start
     end = contest.end

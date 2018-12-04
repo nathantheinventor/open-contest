@@ -19,7 +19,7 @@ class SubmissionDisplay(UIElement):
             h.code(submission.code.replace("\n", "<br/>").replace(" ", "&nbsp;"))
         ], cls=cls)
 
-def getSubmissions(_, __, user, ___):
+def getSubmissions(params, user):
     submissions = []
     
     cont = Contest.getCurrent()

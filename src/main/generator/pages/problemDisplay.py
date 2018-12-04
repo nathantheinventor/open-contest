@@ -1,9 +1,8 @@
 from code.util.db import Problem, Contest
-from .static import generate
 from code.generator.lib.htmllib import *
 from code.generator.lib.page import *
-import markdown2
 from code.util import register
+import markdown2
 
 def formatMD(md: str) -> str:
     """ Convert Markdown to HTML """
@@ -35,7 +34,7 @@ def getSample(datum, num: int) -> Card:
         ])
     ]))
 
-def viewProblem(params, _, user, ___):
+def viewProblem(params, user):
     problem = Problem.get(params[0])
     
     if not problem:
@@ -65,11 +64,7 @@ def viewProblem(params, _, user, ___):
         ])
     )
 
-def generateProblems():
-    Problem.forEach(generateProblem)
-    Problem.onSave(generateProblem)
-
-def listProblems(_, __, ___, ____):
+def listProblems(params, user):
     if Contest.getCurrent():
         contest = Contest.getCurrent()
         probCards = []

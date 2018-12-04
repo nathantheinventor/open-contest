@@ -17,7 +17,7 @@ class MessageCard(UIElement):
                 reply=f"reply('{msg.fromUser.id}')"
             )
 
-def getMessages(_, __, user, ___):
+def getMessages(params, user):
     messages = []
     Message.forEach(lambda msg: messages.append(msg) if ((msg.toUser and msg.toUser.id == user.id) or msg.fromUser.id == user.id or msg.isGeneral or (msg.isAdmin and user.isAdmin())) else None)
     messages = [*map(lambda msg: MessageCard(msg, user), sorted(messages, key=lambda msg: -msg.timestamp))]
