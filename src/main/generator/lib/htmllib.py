@@ -23,8 +23,8 @@ class HTMLObject:
             options += ' {}="{}"'.format(opt, self.options[opt])
         contents = "".join(map(str, self.contents))
         if self.type in singletons and contents == "":
-            return "<{}{}/>\n".format(self.type, options)
-        return "<{}{}>{}</{}>\n".format(self.type, options, contents, self.type)
+            return "<{}{}/>".format(self.type, options)
+        return "<{}{}>{}</{}>".format(self.type, options, contents, self.type)
 
 class HTML:
     def __getattr__(self, attr):
