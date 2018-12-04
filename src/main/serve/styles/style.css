@@ -531,4 +531,18 @@ Messages Page
         margin-top: 20px;
         margin-bottom: 20px;
     }
-
+/*--------------------------------------------------------------------------------------------------
+Judging Page
+--------------------------------------------------------------------------------------------------*/
+    #judge-tabs {
+        background: none;
+        border: none;
+    }
+    #judge-tabs .ui-tabs-nav {
+        background: none;
+        margin-bottom: 10px;
+        border: none;
+    }
+    #judge-tabs .ui-tabs-nav li {
+        border-bottom-width: 1px;
+    }

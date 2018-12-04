@@ -11,7 +11,7 @@ def leaderboard(params, user):
 
     subs = {}
     for sub in Submission.all():
-        if start <= sub.timestamp <= end:
+        if start <= sub.timestamp <= end and not sub.user.isAdmin():
             subs[sub.user.id] = subs.get(sub.user.id) or []
             subs[sub.user.id].append(sub)
     

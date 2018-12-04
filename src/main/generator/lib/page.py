@@ -30,6 +30,7 @@ class Menu(UIElement):
                 MenuItem("/leaderboard", "Leaderboard"),
                 MenuItem("/submissions", "My Submissions", role="participant"),
                 MenuItem("/messages", "Messages"),
+                MenuItem("/judge", "Judge", role="admin"),
                 MenuItem("/setup", "Setup", role="admin"),
                 MenuItem("/logout", "Logout")
             ])

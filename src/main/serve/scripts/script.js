@@ -63,6 +63,7 @@ General page code
         } else if (pageName == "Problem") {
             setupProblemPage();
         }
+        $("#judge-tabs").tabs();
     });
 /*--------------------------------------------------------------------------------------------------
 Problem page
