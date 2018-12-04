@@ -131,7 +131,7 @@ class Server(BaseHTTPRequestHandler):
                     response = f"Not authorized: {url}"
                 else:
                     statusCode = 302
-                    headers.append(("Location", "/static/login.html"))
+                    headers.append(("Location", "/login"))
             else:
                 content_length = int(self.headers['Content-Length'] or 0)
                 f = self.rfile.read(content_length).decode("utf-8")

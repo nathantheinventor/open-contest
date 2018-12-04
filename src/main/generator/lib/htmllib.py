@@ -38,7 +38,6 @@ class UIElement:
 h = HTML()
 
 head  = h.head
-title = h.title
 body  = h.body
 div   = h.div
 a     = h.a

@@ -5,3 +5,4 @@ from .problemEdit import *
 from .problemDisplay import *
 from .leaderboard import *
 from .messages import *
+from .users import *

@@ -3,9 +3,6 @@ from code.util.db import User
 from code.util.auth import generatePassword
 import logging
 
-def getUsers(params, setHeader, user):
-    return User.allJSON()
-
 def createUser(params, setHeader, user):
     newPassword = generatePassword()
     user = User(
@@ -22,6 +19,5 @@ def deleteUser(params, setHeader, user):
     user.delete()
     return "ok"
 
-register.post("/getUsers", "admin", getUsers)
 register.post("/createUser", "admin", createUser)
 register.post("/deleteUser", "admin", deleteUser)

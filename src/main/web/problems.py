@@ -2,13 +2,6 @@ from code.util import register
 from code.util.db.problem import Problem, Datum
 import json
 
-def getProblems(params, setHeader, user):
-    return Problem.allJSON()
-
-def getProblem(params, setHeader, user):
-    id = params["id"]
-    return Problem.get(id).toJSONFull()
-
 def deleteProblem(params, setHeader, user):
     id = params["id"]
     Problem.get(id).delete()
@@ -34,7 +27,5 @@ def editProblem(params, setHeader, user):
 
     return problem.id
 
-register.post("/getProblems", "admin", getProblems)
-register.post("/getProblem", "admin", getProblem)
 register.post("/deleteProblem", "admin", deleteProblem)
 register.post("/editProblem", "admin", editProblem)

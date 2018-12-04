@@ -25,7 +25,6 @@ class User:
         return None
     
     def save(self):
-        logging.info(f"saving {self.username}")
         if self.id == None:
             self.id = str(uuid4())
             users[self.id] = self

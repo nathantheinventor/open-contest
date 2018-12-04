@@ -274,13 +274,13 @@ Problem Page
     Print view
     -------------------------------------------------*/
     @media print {
-        div.card {
+        div.problem-description div.card {
             border: none;
         }
-        div.card-header {
+        div.problem-description div.card-header {
             padding: 0px;
         }
-        div.card-contents {
+        div.problem-description div.card-contents {
             padding: 0px;
             font-size: 13pt;
         }
@@ -403,6 +403,13 @@ Users Page
     Print view
     -------------------------------------------------*/
     @media print {
+        div.user-cards .col-3 {
+            max-width: 50%;
+            flex: 0 0 50%;
+        }
+        div.page-break {
+            page-break-after: always;
+        }
         button {
             display: none;
         }
@@ -422,13 +429,18 @@ Users Page
             display: inline;
         }
         .user-cards div.card-header {
-            font-size: 12.8px;
+            font-size: 21.3333px;
             border-bottom: none;
             margin-bottom: -20px;
         }
-        .user-cards div.card-header h2 {
-            font-size: 12.8px;
-            margin: -3px;
+        .user-cards div.card-header h2 h2 {
+            font-size: 25.6px;
+            margin-right: -5px;
+            margin-left: -5px;
+        }
+        .user-cards div.card-contents {
+            font-size: 1.6em;
+            padding: 10px;
         }
     }
 

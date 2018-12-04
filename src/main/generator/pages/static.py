@@ -27,77 +27,11 @@ register.web("/login", "any", lambda x,y,z,w: Page(
     ))
 
 
-register.web("/setup", "any", lambda x,y,z,w: Page(
+register.web("/setup", "admin", lambda x,y,z,w: Page(
         h2("Setup", cls="page-title"),
         Card("Problems", "Create problems to go in the contests", "/problems_mgmt"),
         Card("Contests", "Create contests", "/contests"),
         Card("Users", "Create users who will participate in contests, as well as other admin users who can create and judge contests and problems", "/users")
-    ))
-
-def generateUsersPage():
-    generate("users.html", Page(
-        h2("Users", cls="page-title"),
-        div(cls="actions", contents=[
-            h.button("+ Create Admin", cls="button button-blue create-admin"),
-            h.button("+ Create Participant", cls="button create-participant")
-        ]),
-        div(cls="row user-cards")
-    ))
-
-def generateContestsPage():
-    generate("contests.html", Page(
-        h2("Contests", cls="page-title"),
-        div(cls="actions", contents=[
-            h.button("+ Create Contest", cls="button create-contest")
-        ]),
-        div(cls="contest-cards")
-    ))
-
-
-def generateContestPage():
-    generate("contest.html", Page(
-        h2("Contest", cls="page-title"),
-        div(cls="actions", contents=[
-            h.button("+ Choose Problem", cls="button", onclick="chooseProblemDialog()")
-        ]),
-        Card("Contest Details", div(cls="contest-details", contents=[
-            h.form(cls="row", contents=[
-                div(cls="form-group col-12", contents=[
-                    h.label(**{"for": "contest-name", "contents":"Name"}),
-                    h.input(cls="form-control", name="contest-name", id="contest-name")
-                ]),
-                div(cls="form-group col-6", contents=[
-                    h.label(**{"for": "contest-start-date", "contents":"Start Date"}),
-                    h.input(cls="form-control", name="contest-start-date", id="contest-start-date", type="date")
-                ]),
-                div(cls="form-group col-6", contents=[
-                    h.label(**{"for": "contest-start-time", "contents":"Start Time"}),
-                    h.input(cls="form-control", name="contest-start-time", id="contest-start-time", type="time")
-                ]),
-                div(cls="form-group col-6", contents=[
-                    h.label(**{"for": "contest-end-date", "contents":"End Date"}),
-                    h.input(cls="form-control", name="contest-end-date", id="contest-end-date", type="date")
-                ]),
-                div(cls="form-group col-6", contents=[
-                    h.label(**{"for": "contest-end-time", "contents":"End Time"}),
-                    h.input(cls="form-control", name="contest-end-time", id="contest-end-time", type="time")
-                ])
-            ]),
-            div(cls="align-right col-12", contents=[
-                h.button("Save", cls="button", onclick="editContest()")
-            ])
-        ])),
-        Modal(
-            "Choose Problem",
-            h.select(cls="form-control problem-choice", contents=[
-                h.option("-")
-            ]),
-            div(
-                h.button("Cancel", **{"type":"button", "class": "button button-white", "data-dismiss": "modal"}),
-                h.button("Add Problem", **{"type":"button", "class": "button", "onclick": "chooseProblem()"})
-            )
-        ),
-        div(cls="problem-cards")
     ))
 
 class FAQ(UIElement):

@@ -21,7 +21,12 @@ class SubmissionDisplay(UIElement):
 
 def getSubmissions(_, __, user, ___):
     submissions = []
-    Submission.forEach(lambda x: submissions.append(x) if x.user.id == user.id else None)
+    
+    cont = Contest.getCurrent()
+    if not cont:
+        return ""
+    
+    Submission.forEach(lambda x: submissions.append(x) if x.user.id == user.id and cont.start <= x.timestamp <= cont.end else None)
     if len(submissions) == 0:
         return Page(
             h2("No Submissions Yet", cls="page-title"),

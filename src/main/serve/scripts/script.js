@@ -304,7 +304,7 @@ Login page
         var password = $("input[name=password]").val();
         $.post("/login", {username: username, password: password}, data => {
             if (data == "ok") {
-                window.location = "/static/problems.html";
+                window.location = "/problems";
             } else {
                 alert(data);
             }
@@ -330,60 +330,23 @@ Login page
 /*--------------------------------------------------------------------------------------------------
 Users page
 --------------------------------------------------------------------------------------------------*/
-    function createUserCard(username, password, type) {
-        $("div.user-cards").prepend(`<div class="col-3">
-            <div class="card${type == "admin" ? " blue": ""}" data-username="${username}">
-                <div class="card-header">
-                    <strong class="username-hidden"><i>Username:</i></strong><br class="username-hidden"/>
-                    <p class="username-hidden">&quot;</p>
-                    <h2 class="card-title">${username}</h2>
-                    <p class="username-hidden">&quot;</p>
-                    <div class="delete-link"><i class="material-icons">clear</i></div>
-                </div>
-                <div class="card-contents">
-                    <strong><i>Password:</i></strong><br/>
-                    &quot;${password}&quot;
-                </div>
-            </div>
-        </div>`);
-        $(`div[data-username="${username}"] div.delete-link`).click(function() {
-            var username = $(this).parents(".card").data("username");
-            var col = $(this).parents(".col-3");
-            if (confirm(`Are you sure you want to delete ${username}?`)) {
-                $.post("/deleteUser", {username: username}, data => {
-                    if (data == "ok") {
-                        col.remove(); // Bad practice, but I'm not completely sure how to do it right
-                    }
-                });
-            }
-        });
+    function deleteUser(username) {
+        if (confirm(`Are you sure you want to delete ${username}?`)) {
+            $.post("/deleteUser", {username: username}, data => {
+                if (data == "ok") {
+                    window.location.reload();
+                }
+            });
+        }
     }
 
-    function displayExistingUsers() {
-        $.post("/getUsers", {}, data => {
-            for (var user of data) {
-                createUserCard(user.username, user.password, user.type);
-            }
-        });
-    }
-
-    function setupUserButtons() {
-        $("button.create-admin").click(function() {
-            var username = prompt("New User's Name")
-            if (username) {
-                $.post("/createUser", {type: "admin", username: username}, password => {
-                    createUserCard(username, password, "admin");
-                });
-            }
-        });
-        $("button.create-participant").click(function() {
-            var username = prompt("New User's Name")
-            if (username) {
-                $.post("/createUser", {type: "participant", username: username}, password => {
-                    createUserCard(username, password, "participant");
-                });
-            }
-        });
+    function createUser(type) {
+        var username = prompt("New User's Name")
+        if (username) {
+            $.post("/createUser", {type: type, username: username}, password => {
+                window.location.reload();
+            });
+        }
     }
 
 /*--------------------------------------------------------------------------------------------------

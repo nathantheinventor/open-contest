@@ -1,11 +1,7 @@
 from code.util import register, auth
 
-def submissions(params, setHeader, user):
-    setHeader("Location", f"/static/submissions/{user.id}.html")
-    return 302
-
 def root(params, setHeader, user):
-    setHeader("Location", "/static/problems.html")
+    setHeader("Location", "/problems")
     return 302
 
 def login(params, setHeader, user):
@@ -20,7 +16,7 @@ def login(params, setHeader, user):
         return "Incorrect username / password";
 
 def logout(params, setHeader, user):
-    setHeader("Location", "/static/login.html")
+    setHeader("Location", "/login")
     setHeader("Set-Cookie", "user=deleted; expires=Thu, 01 Jan 1970 00:00:00 GMT;")
     setHeader("Set-Cookie", "userType=deleted; expires=Thu, 01 Jan 1970 00:00:00 GMT")
     return 302

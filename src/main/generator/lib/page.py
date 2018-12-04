@@ -1,3 +1,4 @@
+from code.util.db import Contest
 from .htmllib import *
 from datetime import datetime
 from uuid import uuid4
@@ -46,11 +47,12 @@ class Footer(UIElement):
         ])
 
 class Page(UIElement):
-    title = "OpenContest"
     def __init__(self, *bodyData):
+        cont = Contest.getCurrent()
+        title = cont.name if cont else "OpenContest"
         self.html = h.html(
             head(
-                title("OpenContest"),
+                h.title(title),
                 h.link(rel="stylesheet", href="/static/lib/fontawesome/css/all.css", type="text/css"),
                 h.link(rel="stylesheet", href="/static/lib/bootstrap/css/bootstrap.min.css", type="text/css"),
                 h.link(rel="stylesheet", href="/static/lib/jqueryui/jquery-ui.min.css", type="text/css"),
@@ -64,7 +66,7 @@ class Page(UIElement):
                 h.script(src="/static/scripts/script.js?" + uuid())
             ),
             body(
-                Header(Page.title),
+                Header(title),
                 Menu(),
                 div(cls="message-alerts"),
                 div(*bodyData, cls="main-content"),

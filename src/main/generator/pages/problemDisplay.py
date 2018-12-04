@@ -35,8 +35,19 @@ def getSample(datum, num: int) -> Card:
         ])
     ]))
 
-def viewProblem(params, _, __, ___):
+def viewProblem(params, _, user, ___):
     problem = Problem.get(params[0])
+    
+    if not problem:
+        return ""
+
+    if not user.isAdmin():
+        # Hide the problems till the contest begins for non-admin users
+        if not Contest.getCurrent():
+            return ""
+        if problem not in Contest.getCurrent().problems:
+            return ""
+    
     return Page(
         h.input(type="hidden", id="problem-id", value=problem.id),
         h2(problem.title, cls="page-title"),
