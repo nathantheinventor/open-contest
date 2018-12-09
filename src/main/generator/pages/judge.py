@@ -96,7 +96,10 @@ class ProblemContent(UIElement):
 def judge(params, user):
     cont = Contest.getCurrent()
     if not cont:
-        return ""
+        return Page(
+            h1("&nbsp;"),
+            h1("No Contest Available", cls="center")
+        )
     
     problemTabs = [*map(ProblemTab, enumerate(cont.problems))]
     problemContents = [*map(lambda x: ProblemContent(x, cont), enumerate(cont.problems))]

@@ -6,6 +6,11 @@ from code.util import register
 
 def leaderboard(params, user):
     contest = Contest.getCurrent() or Contest.getPast()
+    if not contest:
+        return Page(
+            h1("&nbsp;"),
+            h1("No Contest Available", cls="center")
+        )
     start = contest.start
     end = contest.end
 
