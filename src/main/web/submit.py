@@ -4,6 +4,7 @@ from code.util import register
 from code.util.db import Submission, Problem
 import time
 import shutil
+from uuid import uuid4
 
 def addSubmission(probId, lang, code, user, type):
     sub = Submission()
@@ -14,7 +15,10 @@ def addSubmission(probId, lang, code, user, type):
     sub.user = user
     sub.timestamp = time.time() * 1000
     sub.type = type
-    sub.save()
+    if type == "submit":
+        sub.save()
+    else:
+        sub.id = str(uuid4())
     return sub
 
 exts = {
@@ -93,7 +97,8 @@ def runCode(sub):
     sub.answers = answers
     sub.errors = errors
 
-    sub.save()
+    if sub.type == "submit":
+        sub.save()
 
     shutil.rmtree(f"/tmp/{sub.id}", ignore_errors=True)
 
@@ -106,4 +111,14 @@ def submit(params, setHeader, user):
     runCode(submission)
     return submission.toJSON()
 
+def changeResult(params, setHeader, user):
+    id = params["id"]
+    sub = Submission.get(id)
+    if not sub:
+        return "Error: incorrect id"
+    sub.result = params["result"]
+    sub.save()
+    return "ok"
+
 register.post("/submit", "loggedin", submit)
+register.post("/changeResult", "admin", changeResult)

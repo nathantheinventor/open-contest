@@ -64,6 +64,7 @@ General page code
             setupProblemPage();
         }
         $("#judge-tabs").tabs();
+        $(".result-tabs").tabs();
     });
 /*--------------------------------------------------------------------------------------------------
 Problem page
@@ -610,4 +611,18 @@ Messages Page
             localStorage.seenMessages = JSON.stringify(seenMessages);
         });
         window.setTimeout(displayIncomingMessages, 5000);
+    }
+
+/*--------------------------------------------------------------------------------------------------
+Judging Page
+--------------------------------------------------------------------------------------------------*/
+    function changeSubmissionResult(id) {
+        var result = $(`.result-choice.${id}`).val();
+        $.post("/changeResult", {id: id, result: result}, result => {
+            if (result == "ok") {
+                window.location.reload();
+            } else {
+                alert(result);
+            }
+        })
     }

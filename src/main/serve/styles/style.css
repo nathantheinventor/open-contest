@@ -538,11 +538,19 @@ Judging Page
         background: none;
         border: none;
     }
-    #judge-tabs .ui-tabs-nav {
+    #judge-tabs > .ui-tabs-nav {
         background: none;
         margin-bottom: 10px;
         border: none;
     }
-    #judge-tabs .ui-tabs-nav li {
+    #judge-tabs > .ui-tabs-nav li {
         border-bottom-width: 1px;
+    }
+    #judge-tabs code.code {
+        margin-bottom: 10px;
+    }
+    #judge-tabs h4 {
+        font-size: 1.2em;
+        font-weight: bold;
+        margin-top: 5px;
     }
