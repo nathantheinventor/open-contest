@@ -554,3 +554,25 @@ Judging Page
         font-weight: bold;
         margin-top: 5px;
     }
+    .modal-dialog {
+        max-width: 70vw;
+    }
+    .modal .result-tabs {
+        margin-top: 10px;
+    }
+    div.modal-header {
+        background: #dcf0e2;
+    }
+    div.modal-header.red {
+        background: #ff224425;
+    }
+    .btn-primary, .btn-primary:hover {
+        background: #093;
+        border-color: #093;
+    }
+    table#submissions tbody tr {
+        cursor: pointer;
+    }
+    table#submissions tbody tr:hover {
+        background: #ddd;
+    }

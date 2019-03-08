@@ -63,8 +63,23 @@ General page code
         } else if (pageName == "Problem") {
             setupProblemPage();
         }
-        $("#judge-tabs").tabs();
         $(".result-tabs").tabs();
+        // $(".tablesorter").tablesorter();
+        var props = {  
+            sort: true,  
+            filters_row_index:1,  
+            remember_grid_values: true,  
+            alternate_rows: true,
+            custom_slc_options: {  
+                cols:[],
+                texts: [],
+                values: [],
+                sorts: []
+            }
+        }  
+    if ($("#submissions").length) {
+        var tf = setFilterGrid("submissions",props); 
+    }
     });
 /*--------------------------------------------------------------------------------------------------
 Problem page
@@ -625,4 +640,19 @@ Judging Page
                 alert(result);
             }
         })
+    }
+
+    function submissionPopup(id) {
+        $.post(`/judgeSubmission/${id}`, {}, data => {
+            $(".modal-dialog").html(data);
+            $(".result-tabs").tabs();
+            fixFormatting();
+            $(".modal").modal();
+        });
+    }
+
+    function rejudge(id) {
+        $.post("/rejudge", {id: id}, data => {
+            alert(`New Result: ${verdict_name[data]}`);
+        });
     }

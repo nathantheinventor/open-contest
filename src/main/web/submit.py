@@ -120,5 +120,12 @@ def changeResult(params, setHeader, user):
     sub.save()
     return "ok"
 
+def rejudge(params, setHeader, user):
+    id = params["id"]
+    submission = Submission.get(id)
+    runCode(submission)
+    return submission.result
+
 register.post("/submit", "loggedin", submit)
 register.post("/changeResult", "admin", changeResult)
+register.post("/rejudge", "admin", rejudge)

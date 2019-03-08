@@ -3,6 +3,9 @@ from code.util.db import Contest, Problem, Submission
 from code.generator.lib.htmllib import *
 from code.generator.lib.page import *
 
+import logging
+from datetime import datetime
+
 class ProblemTab(UIElement):
     def __init__(self, x):
         num, prob = x
@@ -69,29 +72,77 @@ class SubmissionCard(UIElement):
         subTime = submission.timestamp
         probName = submission.problem.title
         cls = "red" if submission.result != "ok" else ""
-        self.html = Card("Submission to {} at <span class='time-format'>{}</span>".format(probName, subTime), [
-            h.strong("Language: <span class='language-format'>{}</span>".format(submission.language)),
-            h.br(),
-            h.strong("Result: ",
-                h.select(cls=f"result-choice {submission.id}", onchange=f"changeSubmissionResult('{submission.id}')", contents=[
-                    *resultOptions(submission.result)
+        self.html = div(cls="modal-content", contents=[
+            div(cls=f"modal-header {cls}", contents=[
+                h.h5(
+                    f"Submission to {probName} at ",
+                    h.span(subTime, cls="time-format")
+                ),
+                """
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>"""
+            ]),
+            div(cls="modal-body", contents=[
+                h.strong("Language: <span class='language-format'>{}</span>".format(submission.language)),
+                h.br(),
+                h.strong("Result: ",
+                    h.select(cls=f"result-choice {submission.id}", onchange=f"changeSubmissionResult('{submission.id}')", contents=[
+                        *resultOptions(submission.result)
+                    ])
+                ),
+                h.br(),
+                h.br(),
+                h.button("Rejudge", type="button", onclick=f"rejudge('{submission.id}')", cls="btn btn-primary"),
+                h.br(),
+                h.br(),
+                h.strong("Code:"),
+                h.code(submission.code.replace("\n", "<br/>").replace(" ", "&nbsp;"), cls="code"),
+                div(cls="result-tabs", id="result-tabs", contents=[
+                    h.ul(*map(lambda x: TestCaseTab(x, submission), enumerate(submission.results))),
+                    *map(lambda x: TestCaseData(x, submission), zip(range(submission.problem.tests), submission.inputs, submission.outputs, submission.errors, submission.answers))
                 ])
-            ),
-            h.br(),
-            h.br(),
-            h.strong("Code:"),
-            h.code(submission.code.replace("\n", "<br/>").replace(" ", "&nbsp;"), cls="code"),
-            div(cls="result-tabs", id="result-tabs", contents=[
-                h.ul(*map(lambda x: TestCaseTab(x, submission), enumerate(submission.results))),
-                *map(lambda x: TestCaseData(x, submission), zip(range(submission.problem.tests), submission.inputs, submission.outputs, submission.errors, submission.answers))
             ])
-        ], cls=cls)
+        ])
 
 class ProblemContent(UIElement):
     def __init__(self, x, cont):
         num, prob = x
         subs = filter(lambda sub: sub.problem == prob and cont.start <= sub.timestamp <= cont.end, Submission.all())
         self.html = div(*map(SubmissionCard, subs), id=f"tabs-{num}")
+
+class SubmissionRow(UIElement):
+    def __init__(self, sub):
+        self.html = h.tr(
+            h.td(sub.user.username),
+            h.td(sub.problem.title),
+            h.td(datetime.utcfromtimestamp(sub.timestamp // 1000)),
+            h.td(sub.language),
+            h.td(
+                h.i("&nbsp;", cls=f"fa fa-{icons[sub.result]}"),
+                h.span(verdict_name[sub.result])
+            ),
+            onclick=f"submissionPopup('{sub.id}')"
+        )
+
+class SubmissionTable(UIElement):
+    def __init__(self, contest):
+        subs = filter(lambda sub: sub.user.type != "admin" and contest.start <= sub.timestamp <= contest.end, Submission.all())
+        self.html = h.table(
+            h.thead(
+                h.tr(
+                    h.th("Name"),
+                    h.th("Problem"),
+                    h.th("Time"),
+                    h.th("Language"),
+                    h.th("Result")
+                )
+            ),
+            h.tbody(
+                *map(lambda sub: SubmissionRow(sub), subs)
+            ),
+            id="submissions"
+        )
 
 def judge(params, user):
     cont = Contest.getCurrent()
@@ -101,14 +152,20 @@ def judge(params, user):
             h1("No Contest Available", cls="center")
         )
     
-    problemTabs = [*map(ProblemTab, enumerate(cont.problems))]
-    problemContents = [*map(lambda x: ProblemContent(x, cont), enumerate(cont.problems))]
     return Page(
         h2("Judge Submissions", cls="page-title"),
-        div(id="judge-tabs", contents=[
-            h.ul(*problemTabs),
-            *problemContents
+        div(id="judge-table", contents=[
+            SubmissionTable(cont)
+        ]),
+        div(cls="modal", tabindex="-1", role="dialog", contents=[
+            div(cls="modal-dialog", role="document", contents=[
+                div(id="modal-content")
+            ])
         ])
     )
 
+def judge_submission(params, user):
+    return SubmissionCard(Submission.get(params[0]))
+
+register.web("/judgeSubmission/([a-zA-Z0-9-]*)", "admin", judge_submission)
 register.web("/judge", "admin", judge)
