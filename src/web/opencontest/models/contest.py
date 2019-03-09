@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 
 class Contest(models.Model):
     name = models.CharField(max_length=100)
@@ -8,3 +9,10 @@ class Contest(models.Model):
 
     def __str__(self):
         return self.name
+
+    @staticmethod
+    def current():
+        for contest in Contest.objects.all():
+            if contest.start <= timezone.now() <= contest.end:
+                return contest
+        return None
