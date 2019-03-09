@@ -19,10 +19,13 @@ RUN pip3 install markdown2 uwsgi
 RUN ln -s -f /usr/bin/python3 /usr/bin/python
 
 COPY . /code
+COPY runserver.sh /runserver.sh
+COPY uwsgi_params /uwsgi_params
 # COPY web/ /web/
 # COPY serve/ /serve
 # COPY generator/ /generator/
 # COPY setup.js /setup.js
 
 # ENTRYPOINT ["nodemon", "-w", "/code", "-e", "js,py", "--exec", "uwsgi --http :8000 --module", "code"]
-ENTRYPOINT [ "uwsgi", "--http", ":8000", "--module", "code" ]
+# ENTRYPOINT [ "uwsgi", "--http", ":8000", "--module", "code" ]
+ENTRYPOINT [ "bash", "/runserver.sh" ]
