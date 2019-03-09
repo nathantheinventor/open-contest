@@ -10,12 +10,14 @@ import code.generator.pages
 import sys
 import logging
 from code.util.db import User
+from code.util.auth import generatePassword
 logging.basicConfig(level=logging.DEBUG)
 
 user = "Admin"
 # port = int(sys.argv[2])
 
-password = "presently description kirk died"
+# password = "presently description kirk died"
+password = generatePassword()
 usr = User(user, password, "admin")
 usr.save()
 logging.info(f"Admin username is '{user}'")

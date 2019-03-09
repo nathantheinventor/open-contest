@@ -26,8 +26,8 @@ Status: Image is up to date for nathantheinventor/open-contest:latest
 
 $> docker run -v /tmp:/tmp -v ~/db:/db -v /var/run/docker.sock:/var/run/docker.sock -p 0.0.0.0:
 8000:8000/tcp nathantheinventor/open-contest
-INFO:root:saving John Smith
-INFO:root:Admin username is 'John Smith'
+INFO:root:saving Admin
+INFO:root:Admin username is 'Admin'
 INFO:root:Admin password is 'presently description kirk died'
 INFO:root:Starting server...
 
