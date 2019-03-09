@@ -1,5 +1,2 @@
-cat /etc/nginx/sites-enabled/nginx.conf
-ls /etc/nginx/sites-enabled/
-/etc/init.d/nginx start
-systemctl status nginx.service
+/usr/sbin/nginx
 uwsgi --http :8001 --module code

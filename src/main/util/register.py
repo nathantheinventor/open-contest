@@ -82,6 +82,7 @@ def serveHTML(cookie, url):
     return statusCode, headers, response
 
 def serveStatic(path):
+    assert False
     path = "/code/serve" + path
     logging.info("Serving {}".format(path))
     if os.path.abspath(path).startswith("/code/serve"):
@@ -100,7 +101,7 @@ def setHeader(headers, name, value):
 #     def handleRequest(self, method):
 def serve(env):
     method = env["REQUEST_METHOD"]
-    cookie = env["HTTP_COOKIE"]
+    cookie = env.get("HTTP_COOKIE") or ""
     
     url = env["REQUEST_URI"]
     url = url.split("?")[0]

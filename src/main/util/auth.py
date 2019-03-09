@@ -27,8 +27,9 @@ def parseCookie(cookie):
     results = {}
     cookies = cookie.split(";")
     for cookie in cookies:
-        name, val = map(str.strip, cookie.split("="))
-        results[name] = val
+        if "=" in cookie:
+            name, val = map(str.strip, cookie.split("="))
+            results[name] = val
     return results
 
 def getUser(cookie):
