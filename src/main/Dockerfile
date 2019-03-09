@@ -13,10 +13,10 @@ FROM $USER/$OC_PROJECT_NAME-vb-runner
 FROM ubuntu:bionic
 
 RUN apt-get update && \
-    apt-get -y install nodejs npm python3 python3-pip docker.io psmisc
-# RUN npm install -g nodemon
-RUN pip3 install markdown2
-# RUN ln -s -f /usr/bin/python3 /usr/bin/python
+    apt-get -y install nodejs npm python3 python3-pip docker.io psmisc nginx
+RUN npm install -g nodemon
+RUN pip3 install markdown2 uwsgi
+RUN ln -s -f /usr/bin/python3 /usr/bin/python
 
 COPY . /code
 # COPY web/ /web/
@@ -24,5 +24,5 @@ COPY . /code
 # COPY generator/ /generator/
 # COPY setup.js /setup.js
 
-# ENTRYPOINT ["nodemon", "-w", "/code", "-e", "js,py", "--exec", "python3 -m", "code"]
-ENTRYPOINT [ "python3", "-m", "code" ]
+# ENTRYPOINT ["nodemon", "-w", "/code", "-e", "js,py", "--exec", "uwsgi --http :8000 --module", "code"]
+ENTRYPOINT [ "uwsgi", "--http", ":8000", "--module", "code" ]

@@ -23,13 +23,22 @@ def checkPassword(username, password):
         return False
     return user
 
+def parseCookie(cookie):
+    results = {}
+    cookies = cookie.split(";")
+    for cookie in cookies:
+        name, val = map(str.strip, cookie.split("="))
+        results[name] = val
+    return results
+
 def getUser(cookie):
     if cookie == None:
         return None
-    logging.debug("Parsing cookie {}".format(cookie))
-    cookies = cookie.split(";")
-    id = cookies[0].split("=")[1]
-    return User.get(id)
+    # logging.debug("Parsing cookie {}".format(cookie))
+    cookie = parseCookie(cookie)
+    if "user" in cookie:
+        return User.get(cookie["user"])
+    return None
 
 def isAdmin(cookie):
     user = getUser(cookie)

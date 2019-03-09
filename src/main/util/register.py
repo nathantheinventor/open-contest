@@ -51,7 +51,7 @@ def HTMLMatches(url):
             return True
     return False
 
-def serveHTML(self, url):
+def serveHTML(cookie, url):
     endpoint = None
     for (u, t, c) in webEndpoints:
         x = re.match(u, url)
@@ -62,11 +62,11 @@ def serveHTML(self, url):
     logging.info(endpoint)
     _, userType, callback, x = endpoint
     params = x.groups()
-    user = auth.getUser(self.headers["Cookie"])
+    user = auth.getUser(cookie)
 
     statusCode = 200
     headers = [("Content-type", "text/html")]
-    if not fits(self.headers["Cookie"], userType):
+    if not fits(cookie, userType):
         statusCode = 302
         headers = [("Location", "/")]
         response = ""
@@ -81,99 +81,95 @@ def serveHTML(self, url):
         response = "Internal error" 
     return statusCode, headers, response
 
-def serveStatic(self, path):
+def serveStatic(path):
     path = "/code/serve" + path
     logging.info("Serving {}".format(path))
     if os.path.abspath(path).startswith("/code/serve"):
         if not os.path.exists(path) or not os.path.isfile(path):
-            self.send_response(404)
-            self.send_header("Content-type", "text/plain")
-            self.end_headers()
-            self.wfile.write(b"Not found")
+            return 404, [("Content-type", "text/plain")], "Not found"
         else:
-            with open(path, "rb") as f:
-                self.send_response(200)
-                self.send_header("Content-type", mimetypes.guess_type(path))
-                self.end_headers()
-                self.wfile.write(f.read())
+            with open(path, "r") as f:
+                return 200, [("Content-type", str(mimetypes.guess_type(path)))], f.read()
     else:
-        self.send_response(403)
-        self.send_header("Content-type", "text/plain")
-        self.end_headers()
-        self.wfile.write(b"Not authorized")
+        return 403, [("Content-type", "text/plain")], "Not authorized"
 
 def setHeader(headers, name, value):
     headers.append((name, value))
 
-class Server(BaseHTTPRequestHandler):
-    def handleRequest(self, method):
-        url = self.path
-        url = url.split("?")[0]
-        url = url.split("#")[0]
-        logging.info("Call to {}".format(url))
-
-        headers = []
-        statusCode = 200
-        response = ""
-
-        if url.startswith("/static"):
-            path = url[7:]
-            serveStatic(self, path)
-            return
-
-        if f"{url}|{method}" in paths:
-            endpoint = paths[f"{url}|{method}"]
-            if not fits(self.headers["Cookie"], endpoint.userType):
-                if method == "POST":
-                    statusCode = 403
-                    headers.append(("Content-type", "text/plain"))
-                    response = f"Not authorized: {url}"
-                else:
-                    statusCode = 302
-                    headers.append(("Location", "/login"))
-            else:
-                content_length = int(self.headers['Content-Length'] or 0)
-                f = self.rfile.read(content_length).decode("utf-8")
-                params = parse_qs(f)
-                for param in params:
-                    if len(params[param]) == 1:
-                        params[param] = params[param][0]
-                user = auth.getUser(self.headers["Cookie"])
-                try:
-                    result = endpoint.callback(params, lambda x, y: setHeader(headers, x, y), user)
-                    logging.info(result)
-                    if isinstance(result, str):
-                        headers.append(("Content-type", "text/plain"))
-                        response = result
-                    elif isinstance(result, int):
-                        statusCode = result
-                    elif isinstance(result, dict) or isinstance(result, list):
-                        headers.append(("Content-type", "application/json"))
-                        response = json.dumps(result)
-                    else:
-                        headers.append(("Content-type", "application/json"))
-                        response = "" # TODO: util.toString(result)
-                except Exception as e:
-                    exc = traceback.format_exc()
-                    logging.error(exc)
-                    statusCode = 500
-                    headers.append(("Content-type", "text/plain"))
-                    response = f"Internal Error: {e}"
-        elif HTMLMatches(url):
-            statusCode, headers, response = serveHTML(self, url)
-        else:
-            statusCode = 404
-            headers.append(("Content-type", "text/plain"))
-            response = f"Not found: {url}"
-
-        self.send_response(statusCode)
-        for header, value in headers:
-            self.send_header(header, value)
-        self.end_headers()
-        self.wfile.write(bytes(str(response), "utf-8"))
-
-    def do_GET(self):
-        return self.handleRequest("GET")
+# class Server(BaseHTTPRequestHandler):
+#     def handleRequest(self, method):
+def serve(env):
+    method = env["REQUEST_METHOD"]
+    cookie = env["HTTP_COOKIE"]
     
-    def do_POST(self):
-        return self.handleRequest("POST")
+    url = env["REQUEST_URI"]
+    url = url.split("?")[0]
+    url = url.split("#")[0]
+    logging.info("Call to {}".format(url))
+
+    headers = []
+    statusCode = 200
+    response = ""
+
+    if url.startswith("/static"):
+        path = url[7:]
+        return serveStatic(path)
+
+    if f"{url}|{method}" in paths:
+        endpoint = paths[f"{url}|{method}"]
+        if not fits(cookie, endpoint.userType):
+            if method == "POST":
+                statusCode = 403
+                headers.append(("Content-type", "text/plain"))
+                response = f"Not authorized: {url}"
+            else:
+                statusCode = 302
+                headers.append(("Location", "/login"))
+        else:
+            f = env["wsgi.input"].read().decode("utf-8")
+            params = parse_qs(f)
+            logging.info("-------------------------")
+            logging.info(params)
+            for param in params:
+                if len(params[param]) == 1:
+                    params[param] = params[param][0]
+            user = auth.getUser(cookie)
+            try:
+                result = endpoint.callback(params, lambda x, y: setHeader(headers, x, y), user)
+                logging.info(result)
+                if isinstance(result, str):
+                    headers.append(("Content-type", "text/plain"))
+                    response = result
+                elif isinstance(result, int):
+                    statusCode = result
+                elif isinstance(result, dict) or isinstance(result, list):
+                    headers.append(("Content-type", "application/json"))
+                    response = json.dumps(result)
+                else:
+                    headers.append(("Content-type", "application/json"))
+                    response = "" # TODO: util.toString(result)
+            except Exception as e:
+                exc = traceback.format_exc()
+                logging.error(exc)
+                statusCode = 500
+                headers.append(("Content-type", "text/plain"))
+                response = f"Internal Error: {e}"
+    elif HTMLMatches(url):
+        statusCode, headers, response = serveHTML(cookie, url)
+    else:
+        statusCode = 404
+        headers.append(("Content-type", "text/plain"))
+        response = f"Not found: {url}"
+
+    return statusCode, headers, response
+    self.send_response(statusCode)
+    for header, value in headers:
+        self.send_header(header, value)
+    self.end_headers()
+    self.wfile.write(bytes(str(response), "utf-8"))
+
+    # def do_GET(self):
+    #     return self.handleRequest("GET")
+    
+    # def do_POST(self):
+    #     return self.handleRequest("POST")
