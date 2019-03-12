@@ -1,5 +1,6 @@
 from code.util.db import getKey, setKey, listSubKeys, deleteKey, User, Problem
 from uuid import uuid4
+import logging
 
 submissions = {}
 
@@ -29,12 +30,12 @@ class Submission:
             self.language    = None
             self.code        = None
             self.type        = None
-            self.results     = None
-            self.inputs      = None
-            self.outputs     = None
-            self.errors      = None
-            self.answers     = None
-            self.result      = None
+            self.results     = []
+            self.inputs      = []
+            self.outputs     = []
+            self.errors      = []
+            self.answers     = []
+            self.result      = []
 
     def get(id: str):
         if id in submissions:
@@ -67,10 +68,24 @@ class Submission:
             callback(self)
     
     def delete(self):
-        deleteKey(f"/submissions/{self.id}")
-        del submissions[self.id]
+        if self.id is not None and self.id in submissions:
+            deleteKey(f"/submissions/{self.id}")
+            del submissions[self.id]
         
     def toJSON(self):
+        logging.info(self.__dict__.keys())
+        if "compile" in self.__dict__:
+            return {
+                "id":        self.id,
+                "user":      self.user.id,
+                "problem":   self.problem.id,
+                "timestamp": self.timestamp,
+                "language":  self.language,
+                "code":      self.code,
+                "type":      self.type,
+                "compile":   self.compile,
+                "results":   self.results
+            }
         return {
             "id":        self.id,
             "user":      self.user.id,

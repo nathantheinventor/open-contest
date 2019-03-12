@@ -86,7 +86,7 @@ def runCode(sub):
 
     sub.result = result
     if readFile(f"/tmp/{sub.id}/result.txt") == "compile_error\n":
-        sub.result = "compile_error"
+        sub.results = "compile_error"
         sub.delete()
         sub.compile = readFile(f"/tmp/{sub.id}/out/compile_error.txt")
         return

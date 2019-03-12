@@ -82,7 +82,6 @@ def serveHTML(cookie, url):
     return statusCode, headers, response
 
 def serveStatic(path):
-    assert False
     path = "/code/serve" + path
     logging.info("Serving {}".format(path))
     if os.path.abspath(path).startswith("/code/serve"):
