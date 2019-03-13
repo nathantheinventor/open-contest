@@ -270,11 +270,27 @@ Problem page
             localStorage[language + "-" + thisProblem] = editor.getValue();
         });
 
+        function disableButtons() {
+            $(".submit-problem").attr("disabled", true);
+            $(".submit-problem").addClass("button-gray");
+            $(".test-samples").attr("disabled", true);
+            $(".test-samples").addClass("button-gray");
+        }
+
+        function enableButtons() {
+            $(".submit-problem").attr("disabled", false);
+            $(".submit-problem").removeClass("button-gray");
+            $(".test-samples").attr("disabled", false);
+            $(".test-samples").removeClass("button-gray");
+        }
+
         // When you click the submit button, submit the code to the server
         $("button.submit-problem").click(_ => {
             createResultsCard();
             var code = editor.getValue();
+            disableButtons();
             $.post("/submit", {problem: thisProblem, language: language, code: code, type: "submit"}, results => {
+                enableButtons();
                 showResults(results);
             });
         });
@@ -283,7 +299,9 @@ Problem page
         $("button.test-samples").click(_ => {
             createResultsCard();
             var code = editor.getValue();
+            disableButtons();
             $.post("/submit", {problem: thisProblem, language: language, code: code, type: "test"}, results => {
+                enableButtons();
                 showResults(results);
             });
         });
@@ -317,6 +335,11 @@ Problem page
 Login page
 --------------------------------------------------------------------------------------------------*/
     function login() {
+        // Clear localStorage
+        for (var key of Object.keys(localStorage)) {
+            delete localStorage[key];
+        }
+
         var username = $("input[name=username]").val();
         var password = $("input[name=password]").val();
         $.post("/login", {username: username, password: password}, data => {

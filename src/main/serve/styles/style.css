@@ -143,6 +143,10 @@ General page code
             button.button-blue {
                 background: #069;
             }
+            button.button-gray {
+                background: #ccc;
+                color: white;
+            }
         /*-------------------------------------------------
         General Stuff
         -------------------------------------------------*/

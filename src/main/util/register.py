@@ -136,7 +136,7 @@ def serve(env):
             user = auth.getUser(cookie)
             try:
                 result = endpoint.callback(params, lambda x, y: setHeader(headers, x, y), user)
-                logging.info(result)
+                # logging.info(result)
                 if isinstance(result, str):
                     headers.append(("Content-type", "text/plain"))
                     response = result

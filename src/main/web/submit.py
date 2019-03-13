@@ -35,7 +35,7 @@ exts = {
 def readFile(path):
     try:
         with open(path, "rb") as f:
-            return f.read().decode("utf-8")
+            return f.read(1000000).decode("utf-8")
     except:
         return None
 
@@ -57,7 +57,7 @@ def runCode(sub):
     os.mkdir(f"/tmp/{sub.id}/out")
 
     # Run the runner
-    if os.system(f"docker run --network=none -m 256MB -v /tmp/{sub.id}/:/source nathantheinventor/open-contest-dev-{sub.language}-runner {tests} 5 > /tmp/{sub.id}/result.txt") != 0:
+    if os.system(f"docker run --rm --network=none -m 256MB -v /tmp/{sub.id}/:/source nathantheinventor/open-contest-dev-{sub.language}-runner {tests} 5 > /tmp/{sub.id}/result.txt") != 0:
         raise Exception("Something went wrong")
 
     inputs = []
@@ -89,6 +89,7 @@ def runCode(sub):
         sub.results = "compile_error"
         sub.delete()
         sub.compile = readFile(f"/tmp/{sub.id}/out/compile_error.txt")
+        shutil.rmtree(f"/tmp/{sub.id}", ignore_errors=True)
         return
 
     sub.results = results
