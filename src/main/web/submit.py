@@ -74,7 +74,7 @@ def runCode(sub):
         answers.append(sub.problem.testData[i].output)
         
         res = readFile(f"/tmp/{sub.id}/out/result{i}.txt")
-        if res == "ok" and answers[-1].strip() != outputs[-1].strip():
+        if res == "ok" and answers[-1].rstrip() != outputs[-1].rstrip():
             res = "wrong_answer"
         if res == None:
             res = "tle"
