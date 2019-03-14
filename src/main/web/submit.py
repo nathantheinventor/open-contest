@@ -4,6 +4,7 @@ from code.util import register
 from code.util.db import Submission, Problem
 import time
 import shutil
+import re
 from uuid import uuid4
 
 def addSubmission(probId, lang, code, user, type):
@@ -38,6 +39,9 @@ def readFile(path):
             return f.read(1000000).decode("utf-8")
     except:
         return None
+
+def strip(text):
+    return re.sub("[ \t\r]*\n", "\n", text)
 
 def runCode(sub):
     # Copy the code over to the runner /tmp folder
@@ -74,7 +78,7 @@ def runCode(sub):
         answers.append(sub.problem.testData[i].output)
         
         res = readFile(f"/tmp/{sub.id}/out/result{i}.txt")
-        if res == "ok" and answers[-1].rstrip() != outputs[-1].rstrip():
+        if res == "ok" and strip(answers[-1].rstrip()) != strip(outputs[-1].rstrip()):
             res = "wrong_answer"
         if res == None:
             res = "tle"
