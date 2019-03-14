@@ -26,22 +26,24 @@ def leaderboard(params, user):
         scores.append((
             User.get(user).username,
             scor[0],
-            scor[1]
+            scor[1],
+            scor[2]
         ))
-    scores = sorted(scores, key=lambda score: score[1] * 1000000000 - score[1], reverse=True)
+    scores = sorted(scores, key=lambda score: score[1] * 1000000000 + score[2] * 10000000 - score[3], reverse=True)
     
     ranks = [i + 1 for i in range(len(scores))]
     for i in range(1, len(scores)):
         u1 = scores[i]
         u2 = scores[i - 1]
-        if (u1[1], u1[2]) == (u2[1], u2[2]):
+        if (u1[1], u1[2], u1[3]) == (u2[1], u2[2], u2[3]):
             ranks[i] = ranks[i - 1]
     
     scoresDisplay = []
-    for (name, solved, points), rank in zip(scores, ranks):
+    for (name, solved, samples, points), rank in zip(scores, ranks):
         scoresDisplay.append(h.tr(
             h.td(name),
             h.td(solved, cls="center"),
+            h.td(samples, cls="center"),
             h.td(points, cls="center"),
             h.td(rank, cls="center")
         ))
@@ -53,6 +55,7 @@ def leaderboard(params, user):
                 h.tr(
                     h.th("User"),
                     h.th("Problems Solved", cls="center"),
+                    h.th("Sample Cases Solved", cls="center"),
                     h.th("Penalty Points", cls="center"),
                     h.th("Rank", cls="center")
                 )
@@ -68,6 +71,7 @@ def score(submissions: list, contestStart) -> tuple:
         Calculates score in ACM format. """
     
     solvedProbs = 0
+    sampleProbs = 0
     penPoints = 0
 
     # map from problems to list of submissions
@@ -87,8 +91,14 @@ def score(submissions: list, contestStart) -> tuple:
         # Penalty points for this problem
         points = 0
         solved = False
+        sampleSolved = False
         
         for sub in subs:
+            for res in sub.results[:sub.problem.samples]:
+                if res != "ok":
+                    break
+            else:
+                sampleSolved = True
             if sub.result != "ok":
                 # Unsuccessful submissions count for 20 penalty points
                 # But only if the problem is eventually solved
@@ -105,8 +115,10 @@ def score(submissions: list, contestStart) -> tuple:
         if solved:
             solvedProbs += 1
             penPoints += points
+        elif sampleSolved:
+            sampleProbs += 1
     
     # The user's score is dependent on the number of solved problems and the number of penalty points
-    return solvedProbs, int(penPoints)
+    return solvedProbs, sampleProbs, int(penPoints)
 
 register.web("/leaderboard", "loggedin", leaderboard)
