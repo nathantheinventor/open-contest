@@ -33,6 +33,13 @@ class FAQ(UIElement):
             cls="faq"
         )
 
+# Fake privacy policy for laughs
+register.web("/privacy2", "any", lambda params, user: Page(
+        h2("Privacy Policy", cls="page-title"),
+        h1("LOL", cls="jumbotron center"),
+        h1("After all, you use Facebook", cls="center")
+    ))
+
 register.web("/privacy", "any", lambda params, user: Page(
         h2("Privacy Policy", cls="page-title"),
         Card("TL;DR", "OpenContest as an organization is too lazy to steal your data (we're busy enough keeping track of our own). " +
@@ -64,12 +71,6 @@ register.web("/privacy", "any", lambda params, user: Page(
         )
     ))
 
-    # Fake privacy policy for laughs
-register.web("/privacy2", "any", lambda params, user: Page(
-        h2("Privacy Policy", cls="page-title"),
-        h1("LOL", cls="jumbotron center"),
-        h1("After all, you use Facebook", cls="center")
-    ))
 
     # Instructions about using OpenContest
 register.web("/faqs", "any", lambda params, user: Page(
