@@ -35,6 +35,9 @@ class UIElement:
     def __str__(self):
         return str(self.html)
 
+def html_encode(m: str) -> str:
+    return m.replace('<', '&lt;').replace('>', '&gt;').replace('&', '&amp;')
+
 h = HTML()
 
 head  = h.head

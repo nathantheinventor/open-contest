@@ -12,9 +12,10 @@ class Message:
             self.fromUser    = User.get(details["from"])
             self.toUser      = User.get(details["to"])
             self.isGeneral   = bool(details["general"])
-            self.isAdmin     = bool(details["admin"])
+            self.isAdmin     = bool(details["admin"])   # Message sent to admin
             self.message     = details["message"]
             self.timestamp   = float(details["timestamp"])
+            self.replyTo     = details.get("replyTo")
         else:
             self.id          = None
             self.fromUser    = None
@@ -23,6 +24,7 @@ class Message:
             self.isAdmin     = False
             self.message     = ""
             self.timestamp   = 0
+            self.replyTo     = None
 
     def get(id: str):
         if id in messages:
@@ -37,7 +39,8 @@ class Message:
             "general":   self.isGeneral,
             "admin":     self.isAdmin,
             "message":   self.message,
-            "timestamp": self.timestamp
+            "timestamp": self.timestamp,
+            "replyTo":   self.replyTo
         }
 
     def save(self):
