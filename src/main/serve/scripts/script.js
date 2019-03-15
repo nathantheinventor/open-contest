@@ -610,7 +610,8 @@ Messages Page
     function sendMessage() {
         var text = $("textarea.message").val();
         var recipient = $("select.recipient").val();
-        $.post("/sendMessage", {to: recipient, message: text}, result => {
+        var replyTo = $("#replyTo").val();
+        $.post("/sendMessage", {to: recipient, message: text, replyTo: replyTo}, result => {
             if (result == "ok") {
                 $("div.modal").modal("hide");
             } else {
@@ -619,8 +620,9 @@ Messages Page
         });
     }
 
-    function reply(user) {
+    function reply(user, replyToMsgId) {
         $("select.recipient").val(user);
+        $("#replyTo").val(replyToMsgId);
         createMessage();
         $("textarea.message").focus();
     }

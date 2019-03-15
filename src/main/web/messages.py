@@ -1,5 +1,6 @@
 from code.util import register
 from code.util.db import Message, User
+from code.generator.lib.htmllib import html_encode
 import time
 
 def getMessages(params, setHeader, user):
@@ -16,11 +17,12 @@ def getMessages(params, setHeader, user):
 def sendMessage(params, setHeader, user):
     message = Message()
     message.fromUser = user
-    message.message = params["message"]
+    message.message = html_encode(params["message"])
     message.timestamp = time.time() * 1000
     if user.isAdmin():
         message.toUser = User.get(params["to"])
         message.isGeneral = params["to"] == "general"
+        message.replyTo = params.get("replyTo")
     else:
         message.isAdmin = True
     message.save()
