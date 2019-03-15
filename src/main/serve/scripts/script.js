@@ -586,7 +586,7 @@ Problem page
 General
 --------------------------------------------------------------------------------------------------*/
     async function fixFormatting() {
-        $("span.time-format").each((_, span) => {
+        $(".time-format").each((_, span) => {
             var timestamp = $(span).text();
             var d = new Date(parseInt(timestamp));
             $(span).text(d.toLocaleString());

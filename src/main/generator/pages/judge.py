@@ -120,7 +120,7 @@ class SubmissionRow(UIElement):
         self.html = h.tr(
             h.td(sub.user.username),
             h.td(sub.problem.title),
-            h.td(datetime.utcfromtimestamp(sub.timestamp // 1000)),
+            h.td(cls='time-format', contents=sub.timestamp),
             h.td(sub.language),
             h.td(
                 h.i("&nbsp;", cls=f"fa fa-{icons[sub.result]}"),
