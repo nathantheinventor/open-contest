@@ -236,6 +236,7 @@ Problem page
                 </div>
             </div>`);
         }
+        scrollTo(0,document.body.scrollHeight);
     }
 
     async function setupAceEditor() {
@@ -675,7 +676,12 @@ Judging Page
     }
 
     function rejudge(id) {
+        $(".rejudge").attr("disabled", true);
+        $(".rejudge").addClass("button-gray");
+
         $.post("/rejudge", {id: id}, data => {
+            $(".rejudge").attr("disabled", false);
+            $(".rejudge").removeClass("button-gray");
             alert(`New Result: ${verdict_name[data]}`);
         });
     }
