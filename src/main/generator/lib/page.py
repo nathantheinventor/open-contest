@@ -29,7 +29,7 @@ class Menu(UIElement):
                 MenuItem("/problems", "Problems"),
                 MenuItem("/leaderboard", "Leaderboard"),
                 MenuItem("/submissions", "My Submissions", role="participant"),
-                MenuItem("/messages", "Messages"),
+                MenuItem("/messages/inbox", "Messages"),
                 MenuItem("/judge", "Judge", role="admin"),
                 MenuItem("/setup", "Setup", role="admin"),
                 MenuItem("/logout", "Logout")

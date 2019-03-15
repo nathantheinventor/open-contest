@@ -53,4 +53,4 @@ def getMessages(params, user):
         div(cls="message-cards", contents=messages),
     )
 
-register.web("/messages", "loggedin", getMessages)
+register.web("/messages/([a-z]+)", "loggedin", getMessages)
