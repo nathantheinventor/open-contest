@@ -6,7 +6,7 @@ import markdown2
 
 def formatMD(md: str) -> str:
     """ Convert Markdown to HTML """
-    return markdown2.markdown(md)
+    return markdown2.markdown(md, extras=["tables"])
 
 class CodeEditor(UIElement):
     def __init__(self):

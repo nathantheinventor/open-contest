@@ -71,7 +71,7 @@ class Problem:
             self.id = str(uuid4())
             problems[self.id] = self
         setKey(f"/problems/{self.id}/problem.json", self.toJSONSimple())
-        self.sampleData  = [Datum.get(id, i) for i in range(self.samples)]
+        self.sampleData  = [Datum.get(self.id, i) for i in range(self.samples)]
         for i, datum in enumerate(self.testData):
             setKey(f"/problems/{self.id}/input/in{i}.txt", datum.input)
             setKey(f"/problems/{self.id}/output/out{i}.txt", datum.output)
