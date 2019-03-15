@@ -3,6 +3,7 @@ from code.generator.lib.htmllib import *
 from code.generator.lib.page import *
 import logging
 from code.util import register
+import time
 
 def leaderboard(params, user):
     contest = Contest.getCurrent() or Contest.getPast()
@@ -11,6 +12,12 @@ def leaderboard(params, user):
             h1("&nbsp;"),
             h1("No Contest Available", cls="center")
         )
+    elif contest.scoreboardOff <= time.time() * 1000 and not user.isAdmin():
+        return Page(
+            h1("&nbsp;"),
+            h1("Scoreboard is off.", cls="center")
+        )
+
     start = contest.start
     end = contest.end
 

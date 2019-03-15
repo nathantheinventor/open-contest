@@ -413,12 +413,19 @@ Contest page
         var startTime = $("#contest-start-time").val();
         var endDate = $("#contest-end-date").val();
         var endTime = $("#contest-end-time").val();
+        var scoreboardOffTime = $("#scoreboard-off-time").val();
 
         var start = new Date(`${startDate} ${startTime}`).getTime();
         var end = new Date(`${endDate} ${endTime}`).getTime();
+        var endScoreboard = new Date(`${endDate} ${scoreboardOffTime}`).getTime();
 
         if (end <= start) {
             alert("The end of the contest must be after the start.");
+            return;
+        }
+
+        if (!(start < endScoreboard && endScoreboard <= end)) {
+            alert("The scoreboard off time must be between the start and end time.");
             return;
         }
 
@@ -438,7 +445,7 @@ Contest page
             problems.push(newProblem);
         }
 
-        $.post("/editContest", {id: id, name: name, start: start, end: end, problems: JSON.stringify(problems)}, id => {
+        $.post("/editContest", {id: id, name: name, start: start, end: end, scoreboardOff: endScoreboard, problems: JSON.stringify(problems)}, id => {
             if (window.location.pathname == "/contests/new") {
                 window.location = `/contests/${id}`;
             } else {
@@ -464,6 +471,9 @@ Contest page
         var end = new Date(parseInt($("#end").val()));
         $("#contest-end-date").val(`${end.getFullYear()}-${fix(end.getMonth() + 1)}-${fix(end.getDate())}`);
         $("#contest-end-time").val(`${fix(end.getHours())}:${fix(end.getMinutes())}`);
+
+        var endScoreboard = new Date(parseInt($("#scoreboardOff").val()));
+        $("#scoreboard-off-time").val(`${fix(endScoreboard.getHours())}:${fix(endScoreboard.getMinutes())}`);
 
         $("div.problem-cards").sortable({
             placeholder: "ui-state-highlight",
