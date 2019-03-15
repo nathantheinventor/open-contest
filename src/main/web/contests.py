@@ -14,6 +14,7 @@ def editContest(params, setHeader, user):
     contest.name     = params["name"]
     contest.start    = int(params["start"])
     contest.end      = int(params["end"])
+    contest.scoreboardOff = int(params["scoreboardOff"])
     contest.problems = [Problem.get(id) for id in json.loads(params["problems"])]
 
     contest.save()

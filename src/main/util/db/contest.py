@@ -14,13 +14,15 @@ class Contest:
             self.name     = details["name"]
             self.start    = int(details["start"])
             self.end      = int(details["end"])
+            self.scoreboardOff = int(details.get("scoreboardOff", self.end))
             self.problems = [Problem.get(id) for id in details["problems"]]
         else:
             self.id = None
             self.name = None
             self.start = None
             self.end = None
-            self.problems = None
+            self.scoreboardOff = None
+            self.problems = None            
 
     def get(id: str):
         if id in contests:
@@ -33,6 +35,7 @@ class Contest:
             "name": self.name,
             "start": self.start,
             "end": self.end,
+            "scoreboardOff": self.scoreboardOff,
             "problems": [prob.id for prob in self.problems]
         }
 

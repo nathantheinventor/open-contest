@@ -44,6 +44,7 @@ def editContest(params, user):
         title = contest.name
         start = contest.start
         end = contest.end
+        scoreboardOff = contest.scoreboardOff
         chooseProblem = div(cls="actions", contents=[
             h.button("+ Choose Problem", cls="button", onclick="chooseProblemDialog()")
         ])
@@ -94,6 +95,12 @@ def editContest(params, user):
                 div(cls="form-group col-6", contents=[
                     h.label(**{"for": "contest-end-time", "contents":"End Time"}),
                     h.input(cls="form-control", name="contest-end-time", id="contest-end-time", type="time")
+                ]),
+                h.input(type="hidden", id="scoreboardOff", value=scoreboardOff),
+                div(cls="form-group col-6"),
+                div(cls="form-group col-6", contents=[
+                    h.label(**{"for": "scoreboard-off-time", "contents":"Turn Scoreboard Off Time"}),
+                    h.input(cls="form-control", name="scoreboard-off-time", id="scoreboard-off-time", type="time")
                 ])
             ]),
             div(cls="align-right col-12", contents=[
