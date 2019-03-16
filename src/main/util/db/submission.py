@@ -1,6 +1,9 @@
 from code.util.db import getKey, setKey, listSubKeys, deleteKey, User, Problem
 from uuid import uuid4
 import logging
+from readerwriterlock import rwlock
+
+lock = rwlock.RWLockWrite()
 
 submissions = {}
 
@@ -38,8 +41,9 @@ class Submission:
             self.result      = []
 
     def get(id: str):
-        if id in submissions:
-            return submissions[id]
+        with lock.gen_rlock():
+            if id in submissions:
+                return submissions[id]
         return None
     
     def toJSONSimple(self):
@@ -60,21 +64,35 @@ class Submission:
         }
 
     def save(self):
-        if self.id == None:
-            self.id = str(uuid4())
-            submissions[self.id] = self
-        setKey(f"/submissions/{self.id}/submission.json", self.toJSONSimple())
+        with lock.gen_wlock():
+            if self.id == None:
+                self.id = str(uuid4())
+                submissions[self.id] = self
+            setKey(f"/submissions/{self.id}/submission.json", self.toJSONSimple())
         for callback in Submission.saveCallbacks:
             callback(self)
     
     def delete(self):
-        if self.id is not None and self.id in submissions:
-            deleteKey(f"/submissions/{self.id}")
-            del submissions[self.id]
+        with lock.gen_wlock():
+            if self.id is not None and self.id in submissions:
+                deleteKey(f"/submissions/{self.id}")
+                del submissions[self.id]
         
     def toJSON(self):
-        logging.info(self.__dict__.keys())
-        if "compile" in self.__dict__:
+        with lock.gen_rlock():
+            logging.info(self.__dict__.keys())
+            if "compile" in self.__dict__:
+                return {
+                    "id":        self.id,
+                    "user":      self.user.id,
+                    "problem":   self.problem.id,
+                    "timestamp": self.timestamp,
+                    "language":  self.language,
+                    "code":      self.code,
+                    "type":      self.type,
+                    "compile":   self.compile,
+                    "results":   self.results
+                }
             return {
                 "id":        self.id,
                 "user":      self.user.id,
@@ -83,34 +101,26 @@ class Submission:
                 "language":  self.language,
                 "code":      self.code,
                 "type":      self.type,
-                "compile":   self.compile,
-                "results":   self.results
+                "results":   self.results,
+                "inputs":    self.inputs[:self.problem.samples],
+                "outputs":   self.outputs[:self.problem.samples],
+                "errors":    self.errors[:self.problem.samples],
+                "answers":   self.answers[:self.problem.samples],
+                "result":    self.result
             }
-        return {
-            "id":        self.id,
-            "user":      self.user.id,
-            "problem":   self.problem.id,
-            "timestamp": self.timestamp,
-            "language":  self.language,
-            "code":      self.code,
-            "type":      self.type,
-            "results":   self.results,
-            "inputs":    self.inputs[:self.problem.samples],
-            "outputs":   self.outputs[:self.problem.samples],
-            "errors":    self.errors[:self.problem.samples],
-            "answers":   self.answers[:self.problem.samples],
-            "result":    self.result
-        }
 
     def forEach(callback: callable):
-        for id in submissions:
-            callback(submissions[id])
+        with lock.gen_rlock():
+            for id in submissions:
+                callback(submissions[id])
     
     def onSave(callback: callable):
         Submission.saveCallbacks.append(callback)
     
     def all():
-        return [submissions[id] for id in submissions]
+        with lock.gen_rlock():
+            return [submissions[id] for id in submissions]
 
-for id in listSubKeys("/submissions"):
-    submissions[id] = Submission(id)
+with lock.gen_wlock():
+    for id in listSubKeys("/submissions"):
+        submissions[id] = Submission(id)

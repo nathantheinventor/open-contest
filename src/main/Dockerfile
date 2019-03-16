@@ -15,7 +15,7 @@ FROM ubuntu:bionic
 RUN apt-get update && \
     apt-get -y install nodejs npm python3 python3-pip docker.io psmisc nginx
 RUN npm install -g nodemon
-RUN pip3 install markdown2 uwsgi
+RUN pip3 install markdown2 uwsgi readerwriterlock
 RUN ln -s -f /usr/bin/python3 /usr/bin/python
 
 COPY . /code

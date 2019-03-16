@@ -2,6 +2,9 @@ from code.util.db import getKey, setKey, listSubKeys, deleteKey, Problem
 from uuid import uuid4
 import logging
 import time
+from readerwriterlock import rwlock
+
+lock = rwlock.RWLockWrite()
 
 contests = {}
 
@@ -25,9 +28,10 @@ class Contest:
             self.problems = None            
 
     def get(id: str):
-        if id in contests:
-            return contests[id]
-        return None
+        with lock.gen_rlock():
+            if id in contests:
+                return contests[id]
+            return None
     
     def toJSONSimple(self):
         return {
@@ -40,60 +44,70 @@ class Contest:
         }
 
     def save(self):
-        if self.id == None:
-            self.id = str(uuid4())
-            contests[self.id] = self
-        setKey(f"/contests/{self.id}/contest.json", self.toJSONSimple())
+        with lock.gen_wlock():
+            if self.id == None:
+                self.id = str(uuid4())
+                contests[self.id] = self
+            setKey(f"/contests/{self.id}/contest.json", self.toJSONSimple())
         for callback in Contest.saveCallbacks:
             callback(self)
     
     def delete(self):
-        deleteKey(f"/contests/{self.id}")
-        del contests[self.id]
+        with lock.gen_wlock():
+            deleteKey(f"/contests/{self.id}")
+            del contests[self.id]
     
     def toJSON(self):
-        return {
-            "id": self.id,
-            "name": self.name,
-            "start": self.start,
-            "end": self.end,
-            "problems": [prob.toJSONSimple() for prob in self.problems]
-        }
+        with lock.gen_rlock():
+            return {
+                "id": self.id,
+                "name": self.name,
+                "start": self.start,
+                "end": self.end,
+                "problems": [prob.toJSONSimple() for prob in self.problems]
+            }
     
     def allJSON():
-        return [contests[id].toJSON() for id in contests]
+        with lock.gen_rlock():
+            return [contests[id].toJSON() for id in contests]
     
     def forEach(callback: callable):
-        for id in contests:
-            callback(contests[id])
+        with lock.gen_rlock():
+            for id in contests:
+                callback(contests[id])
     
     def onSave(callback: callable):
         Contest.saveCallbacks.append(callback)
     
     def getCurrent():
-        for id in contests:
-            if contests[id].start <= time.time() * 1000 <= contests[id].end:
-                return contests[id]
-        return None
+        with lock.gen_rlock():
+            for id in contests:
+                if contests[id].start <= time.time() * 1000 <= contests[id].end:
+                    return contests[id]
+            return None
     
     def getFuture():
-        contest = None
-        for id in contests:
-            if contests[id].start > time.time() * 1000:
-                if not contest or contest[id].start < contest.start:
-                    contest = contests[id]
-        return contest
+        with lock.gen_rlock():
+            contest = None
+            for id in contests:
+                if contests[id].start > time.time() * 1000:
+                    if not contest or contest[id].start < contest.start:
+                        contest = contests[id]
+            return contest
 
     def getPast():
-        contest = None
-        for id in contests:
-            if contests[id].end < time.time() * 1000:
-                if not contest or contests[id].end > contest.end:
-                    contest = contests[id]
-        return contest
+        with lock.gen_rlock():
+            contest = None
+            for id in contests:
+                if contests[id].end < time.time() * 1000:
+                    if not contest or contests[id].end > contest.end:
+                        contest = contests[id]
+            return contest
     
     def all():
-        return [contests[id] for id in contests]
+        with lock.gen_rlock():
+            return [contests[id] for id in contests]
 
-for id in listSubKeys("/contests"):
-    contests[id] = Contest(id)
+with lock.gen_wlock():
+    for id in listSubKeys("/contests"):
+        contests[id] = Contest(id)

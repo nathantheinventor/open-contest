@@ -1,5 +1,8 @@
 from code.util.db import getKey, setKey, listSubKeys, deleteKey, User
 from uuid import uuid4
+from readerwriterlock import rwlock
+
+lock = rwlock.RWLockWrite()
 
 messages = {}
 
@@ -27,9 +30,10 @@ class Message:
             self.replyTo     = None
 
     def get(id: str):
-        if id in messages:
-            return messages[id]
-        return None
+        with lock.gen_rlock():
+            if id in messages:
+                return messages[id]
+            return None
     
     def toJSONSimple(self):
         return {
@@ -44,16 +48,18 @@ class Message:
         }
 
     def save(self):
-        if self.id == None:
-            self.id = str(uuid4())
-            messages[self.id] = self
-        setKey(f"/messages/{self.id}/message.json", self.toJSONSimple())
+        with lock.gen_wlock():
+            if self.id == None:
+                self.id = str(uuid4())
+                messages[self.id] = self
+            setKey(f"/messages/{self.id}/message.json", self.toJSONSimple())
         for callback in Message.saveCallbacks:
             callback(self)
     
     def delete(self):
-        deleteKey(f"/messages/{self.id}")
-        del messages[self.id]
+        with lock.gen_wlock():
+            deleteKey(f"/messages/{self.id}")
+            del messages[self.id]
         
     def toJSON(self):
         return {
@@ -67,14 +73,17 @@ class Message:
         }
 
     def forEach(callback: callable):
-        for id in messages:
-            callback(messages[id])
+        with lock.gen_rlock():
+            for id in messages:
+                callback(messages[id])
     
     def onSave(callback: callable):
         Message.saveCallbacks.append(callback)
     
     def messagesSince(timestamp: float) -> list:
-        return [messages[id] for id in messages if messages[id].timestamp >= timestamp]
+        with lock.gen_rlock():
+            return [messages[id] for id in messages if messages[id].timestamp >= timestamp]
 
-for id in listSubKeys("/messages"):
-    messages[id] = Message(id)
+with lock.gen_wlock():
+    for id in listSubKeys("/messages"):
+        messages[id] = Message(id)

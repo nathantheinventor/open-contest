@@ -1,5 +1,8 @@
 from code.util.db import getKey, setKey, listSubKeys, deleteKey
 from uuid import uuid4
+from readerwriterlock import rwlock
+
+lock = rwlock.RWLockWrite()
 
 problems = {}
 
@@ -49,9 +52,10 @@ class Problem:
             self.testData    = []
 
     def get(id: str):
-        if id in problems:
-            return problems[id]
-        return None
+        with lock.gen_rlock():
+            if id in problems:
+                return problems[id]
+            return None
     
     def toJSONSimple(self):
         return {
@@ -67,25 +71,29 @@ class Problem:
         }
 
     def save(self):
-        if self.id == None:
-            self.id = str(uuid4())
-            problems[self.id] = self
-        setKey(f"/problems/{self.id}/problem.json", self.toJSONSimple())
-        self.sampleData  = [Datum.get(self.id, i) for i in range(self.samples)]
-        for i, datum in enumerate(self.testData):
-            setKey(f"/problems/{self.id}/input/in{i}.txt", datum.input)
-            setKey(f"/problems/{self.id}/output/out{i}.txt", datum.output)
+        with lock.gen_wlock():
+            if self.id == None:
+                self.id = str(uuid4())
+                problems[self.id] = self
+            setKey(f"/problems/{self.id}/problem.json", self.toJSONSimple())
+            for i, datum in enumerate(self.testData):
+                setKey(f"/problems/{self.id}/input/in{i}.txt", datum.input)
+                setKey(f"/problems/{self.id}/output/out{i}.txt", datum.output)
+            self.sampleData  = [Datum.get(self.id, i) for i in range(self.samples)]
+
         for callback in Problem.saveCallbacks:
             callback(self)
     
     def delete(self):
-        deleteKey(f"/problems/{self.id}")
-        del problems[self.id]
+        with lock.gen_wlock():
+            deleteKey(f"/problems/{self.id}")
+            del problems[self.id]
         
     def toJSON(self):
-        json = self.toJSONSimple()
-        json.sampleData = [datum.toJSON() for datum in self.sampleData]
-        return json
+        with lock.gen_rlock():
+            json = self.toJSONSimple()
+            json.sampleData = [datum.toJSON() for datum in self.sampleData]
+            return json
     
     def toJSONFull(self):
         json = self.toJSONSimple()
@@ -93,17 +101,21 @@ class Problem:
         return json
     
     def allJSON():
-        return [problems[id].toJSONSimple() for id in problems]
+        with lock.gen_rlock():
+            return [problems[id].toJSONSimple() for id in problems]
     
     def forEach(callback: callable):
-        for id in problems:
-            callback(problems[id])
+        with lock.gen_rlock():
+            for id in problems:
+                callback(problems[id])
     
     def onSave(callback: callable):
         Problem.saveCallbacks.append(callback)
     
     def all():
-        return [problems[id] for id in problems]
+        with lock.gen_rlock():
+            return [problems[id] for id in problems]
 
-for id in listSubKeys("/problems"):
-    problems[id] = Problem(id)
+with lock.gen_wlock():
+    for id in listSubKeys("/problems"):
+        problems[id] = Problem(id)
