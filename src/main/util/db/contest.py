@@ -91,7 +91,7 @@ class Contest:
             contest = None
             for id in contests:
                 if contests[id].start > time.time() * 1000:
-                    if not contest or contest[id].start < contest.start:
+                    if not contest or contests[id].start < contest.start:
                         contest = contests[id]
             return contest
 
