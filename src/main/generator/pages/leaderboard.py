@@ -29,12 +29,14 @@ def leaderboard(params, user):
     
     scores = []
     for user in subs:
-        scor = score(subs[user], start)
+        usersubs = subs[user]
+        scor = score(usersubs, start)
         scores.append((
             User.get(user).username,
             scor[0],
             scor[1],
-            scor[2]
+            scor[2],
+            len(usersubs)
         ))
     scores = sorted(scores, key=lambda score: score[1] * 1000000000 + score[2] * 10000000 - score[3], reverse=True)
     
@@ -46,13 +48,14 @@ def leaderboard(params, user):
             ranks[i] = ranks[i - 1]
     
     scoresDisplay = []
-    for (name, solved, samples, points), rank in zip(scores, ranks):
+    for (name, solved, samples, points, attempts), rank in zip(scores, ranks):
         scoresDisplay.append(h.tr(
+            h.td(rank, cls="center"),
             h.td(name),
+            h.td(attempts, cls="center"),
             h.td(solved, cls="center"),
             h.td(samples, cls="center"),
-            h.td(points, cls="center"),
-            h.td(rank, cls="center")
+            h.td(points, cls="center")
         ))
 
     return Page(
@@ -60,11 +63,12 @@ def leaderboard(params, user):
         h.table(
             h.thead(
                 h.tr(
+                    h.th("Rank", cls="center"),
                     h.th("User"),
+                    h.th("Attempts", cls="center"),
                     h.th("Problems Solved", cls="center"),
                     h.th("Sample Cases Solved", cls="center"),
-                    h.th("Penalty Points", cls="center"),
-                    h.th("Rank", cls="center")
+                    h.th("Penalty Points", cls="center")
                 )
             ),
             h.tbody(
