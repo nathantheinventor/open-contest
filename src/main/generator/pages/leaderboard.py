@@ -21,16 +21,21 @@ def leaderboard(params, user):
     start = contest.start
     end = contest.end
 
+    
     subs = {}
     for sub in Submission.all():
         if start <= sub.timestamp <= end and not sub.user.isAdmin():
             subs[sub.user.id] = subs.get(sub.user.id) or []
-            subs[sub.user.id].append(sub)
+            subs[sub.user.id].append(sub)            
     
+    problemSummary = {}
+    for prob in contest.problems:
+        problemSummary[prob.id] = [0, 0]
+
     scores = []
     for user in subs:
         usersubs = subs[user]
-        scor = score(usersubs, start)
+        scor = score(usersubs, start, problemSummary)
         scores.append((
             User.get(user).username,
             scor[0],
@@ -58,6 +63,14 @@ def leaderboard(params, user):
             h.td(points, cls="center")
         ))
 
+    problemSummaryDisplay = []
+    for problem in contest.problems:
+        problemSummaryDisplay.append(h.tr(
+            h.td(problem.title),
+            h.td(problemSummary[problem.id][0], cls="center"),
+            h.td(problemSummary[problem.id][1], cls="center")
+        ))
+
     return Page(
         h2("Leaderboard", cls="page-title"),
         h.table(
@@ -74,10 +87,24 @@ def leaderboard(params, user):
             h.tbody(
                 *scoresDisplay
             )
+        ),
+        h2("Problem Summary", cls="page-title"),
+        h.table(
+            h.thead(
+                h.tr(
+                    h.th("Problem", cls="center"),
+                    h.th("Attempts", cls="center"),
+                    h.th("Solved", cls="center"),
+                )
+            ),
+            h.tbody(
+                *problemSummaryDisplay
+            )
+
         )
     )
 
-def score(submissions: list, contestStart) -> tuple:
+def score(submissions: list, contestStart, problemSummary) -> tuple:
     """ Given a list of submissions by a particular user, calculate that user's score.
         Calculates score in ACM format. """
     
@@ -122,10 +149,14 @@ def score(submissions: list, contestStart) -> tuple:
                 solved = True
                 break
         
+        # Increment attempts
+        problemSummary[sub.problem.id][0] += 1
+
         # A problem affects the score only if it was successfully solved
         if solved:
             solvedProbs += 1
             penPoints += points
+            problemSummary[sub.problem.id][1] += 1
         elif sampleSolved:
             sampleProbs += 1
     
