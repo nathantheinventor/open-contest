@@ -19,7 +19,8 @@ icons = {
     "tle": "clock",
     "runtime_error": "exclamation-triangle",
     "presentation_error": "times",
-    "extra_output": "times"
+    "extra_output": "times",
+    "pending": "sync"
 }
 verdict_name = {
     "ok": "Accepted",
@@ -27,7 +28,8 @@ verdict_name = {
     "tle": "Time Limit Exceeded",
     "runtime_error": "Runtime Error",
     "presentation_error": "Presentation Error",
-    "extra_output": "Extra Output"
+    "extra_output": "Extra Output",
+    "pending": "Pending..."
 }
 
 def resultOptions(result):
