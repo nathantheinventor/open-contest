@@ -128,6 +128,8 @@ def changeResult(params, setHeader, user):
 def rejudge(params, setHeader, user):
     id = params["id"]
     submission = Submission.get(id)
+    if os.path.exists(f"/tmp/{id}"):
+        shutil.rmtree(f"/tmp/{id}")
     runCode(submission)
     return submission.result
 
