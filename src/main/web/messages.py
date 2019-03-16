@@ -28,5 +28,5 @@ def sendMessage(params, setHeader, user):
     message.save()
     return "ok"
 
-register.post("/getMessages", "loggedin", getMessages)
+register.post("/getMessages", "loggedin", getMessages, True)
 register.post("/sendMessage", "loggedin", sendMessage)

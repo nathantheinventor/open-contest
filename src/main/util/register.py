@@ -8,26 +8,28 @@ from urllib.parse import parse_qs
 import traceback
 import logging
 import re
-logging.basicConfig(level=logging.DEBUG)
+from datetime import datetime
+
+logging.basicConfig(level=logging.INFO)
 
 
 paths = {}
 
 
 class endpoint:
-    def __init__(self, url: str, method: str, userType: str, callback: callable):
+    def __init__(self, url: str, method: str, userType: str, callback: callable, logdebug=False):
         self.url      = url
         self.method   = method
         self.userType = userType
         self.callback = callback
+        self.logdebug = logdebug
+
+def post(url: str, userType: str, callback: callable, logdebug=False):
+    paths[url + "|POST"] = endpoint(url, "POST", userType, callback, logdebug)
 
 
-def post(url: str, userType: str, callback: callable):
-    paths[url + "|POST"] = endpoint(url, "POST", userType, callback)
-
-
-def get(url: str, userType: str, callback: callable):
-    paths[url + "|GET"] = endpoint(url, "GET", userType, callback)
+def get(url: str, userType: str, callback: callable, logdebug=False):
+    paths[url + "|GET"] = endpoint(url, "GET", userType, callback, logdebug)
 
 webEndpoints = []
 def web(url: str, userType: str, callback: callable):
@@ -59,7 +61,7 @@ def serveHTML(cookie, url):
             endpoint = (u, t, c, x)
             break
     
-    logging.info(endpoint)
+    logging.debug(endpoint)
     _, userType, callback, x = endpoint
     params = x.groups()
     user = auth.getUser(cookie)
@@ -105,7 +107,6 @@ def serve(env):
     url = env["REQUEST_URI"]
     url = url.split("?")[0]
     url = url.split("#")[0]
-    logging.info("Call to {}".format(url))
 
     headers = []
     statusCode = 200
@@ -128,15 +129,19 @@ def serve(env):
         else:
             f = env["wsgi.input"].read().decode("utf-8")
             params = parse_qs(f)
-            logging.info("-------------------------")
-            logging.info(params)
+            user = auth.getUser(cookie)
+            username = f'[{user.username}]' if user else ''
+
+            dolog = logging.debug if endpoint.logdebug else logging.info
+            dolog(datetime.now().strftime('%H:%M:%S') + username + ":" + url + " -------------------------")
+            dolog(params)
             for param in params:
                 if len(params[param]) == 1:
                     params[param] = params[param][0]
-            user = auth.getUser(cookie)
             try:
                 result = endpoint.callback(params, lambda x, y: setHeader(headers, x, y), user)
-                # logging.info(result)
+                if logging.getLogger().isEnabledFor(logging.DEBUG):
+                    logging.debug(result)
                 if isinstance(result, str):
                     headers.append(("Content-type", "text/plain"))
                     response = result
@@ -150,7 +155,7 @@ def serve(env):
                     response = "" # TODO: util.toString(result)
             except Exception as e:
                 exc = traceback.format_exc()
-                logging.error(exc)
+                logging.error(f'Error processing {url}:\n{exc}')
                 statusCode = 500
                 headers.append(("Content-type", "text/plain"))
                 response = f"Internal Error: {e}"
