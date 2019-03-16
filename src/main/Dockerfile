@@ -27,5 +27,5 @@ COPY uwsgi_params /uwsgi_params
 # COPY setup.js /setup.js
 
 # ENTRYPOINT ["nodemon", "-w", "/code", "-e", "js,py", "--exec", "uwsgi --http :8000 --module", "code"]
-ENTRYPOINT [ "uwsgi", "--threads", "10", "--http", "0.0.0.0:8000", "--static-map", "/static=/code/serve", "--module", "code" ]
+ENTRYPOINT [ "uwsgi", "--threads", "10", "--http", "0.0.0.0:8000", "--static-map", "/static=/code/serve", "--module", "code", "--log-5xx", "--disable-logging" ]
 # ENTRYPOINT [ "bash", "/runserver.sh" ]
