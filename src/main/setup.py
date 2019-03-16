@@ -38,6 +38,6 @@ codes = {
 
 def application(env, start_response):
     code, headers, response = serve(env)
-    logging.info((code, headers, str(response)[:50]))
+    logging.debug((code, headers, str(response)[:50]))
     start_response(codes[code], headers)
     return str(response).encode("utf-8")

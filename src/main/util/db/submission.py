@@ -80,7 +80,7 @@ class Submission:
         
     def toJSON(self):
         with lock.gen_rlock():
-            logging.info(self.__dict__.keys())
+            #logging.info(self.__dict__.keys())
             if "compile" in self.__dict__:
                 return {
                     "id":        self.id,
