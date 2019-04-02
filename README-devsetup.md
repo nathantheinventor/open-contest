@@ -20,3 +20,20 @@
    Ctrl-C in the console and re-execute the bash command above to restart the
    server and test the changes.
 
+# Working with Visual Studio Code
+
+Visual Studio Code includes excellent Python support. After installing the
+Python extension, to enable improved code browsing, execute the following to
+create a soft link named "code" that points to your main Python source code
+folder (the below assumes that open-contest is installed in your home
+directory):
+
+```
+ln -s ~/open-contest/src/main/ ~/code
+```
+
+Then, use the following command to start Visual Studio Code:
+
+```
+PYTHONPATH=~ code ~/open-contest
+```
