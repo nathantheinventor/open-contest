@@ -7,6 +7,22 @@
 /*--------------------------------------------------------------------------------------------------
 General page code
 --------------------------------------------------------------------------------------------------*/
+    // Convert date string to Date object
+    function parseDateTime(strDate, strTime) {
+        var date = new Date(`${strDate}T${strTime}Z`);
+        return date.getTime() + (date.getTimezoneOffset() * 60000);
+    }
+
+    // Convert Date object to string with date portion
+    function formatDate(date) {
+        return `${date.getFullYear()}-${fix(date.getMonth() + 1)}-${fix(date.getDate())}`;
+    }
+
+    // Convert Date object to string with time portion
+    function formatTime(time) {
+        return `${fix(time.getHours())}:${fix(time.getMinutes())}`
+    }
+
     // from https://www.quirksmode.org/js/cookies.html
     function readCookie(name) {
         var nameEQ = name + "=";
@@ -422,12 +438,9 @@ Contest page
         // for the correct time zone for each of the following variables, since "Z" assumes you
         // are entering a UTC time.
 
-        var start = new Date(`${startDate}T${startTime}Z`);
-        start = start.getTime() + (start.getTimezoneOffset() * 60000);
-        var end = new Date(`${endDate}T${endTime}Z`);
-        end = end.getTime() + (end.getTimezoneOffset() * 60000);
-        var endScoreboard = new Date(`${endDate}T${scoreboardOffTime}Z`);
-        endScoreboard = endScoreboard.getTime() + (endScoreboard.getTimezoneOffset() * 60000);
+        var start = parseDateTime(startDate, startTime);
+        var end = parseDateTime(endDate, endTime);
+        var endScoreboard = parseDateTime(endDate, scoreboardOffTime);
 
         if (end <= start) {
             alert("The end of the contest must be after the start.");
@@ -475,15 +488,15 @@ Contest page
     var problemsHere = {};
     function setupContestPage() {
         var start = new Date(parseInt($("#start").val()));
-        $("#contest-start-date").val(`${start.getFullYear()}-${fix(start.getMonth() + 1)}-${fix(start.getDate())}`);
-        $("#contest-start-time").val(`${fix(start.getHours())}:${fix(start.getMinutes())}`);
+        $("#contest-start-date").val(formatDate(start));
+        $("#contest-start-time").val(formatTime(start));
         
         var end = new Date(parseInt($("#end").val()));
-        $("#contest-end-date").val(`${end.getFullYear()}-${fix(end.getMonth() + 1)}-${fix(end.getDate())}`);
-        $("#contest-end-time").val(`${fix(end.getHours())}:${fix(end.getMinutes())}`);
+        $("#contest-end-date").val(formatDate(end));
+        $("#contest-end-time").val(formatTime(end));
 
         var endScoreboard = new Date(parseInt($("#scoreboardOff").val()));
-        $("#scoreboard-off-time").val(`${fix(endScoreboard.getHours())}:${fix(endScoreboard.getMinutes())}`);
+        $("#scoreboard-off-time").val(formatTime(endScoreboard));
 
         $("div.problem-cards").sortable({
             placeholder: "ui-state-highlight",
