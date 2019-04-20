@@ -5,16 +5,18 @@
 
 1. Clone this project (recommended location: your home directory).
 
-1. Edit open-contest/test.sh and update the OC_CODE_DIR variable to point to the
-   location of the source code if you placed it somewhere other than your home directory.
+1. If you have not already done so, create an empty db directory to hold the
+   contest database files.
 
 1. To start the contest server running using your development source code, execute
    ```
-   bash ~/open-contest/test.sh
+   bash ~/open-contest/test.sh <path-to-db-directory>
    ```
 
    Review the Admin credentials in the output. Then, point your browser to port 8000
-   and login using the credentials.
+   and login using the credentials. Note that subsequent starts of the application
+   will generate and display new Admin credentials, but you should ignore the
+   new credentials and simply use the ones in the db/users.json file.
 
 1. Make changes to files in open-contest/src/main as needed, then press
    Ctrl-C in the console and re-execute the bash command above to restart the
