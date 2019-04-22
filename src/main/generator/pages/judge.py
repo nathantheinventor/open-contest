@@ -74,6 +74,15 @@ class TestCaseData(UIElement):
                     h.h4("Correct Answer"),
                     h.code(answer.replace(" ", "&nbsp;").replace("\n", "<br/>"))
                 ])
+            ]),
+            div(cls="row", contents=[
+                div(cls="col-12", contents=[
+                    h.h4("Diff"),
+                    h.em("Insertions are in <span style=color:darkgreen;background-color:palegreen>green</span>, deletions are in <span style=color:darkred;background-color:#F6B0B0>red</span>"),
+                    h.code(id=f"diff-{sub.id}-{num}", contents=[
+                        h.script(f"document.getElementById('diff-{sub.id}-{num}').innerHTML = getDiff(`{output.rstrip()}`, `{answer.rstrip()}`)")
+                    ])
+                ])
             ])
         ])
 

@@ -719,3 +719,31 @@ Judging Page
             alert(`New Result: ${verdict_name[data]}`);
         });
     }
+
+    function getDiff(output, answer) {
+
+
+        let color = '',
+        span = '';
+
+        outArr = output.split("\n");
+        ansArr = answer.split("\n");
+
+        let diff = Diff.diffArrays(ansArr, outArr),
+            fragment = "";
+
+        diff.forEach(function(part){{
+        // green for additions, red for deletions
+        // grey for common parts
+            color = part.added ? 'darkgreen' :
+                part.removed ? 'darkred' : 'dimgrey';
+            bgcolor = (color == 'darkgreen') ? ';background-color:palegreen' :
+                (color == 'darkred') ? ';background-color:#F6B0B0' : ''
+            part.value.forEach(function(item) {
+                span = '<div style="color:{0}{1}">{2}<br/></div>'.replace("{0}", color).replace("{1}", bgcolor).replace("{2}", item.replace(/ /g, "&nbsp;"));
+                fragment += span;
+            });
+        }});
+        return fragment;
+            
+    }
