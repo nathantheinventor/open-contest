@@ -19,10 +19,7 @@ class Contest:
             self.end      = int(details["end"])
             self.scoreboardOff = int(details.get("scoreboardOff", self.end))
             self.problems = [Problem.get(id) for id in details["problems"]]
-            if str(details["tieBreaker"]).lower() == "true":
-                self.tieBreaker = True
-            else:
-                self.tieBreaker = False
+            self.tieBreaker = str(details.get("tieBreaker", "")) == "true"
 
         else:
             self.id = None
