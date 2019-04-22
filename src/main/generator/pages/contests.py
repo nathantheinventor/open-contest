@@ -34,7 +34,7 @@ class ProblemCard(UIElement):
 def editContest(params, user):
     id = params[0] if params else None
     contest = Contest.get(id)
-    
+
     title = "New Contest"
     chooseProblem = ""
     existingProblems = []
@@ -45,6 +45,7 @@ def editContest(params, user):
         title = contest.name
         start = contest.start
         end = contest.end
+
         scoreboardOff = contest.scoreboardOff
         chooseProblem = div(cls="actions", contents=[
             h.button("+ Choose Problem", cls="button", onclick="chooseProblemDialog()")
@@ -98,7 +99,13 @@ def editContest(params, user):
                     h.input(cls="form-control", name="contest-end-time", id="contest-end-time", type="time")
                 ]),
                 h.input(type="hidden", id="scoreboardOff", value=scoreboardOff),
-                div(cls="form-group col-6"),
+                div(cls="form-group col-6", contents=[
+                    h.label(**{"for": "scoreboard-tie-breaker", "contents":"Sample Data Breaks Ties"}),
+                    h.select(cls="form-control", name="scoreboard-tie-breaker", id="scoreboard-tie-breaker", contents=[
+                        *[h.option(text, value=val, selected="selected") if contest.tieBreaker == val else
+                          h.option(text, value=val) for text, val in zip(("On", "Off"), (True, False))]
+                    ])
+                ]),
                 div(cls="form-group col-6", contents=[
                     h.label(**{"for": "scoreboard-off-time", "contents":"Turn Scoreboard Off Time"}),
                     h.input(cls="form-control", name="scoreboard-off-time", id="scoreboard-off-time", type="time")
