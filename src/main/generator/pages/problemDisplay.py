@@ -72,7 +72,12 @@ def listProblems(params, user):
             probCards.append(Card(
                 prob.title,
                 prob.description,
-                f"/problems/{prob.id}"
+                f"/problems/{prob.id}",
+                None,
+                None,
+                None,
+                user,
+                prob.id
             ))
         return Page(
             h2("Problems", cls="page-title"),
