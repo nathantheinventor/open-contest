@@ -1,4 +1,5 @@
 from code.util import register, auth
+import time
 
 def root(params, setHeader, user):
     setHeader("Location", "/problems")
@@ -11,6 +12,7 @@ def login(params, setHeader, user):
     if user:
         setHeader("Set-Cookie", f"user={user.id}")
         setHeader("Set-Cookie", f"userType={user.type}")
+        setHeader("Set-Cookie", f"userLoginTime={time.time() * 1000}")
         return "ok"
     else:
         return "Incorrect username / password";
