@@ -108,8 +108,7 @@ class Submission:
                 "outputs":   self.outputs[:self.problem.samples] if self.type != "custom" else self.outputs,
                 "errors":    self.errors [:self.problem.samples] if self.type != "custom" else self.errors,
                 "answers":   self.answers[:self.problem.samples] if self.type != "custom" else self.answers,
-                "result":    self.result,
-                "status":    self.status
+                "result":    self.result
             }
 
     def forEach(callback: callable):
