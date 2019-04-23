@@ -6,6 +6,9 @@ import time
 import shutil
 import re
 from uuid import uuid4
+from zipfile import ZipFile
+import base64
+import json
 
 def addSubmission(probId, lang, code, user, type, custominput):
     sub = Submission()
@@ -194,6 +197,34 @@ def rejudge(params, setHeader, user):
     runCode(submission)
     return submission.result
 
+def download(params, setHeader, user):
+    id = params["id"]
+    submission = Submission.get(id)
+    if os.path.exists(f"/tmp/{id}"):
+        shutil.rmtree(f"/tmp/{id}")
+    os.mkdir(f"/tmp/{id}")
+    os.mkdir(f"/tmp/{id}/zip")
+    f=open(f"/tmp/{id}/zip/source."+exts[submission.language], "w+")
+    f.write(submission.code)
+    f.close()
+    for index, input in enumerate(submission.inputs):
+        f=open(f"/tmp/{id}/zip/input_{index}.txt", "w+")
+        f.write(input)
+        f.close()
+    for index, output in enumerate(submission.outputs):
+        f=open(f"/tmp/{id}/zip/output_{index}.txt", "w+")
+        f.write(output)
+        f.close()
+    with ZipFile(f"/tmp/{id}/download.zip",'w') as zip:
+        for root, directories, files in os.walk(f"/tmp/{id}/zip/"):
+            for file in files:
+                zip.write(os.path.join(root, file), file)
+    with open(f"/tmp/{id}/download.zip", "rb") as binary_file:
+        data = {"download.zip": base64.b64encode(binary_file.read()).decode('ascii')}
+    return json.dumps(data)
+    
+
 register.post("/submit", "loggedin", submit)
 register.post("/changeResult", "admin", changeResult)
 register.post("/rejudge", "admin", rejudge)
+register.post("/download", "admin", download)
