@@ -83,16 +83,16 @@ General page code
         }
         $(".result-tabs").tabs();
         // $(".tablesorter").tablesorter();
-        var props = {  
-            sort: true,  
-            filters_row_index:1,  
-            remember_grid_values: true,  
+        var props = {
+            sort: true,
+            filters_row_index:1,
+            remember_grid_values: true,
             alternate_rows: true,
-            custom_slc_options: {  
+            custom_slc_options: {
                 cols:[],
                 texts: [],
                 values: [],
-                sorts: []
+                sorts: [],
             }
         };
         if ($("#submissions").length) {
@@ -200,7 +200,7 @@ Problem page
         "runtime_error": "Runtime Error",
         "presentation_error": "Presentation Error",
         "reject": "Submission Rejected",
-        "pending": "Pending ...",
+        "pending": "Executing ...",
         "pending_review": "Pending Review",
     };
 
@@ -774,6 +774,15 @@ Judging Page
                 fixFormatting();
                 $(".modal").modal().click(() => $.post("/judgeSubmissionClose", {id: id, version: $("#version").val()} ));
             }
+        });
+    }
+
+    function submissionPopupContestant(id) {
+        $.post(`/contestantSubmission/${id}`, {}, data => {
+            $(".modal-dialog").html(data);
+            $(".result-tabs").tabs();
+            fixFormatting();
+            $(".modal").modal();
         });
     }
 

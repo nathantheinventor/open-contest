@@ -49,6 +49,7 @@ def editContest(params, user):
         tieBreaker = contest.tieBreaker
 
         scoreboardOff = contest.scoreboardOff
+
         chooseProblem = div(cls="actions", contents=[
             h.button("+ Choose Problem", cls="button", onclick="chooseProblemDialog()")
         ])

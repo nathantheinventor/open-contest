@@ -34,7 +34,7 @@ verdict_name = {
     "extra_output": "Extra Output",
     "incomplete_output": "Incomplete Output",
     "reject": "Submission Rejected",
-    "pending": "Pending...",
+    "pending": "Executing ...",
     "pending_review": "Pending Review",
 }
 
