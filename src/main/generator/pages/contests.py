@@ -41,10 +41,12 @@ def editContest(params, user):
     start = time.time() * 1000
     end = (time.time() + 3600) * 1000
     scoreboardOff = end
+    tieBreaker = False
     if contest:
         title = contest.name
         start = contest.start
         end = contest.end
+        tieBreaker = contest.tieBreaker
 
         scoreboardOff = contest.scoreboardOff
         chooseProblem = div(cls="actions", contents=[
@@ -102,7 +104,7 @@ def editContest(params, user):
                 div(cls="form-group col-6", contents=[
                     h.label(**{"for": "scoreboard-tie-breaker", "contents":"Sample Data Breaks Ties"}),
                     h.select(cls="form-control", name="scoreboard-tie-breaker", id="scoreboard-tie-breaker", contents=[
-                        *[h.option(text, value=val, selected="selected") if contest.tieBreaker == val else
+                        *[h.option(text, value=val, selected="selected") if tieBreaker == val else
                           h.option(text, value=val) for text, val in zip(("On", "Off"), (True, False))]
                     ])
                 ]),
