@@ -93,6 +93,8 @@ class Submission:
                     "compile":   self.compile,
                     "results":   self.results
                 }
+            
+            
             return {
                 "id":        self.id,
                 "user":      self.user.id,
@@ -102,11 +104,12 @@ class Submission:
                 "code":      self.code,
                 "type":      self.type,
                 "results":   self.results,
-                "inputs":    self.inputs[:self.problem.samples],
-                "outputs":   self.outputs[:self.problem.samples],
-                "errors":    self.errors[:self.problem.samples],
-                "answers":   self.answers[:self.problem.samples],
-                "result":    self.result
+                "inputs":    self.inputs [:self.problem.samples] if self.type != "custom" else self.inputs,
+                "outputs":   self.outputs[:self.problem.samples] if self.type != "custom" else self.outputs,
+                "errors":    self.errors [:self.problem.samples] if self.type != "custom" else self.errors,
+                "answers":   self.answers[:self.problem.samples] if self.type != "custom" else self.answers,
+                "result":    self.result,
+                "status":    self.status
             }
 
     def forEach(callback: callable):

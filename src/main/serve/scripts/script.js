@@ -195,15 +195,22 @@ Problem page
                 <h3>Compile Error</h3>
                 <code>${sub.compile.replace(/\n/g, "<br/>").replace(/ /g, "&nbsp;")}</code>
             `);
-        } else if (sub.type == "test") {
+        } else if (sub.type == "test" || sub.type == "custom") {
             var tabs = "";
             var results = "";
             var samples = sub.results.length;
+            if(sub.type == "custom"){
+                samples = 1;
+            }
             for (var i = 0; i < samples; i ++) {
                 var res = sub.results[i];
                 var icon = icons[res];
-                tabs += `<li><a href="#tabs-${i}"><i class="fa fa-${icon}" title="${verdict_name[res]}"></i> Sample #${i}</a></li>`;
-
+                if (sub.type ==  "test"){
+                    tabs += `<li><a href="#tabs-${i}"><i class="fa fa-${icon}" title="${verdict_name[res]}"></i> Sample #${i}</a></li>`;
+                }
+                if(sub.type == "custom"){
+                    tabs += `<li><a href="#tabs-${i}"><i class="fa fa-${icon}" title="${verdict_name[res]}"></i> Custom </a></li>`;
+                }
                 var input = sub.inputs[i];
                 var output = sub.outputs[i];
                 var error = sub.errors[i];
@@ -215,7 +222,8 @@ Problem page
                 if (!error) {
                     errorStr = "";
                 }
-                results += `<div id="tabs-${i}">
+                if (sub.type ==  "test"){
+                    results += `<div id="tabs-${i}">
                     <div class="row">
                         <div class="col-12">
                             <h4>Input</h4>
@@ -232,6 +240,23 @@ Problem page
                         ${errorStr}
                     </div>
                 </div>`;
+                }
+                if(sub.type == "custom"){
+                    results += `<div id="tabs-${i}">
+                    <div class="row">
+                        <div class="col-12">
+                            <h4>Your Input</h4>
+                            <code>${input.replace(/\n/g, "<br/>").replace(/ /g, "&nbsp;")}</code>
+                        </div>
+                        <div class="col-12">
+                            <h4>Your Output</h4>
+                            <code>${output.replace(/\n/g, "<br/>").replace(/ /g, "&nbsp;")}</code>
+                        </div>
+                        ${errorStr}
+                    </div>
+                </div>`;
+                }
+                
             }
             $(".results.card .card-contents").html(`<div id="result-tabs">
                 <ul>
@@ -294,6 +319,9 @@ Problem page
             $(".submit-problem").addClass("button-gray");
             $(".test-samples").attr("disabled", true);
             $(".test-samples").addClass("button-gray");
+            $(".test-custom").attr("disabled", true);
+            $(".test-custom").addClass("button-gray");
+            
         }
 
         function enableButtons() {
@@ -301,6 +329,8 @@ Problem page
             $(".submit-problem").removeClass("button-gray");
             $(".test-samples").attr("disabled", false);
             $(".test-samples").removeClass("button-gray");
+            $(".test-custom").attr("disabled", false);
+            $(".test-custom").removeClass("button-gray");
         }
 
         // When you click the submit button, submit the code to the server
@@ -320,6 +350,18 @@ Problem page
             var code = editor.getValue();
             disableButtons();
             $.post("/submit", {problem: thisProblem, language: language, code: code, type: "test"}, results => {
+                enableButtons();
+                showResults(results);
+            });
+        });
+
+        // When you click the test custom input code button, test the code with custom input
+        $("button.test-custom").click(_ => {
+            createResultsCard();
+            var code = editor.getValue();
+            var input = $("#custom-input").val();
+            disableButtons();
+            $.post("/submit", {problem: thisProblem, language: language, code: code, type: "custom", input:input}, results => {
                 enableButtons();
                 showResults(results);
             });
