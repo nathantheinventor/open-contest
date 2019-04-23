@@ -8,7 +8,7 @@ class MessageCard(UIElement):
         msg = msglist[0]
         if not user.isAdmin() or msg.fromUser.id == user.id:
             self.html = Card(
-                f"Message from {msg.fromUser.username} at <span class='time-format'>{msg.timestamp}</span>",
+                f"Message from {msg.fromUser.username} at <span class='time-format' data_timestamp='{msg.timestamp}'>{msg.timestamp}</span>",
                 msg.message
             )
         else:
@@ -16,10 +16,10 @@ class MessageCard(UIElement):
             print('*** msglist = ', msglist)
             for reply in msglist[1:]:
                 body += f"""\n<br><br>Reply from {reply.fromUser.username} at 
-                    <span class='time-format'>{reply.timestamp}</span>:<br>
+                    <span class='time-format' data_timestamp='{reply.timestamp}'>{reply.timestamp}</span>:<br>
                     {reply.message}"""
             self.html = Card(
-                f"Message from judge at <span class='time-format'>{msg.timestamp}</span>",
+                f"Message from judge at <span class='time-format' data_timestamp='{msg.timestamp}'>{msg.timestamp}</span>",
                 body,
                 reply=f"reply('{msg.fromUser.id}', '{msg.id}')"
             )

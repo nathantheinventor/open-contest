@@ -65,7 +65,7 @@ class Page(UIElement):
                 h.script(src="/static/lib/ace/ace.js"),
                 h.script(src="/static/lib/simplemde/simplemde.min.js"),
                 h.script(src="/static/scripts/script.js?" + uuid()),
-                h.script(src="/static/lib/tablefilter_all_min.js"),
+                h.script(src="/static/lib/tablefilter/tablefilter.js"),
                 h.script(src="/static/lib/FileSaver.min.js"),
                 h.script(src="/static/lib/diff.min.js"),
             ),

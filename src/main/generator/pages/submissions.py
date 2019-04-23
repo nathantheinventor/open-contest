@@ -8,11 +8,11 @@ class SubmissionDisplay(UIElement):
     def __init__(self, submission: Submission):
         subTime = submission.timestamp
         probName = submission.problem.title
-        cls = "red" if submission.result != "ok" else ""
-        self.html = Card("Submission to {} at <span class='time-format'>{}</span>".format(probName, subTime), [
+        cls = "gray" if submission.status == "Review" else "red" if submission.result != "ok" else ""
+        self.html = Card("Submission to {0} at <span class='time-format' data_timestamp='{1}'>{1}</span>".format(probName, subTime), [
             h.strong("Language: <span class='language-format'>{}</span>".format(submission.language)),
             h.br(),
-            h.strong("Result: <span class='result-format'>{}</span>".format(submission.result)),
+            h.strong("Result: <span class='result-format'>{}</span>".format(submission.getContestantResult())),
             h.br(),
             h.br(),
             h.strong("Code:"),

@@ -25,6 +25,9 @@ class Submission:
             self.errors      = details["errors"]
             self.answers     = details["answers"]
             self.result      = details["result"]
+            self.status      = details.get("status", None)
+            self.checkout    = details.get("checkout", None)
+            self.version     = details.get("version", 1)
         else:
             self.id          = None
             self.user        = None
@@ -39,6 +42,9 @@ class Submission:
             self.errors      = []
             self.answers     = []
             self.result      = []
+            self.status      = None
+            self.checkout    = None
+            self.version     = 1
 
     def get(id: str):
         with lock.gen_rlock():
@@ -60,8 +66,17 @@ class Submission:
             "outputs":   self.outputs,
             "errors":    self.errors,
             "answers":   self.answers,
-            "result":    self.result
+            "result":    self.result,
+            "status":    self.status,
+            "checkout":  self.checkout,
+            "version":   self.version,
         }
+
+    def getContestantResult(self):
+        return "pending_review" if self.result != "pending" and self.status == "Review" else self.result
+
+    def getContestantIndividualResults(self):
+        return ["pending_review" if self.result != "pending" and self.status == "Review" else res for res in self.results]
 
     def save(self):
         with lock.gen_wlock():
@@ -108,7 +123,10 @@ class Submission:
                 "outputs":   self.outputs[:self.problem.samples] if self.type != "custom" else self.outputs,
                 "errors":    self.errors [:self.problem.samples] if self.type != "custom" else self.errors,
                 "answers":   self.answers[:self.problem.samples] if self.type != "custom" else self.answers,
-                "result":    self.result
+                "result":    self.result,
+                "status":    self.status,
+                "checkout":  self.checkout,
+                "version":   self.version,
             }
 
     def forEach(callback: callable):

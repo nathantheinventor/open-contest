@@ -98,6 +98,9 @@ General page code
             div.card.red div.card-header {
                 background: #ff224425;
             }
+            div.card.gray div.card-header {
+                background: #56565625;
+            }
             h2.card-title {
                 margin: 0px;
                 font-size: 1.2em;
@@ -109,6 +112,9 @@ General page code
             }
             div.card.red h2.card-title {
                 color: #f24;
+            }
+            div.card.gray h2.card-title {
+                color: #565656;
             }
             div.card-contents {
                 padding: 15px;
@@ -542,6 +548,10 @@ Messages Page
 /*--------------------------------------------------------------------------------------------------
 Judging Page
 --------------------------------------------------------------------------------------------------*/
+    .judge-width {
+        width: 150%;
+        margin-left: -25%;
+    }
     #judge-tabs {
         background: none;
         border: none;
@@ -574,13 +584,28 @@ Judging Page
     div.modal-header.red {
         background: #ff224425;
     }
+    div.modal-header.gray {
+        background: #56565625;
+    }
     .btn-primary, .btn-primary:hover {
         background: #093;
         border-color: #093;
+    }
+    table#submissions {
+        width: 100%;
+        table-layout: fixed;
     }
     table#submissions tbody tr {
         cursor: pointer;
     }
     table#submissions tbody tr:hover {
         background: #ddd;
+    }
+    table#submissions .flt {
+        width: 100%;
+    }
+    table#submissions th, td {
+        width: 1px;
+        white-space: nowrap;
+        overflow: hidden;
     }
