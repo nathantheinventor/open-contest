@@ -23,6 +23,8 @@ class CodeEditor(UIElement):
         ])
 
 def getSample(datum, num: int) -> Card:
+    if datum.input == None: datum.input = "" 
+    if datum.output == None: datum.output = "" 
     return Card("Sample #{}".format(num), div(cls="row", contents=[
         div(cls="col-6", contents=[
             h.p("Input:", cls="no-margin"),

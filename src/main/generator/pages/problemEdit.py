@@ -26,6 +26,8 @@ class TestDataCard(UIElement):
         isSample = num < samples
         title = f"Sample Data #{num}" if isSample else f"Test Data #{num}"
         cls = "blue" if isSample else ""
+        if testData.input == None: testData.input = "" 
+        if testData.output == None: testData.output = "" 
         self.html = Card(title, div(cls="row", contents=[
             div(cls="col-6", contents=[
                 p("Input:", cls="no-margin"),
