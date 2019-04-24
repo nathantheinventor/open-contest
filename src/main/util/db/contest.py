@@ -18,6 +18,7 @@ class Contest:
             self.start    = int(details["start"])
             self.end      = int(details["end"])
             self.scoreboardOff = int(details.get("scoreboardOff", self.end))
+            self.showProblInfoBlocks = details.get("showProblInfoBlocks","Off")
             self.problems = [Problem.get(id) for id in details["problems"]]
             self.tieBreaker = str(details.get("tieBreaker", "")) == "true"
 
@@ -27,7 +28,8 @@ class Contest:
             self.start = None
             self.end = None
             self.scoreboardOff = None
-            self.problems = None  
+            self.showProblInfoBlocks = None
+            self.problems = None                        
             self.tieBreaker = False          
 
     def get(id: str):
@@ -43,7 +45,8 @@ class Contest:
             "start": self.start,
             "end": self.end,
             "scoreboardOff": self.scoreboardOff,
-            "problems": [prob.id for prob in self.problems],
+            "showProblInfoBlocks": self.showProblInfoBlocks,
+            "problems": [prob.id for prob in self.problems],            
             "tieBreaker" : self.tieBreaker
         }
 

@@ -39,6 +39,8 @@ def getSample(datum, num: int) -> Card:
 def viewProblem(params, user):
     problem = Problem.get(params[0])
     
+    contest = Contest.getCurrent()
+    
     if not problem:
         return ""
 
@@ -48,17 +50,20 @@ def viewProblem(params, user):
             return ""
         if problem not in Contest.getCurrent().problems:
             return ""
+    contents = []
+    if(contest.showProblInfoBlocks == "On"):
+        contents = [
+                Card("Problem Statement", formatMD(problem.statement), cls="stmt"),
+                Card("Input Format", formatMD(problem.input), cls="inp"),
+                Card("Output Format", formatMD(problem.output), cls="outp"),
+                Card("Constraints", formatMD(problem.constraints), cls="constraints"),                
+                ]
+    contents.append(div(cls="samples", contents=list(map(lambda x: getSample(x[0], x[1]), zip(problem.sampleData, range(problem.samples))))))
     
     return Page(
         h.input(type="hidden", id="problem-id", value=problem.id),
         h2(problem.title, cls="page-title"),
-        div(cls="problem-description", contents=[
-            Card("Problem Statement", formatMD(problem.statement), cls="stmt"),
-            Card("Input Format", formatMD(problem.input), cls="inp"),
-            Card("Output Format", formatMD(problem.output), cls="outp"),
-            Card("Constraints", formatMD(problem.constraints), cls="constraints"),       
-            div(cls="samples", contents=list(map(lambda x: getSample(x[0], x[1]), zip(problem.sampleData, range(problem.samples)))))
-        ]),
+        div(cls="problem-description", contents=contents),
         CodeEditor(),
         div(cls="stmt card ui-sortable-handle", contents=[
             div(cls="card-header", contents=[h2("Custom Input", cls="card-title")]),

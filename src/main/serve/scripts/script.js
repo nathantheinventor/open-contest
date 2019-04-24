@@ -490,6 +490,8 @@ Contest page
         var endDate = $("#contest-end-date").val();
         var endTime = $("#contest-end-time").val();
         var scoreboardOffTime = $("#scoreboard-off-time").val();
+        var showProblInfoBlocks = $("#show-problem-info-blocks").val();
+
         var tieBreaker = $("#scoreboard-tie-breaker").val();
 
         // Invalid DATE format; "T" after the date and "Z" after the time have been inserted 
@@ -527,7 +529,7 @@ Contest page
             problems.push(newProblem);
         }
 
-        $.post("/editContest", {id: id, name: name, start: start, end: end, scoreboardOff: endScoreboard, tieBreaker: tieBreaker.toString(), problems: JSON.stringify(problems)}, id => {
+        $.post("/editContest", {id: id, name: name, start: start, end: end, scoreboardOff: endScoreboard,showProblInfoBlocks: showProblInfoBlocks,tieBreaker: tieBreaker.toString(), problems: JSON.stringify(problems)}, id => {
             if (window.location.pathname == "/contests/new") {
                 window.location = `/contests/${id}`;
             } else {
@@ -602,14 +604,14 @@ Problem page
         $("div.modal").modal();
     }
 
-    function createTestData() {
+    function createTestData(info) {
         var input = $(".test-data-input").val();
         var output = $(".test-data-output").val();
-        editProblem({input: input, output: output});
+        editProblem({input: input, output: output}, info);
     }
 
     var handlingClick = false;
-    function editProblem(newTest=undefined) {
+    function editProblem(newTest=undefined, info=undefined) {
         // Eliminate double-click problem
         if (handlingClick) {
             // User has already clicked the button recently and the request isn't done
@@ -620,11 +622,19 @@ Problem page
         var id = $("#prob-id").val();
         var problem = {id: id};
         problem.title       = $("#problem-title").val();
-        problem.description = $("#problem-description").val();
-        problem.statement   = mdEditors[0].value();
-        problem.input       = mdEditors[1].value();
-        problem.output      = mdEditors[2].value();
-        problem.constraints = mdEditors[3].value();
+        problem.description = $("#problem-description").val();        
+        if(info === 0){
+            problem.statement   = mdEditors[0].value();
+            problem.input       = mdEditors[1].value();
+            problem.output      = mdEditors[2].value();
+            problem.constraints = mdEditors[3].value();
+        } else {
+            problem.statement   = "empty";
+            problem.input       = "empty";
+            problem.output      = "empty";
+            problem.constraints = "empty";
+        }
+        
         problem.samples     = $("#problem-samples").val();
         testData = [];
         $(".test-data-cards .card").each((_, card) => {
