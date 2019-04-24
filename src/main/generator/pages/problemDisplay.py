@@ -51,7 +51,7 @@ def viewProblem(params, user):
         if problem not in Contest.getCurrent().problems:
             return ""
     contents = []
-    if(contest.showProblInfoBlocks == "On"):
+    if contest == None or contest.showProblInfoBlocks == "On":
         contents = [
                 Card("Problem Statement", formatMD(problem.statement), cls="stmt"),
                 Card("Input Format", formatMD(problem.input), cls="inp"),

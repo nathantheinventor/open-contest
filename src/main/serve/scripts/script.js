@@ -529,7 +529,9 @@ Contest page
             problems.push(newProblem);
         }
 
-        $.post("/editContest", {id: id, name: name, start: start, end: end, scoreboardOff: endScoreboard,showProblInfoBlocks: showProblInfoBlocks,tieBreaker: tieBreaker.toString(), problems: JSON.stringify(problems)}, id => {
+        $.post("/editContest", {id: id, name: name, start: start, end: end, scoreboardOff: endScoreboard, 
+            showProblInfoBlocks: showProblInfoBlocks, tieBreaker: tieBreaker.toString(), 
+            problems: JSON.stringify(problems)}, id => {
             if (window.location.pathname == "/contests/new") {
                 window.location = `/contests/${id}`;
             } else {
@@ -604,14 +606,14 @@ Problem page
         $("div.modal").modal();
     }
 
-    function createTestData(info) {
+    function createTestData() {
         var input = $(".test-data-input").val();
         var output = $(".test-data-output").val();
-        editProblem({input: input, output: output}, info);
+        editProblem({input: input, output: output});
     }
 
     var handlingClick = false;
-    function editProblem(newTest=undefined, info=undefined) {
+    function editProblem(newTest=undefined) {
         // Eliminate double-click problem
         if (handlingClick) {
             // User has already clicked the button recently and the request isn't done
@@ -623,17 +625,10 @@ Problem page
         var problem = {id: id};
         problem.title       = $("#problem-title").val();
         problem.description = $("#problem-description").val();        
-        if(info === 0){
-            problem.statement   = mdEditors[0].value();
-            problem.input       = mdEditors[1].value();
-            problem.output      = mdEditors[2].value();
-            problem.constraints = mdEditors[3].value();
-        } else {
-            problem.statement   = "empty";
-            problem.input       = "empty";
-            problem.output      = "empty";
-            problem.constraints = "empty";
-        }
+        problem.statement   = mdEditors[0].value();
+        problem.input       = mdEditors[1].value();
+        problem.output      = mdEditors[2].value();
+        problem.constraints = mdEditors[3].value();
         
         problem.samples     = $("#problem-samples").val();
         testData = [];
