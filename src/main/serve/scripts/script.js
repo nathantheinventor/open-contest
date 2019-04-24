@@ -68,7 +68,8 @@ General page code
         displayIncomingMessages();
         if ($("#ace-editor").length > 0) {
             setupAceEditor();
-            setupSortability();
+            // Comment out the following to disable draggable info blocks:
+            // setupSortability();
         }
         if (pageName == "Users") {
             displayExistingUsers();
@@ -383,6 +384,7 @@ Problem page
         });
     }
 
+    // Allow problem info blocks to be sorted
     function setupSortability() {
         var thisProblem = $("#problem-id").val();
         if (localStorage["sort-" + thisProblem] != undefined) {

@@ -263,9 +263,14 @@ Problem Page
         background: repeating-linear-gradient(135deg, #eef8f1 0%, #eef8f1 5px, #dcf0e2 5px, #dcf0e2 10px);
         border-radius: 5px;
     }
+
+    /* disable draggable problem info blocks */
+    /*
     div.problem-description div.card-header {
         cursor: move;
     }
+    */
+    
     /*-------------------------------------------------
     Code Editor
     -------------------------------------------------*/
