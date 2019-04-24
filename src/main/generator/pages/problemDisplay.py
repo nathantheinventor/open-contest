@@ -70,7 +70,7 @@ def viewProblem(params, user):
             div(cls="card-contents", contents=[h.textarea(id="custom-input", cls="col-12")])
         ]),
         div(cls="align-right",id="custom-code-text", contents=[
-            h.button("Test Custom Code", cls="button test-custom button-white"),
+            h.button("Test With Custom Input", cls="button test-custom button-white"),
             h.button("Test Code", cls="button test-samples button-white"),
             h.button("Submit Code", cls="button submit-problem")
         ])
