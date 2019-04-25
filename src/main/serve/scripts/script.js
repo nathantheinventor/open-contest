@@ -801,6 +801,20 @@ Judging Page
             alert(`New Result: ${verdict_name[data]}`);
         });
     }
+  
+    function rejudgeAll(id)
+    {
+        
+        $(".btn-primary").attr("disabled", true);
+
+        $.post("/rejudgeAll", {id:id}, data =>{
+            
+            $(".btn-primary").attr("disabled", false);
+            alert("DONE");
+        });
+    }
+
+    
 
     function download(id) {
         $(".rejudge").attr("disabled", true);
