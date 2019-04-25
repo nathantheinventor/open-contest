@@ -22,6 +22,7 @@ def editProblem(params, setHeader, user):
     testData            = json.loads(params["testData"])
     problem.testData    = [Datum(d["input"], d["output"]) for d in testData]
     problem.tests       = len(testData)
+    problem.timelimit   = params["timelimit"]
 
     problem.save()
 
