@@ -115,8 +115,11 @@ def leaderboard(params, user):
             h.tbody(
                 *problemSummaryDisplay
             )
-
-        )
+        ),
+        div(cls="align-right", contents=[
+            h.br(),
+            h.button("Correct Log", cls="button", onclick="window.location='/correctlog'")
+        ])
     )
 
 def contestreport(params, user):
