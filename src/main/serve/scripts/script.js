@@ -496,11 +496,6 @@ Contest page
 
         var tieBreaker = $("#scoreboard-tie-breaker").val();
 
-        // Invalid DATE format; "T" after the date and "Z" after the time have been inserted 
-        // for the correct format for creating the Dates, then the milliseconds are adjusted 
-        // for the correct time zone for each of the following variables, since "Z" assumes you
-        // are entering a UTC time.
-
         var start = parseDateTime(startDate, startTime);
         var end = parseDateTime(endDate, endTime);
         var endScoreboard = parseDateTime(endDate, scoreboardOffTime);
@@ -685,9 +680,11 @@ General
 --------------------------------------------------------------------------------------------------*/
     async function fixFormatting() {
         $(".time-format").each((_, span) => {
-            var timestamp = $(span).attr("data_timestamp");
-            var d = new Date(parseInt(timestamp));
-            $(span).text(d.toLocaleString());
+            var timestamp = $(span).text();
+            if ($.isNumeric(timestamp)) {
+                var d = new Date(parseInt(timestamp));
+                $(span).text(d.toLocaleString());
+            }
         });
         await getLanguages();
         $("span.language-format").each((_, span) => {

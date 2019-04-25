@@ -10,7 +10,7 @@ class SubmissionRow(UIElement):
         result = sub.getContestantResult()
         self.html = h.tr(
             h.td(sub.problem.title),
-            h.td(cls='time-format', data_timestamp=sub.timestamp, contents=sub.timestamp),
+            h.td(cls='time-format', contents=sub.timestamp),
             h.td(sub.language),
             h.td(
                 h.i("&nbsp;", cls=f"fa fa-{icons[result]}"),
@@ -45,7 +45,7 @@ class SubmissionCard(UIElement):
             div(cls=f"modal-header {cls}", contents=[
                 h.h5(
                     f"Submission to {probName} at ",
-                    h.span(subTime, cls="time-format", data_timestamp=f"{subTime}")
+                    h.span(subTime, cls="time-format")
                 ),
                 """
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
