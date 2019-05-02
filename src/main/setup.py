@@ -17,9 +17,14 @@ user = "Admin"
 # port = int(sys.argv[2])
 
 # password = "presently description kirk died"
-password = generatePassword()
-usr = User(user, password, "admin")
-usr.save()
+usr = User.getByName(user)
+if usr:
+    password = usr.password
+else:
+    password = generatePassword()
+    usr = User(user, password, "admin")
+    usr.save()
+
 logging.info(f"Admin username is '{user}'")
 logging.info(f"Admin password is '{password}'")
 
