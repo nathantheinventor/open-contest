@@ -98,7 +98,7 @@ def runCode(sub):
     os.mkdir(f"/tmp/{sub.id}/out")
 
     # Run the runner
-    if os.system(f"docker run --rm --network=none -m 256MB -v /tmp/{sub.id}/:/source nathantheinventor/open-contest-dev-{sub.language}-runner {tests} 5 > /tmp/{sub.id}/result.txt") != 0:
+    if os.system(f"docker run --rm --network=none -m 256MB -v /tmp/{sub.id}/:/source nathantheinventor/open-contest-dev-{sub.language}-runner {tests} {prob.timelimit} > /tmp/{sub.id}/result.txt") != 0:
         raise Exception("Something went wrong")
 
     inputs = []
@@ -207,6 +207,16 @@ def rejudge(params, setHeader, user):
     runCode(submission)
     return submission.result
 
+def rejudgeAll(params, setHeader, user):
+
+    ctime = time.time() * 1000
+    id = params["id"]
+    allsub = Submission.all()
+    for i in allsub:
+        if i.problem.id == id and i.timestamp < ctime and i.result != 'reject':
+            rejudge({'id':i.id}, None, None)
+    return "Finished"
+
 def download(params, setHeader, user):
     id = params["id"]
     submission = Submission.get(id)
@@ -238,3 +248,4 @@ register.post("/submit", "loggedin", submit)
 register.post("/changeResult", "admin", changeResult)
 register.post("/rejudge", "admin", rejudge)
 register.post("/download", "admin", download)
+register.post("/rejudgeAll", "admin", rejudgeAll)

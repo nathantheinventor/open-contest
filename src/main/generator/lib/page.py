@@ -84,7 +84,7 @@ class Page(UIElement):
         generateStatic()
 
 class Card(UIElement):
-    def __init__(self, title, contents, link=None, cls=None, delete=None, reply=None, user=None, problemId=None):
+    def __init__(self, title, contents, link=None, cls=None, delete=None, reply=None, user=None, problemId=None, rejudge=None):
         if cls == None:
             cls = "card"
         else:
@@ -94,6 +94,8 @@ class Card(UIElement):
             deleteLink = div(h.i("clear", cls="material-icons"), cls="delete-link", onclick=delete)
         elif reply:
             deleteLink = div("Reply", cls="delete-link", onclick=reply)
+        if rejudge:
+            deleteLink = div(h.button("Rejudge", cls="btn btn-primary" ,onclick=rejudge), cls="delete-link")
         result = ''
         if user != None and problemId != None:
             icon = ''

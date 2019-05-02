@@ -81,15 +81,20 @@ def listProblems(params, user):
         contest = Contest.getCurrent()
         probCards = []
         for prob in contest.problems:
+            probid = f"/problems/{prob.id}"
+
+            btn = "rejudgeAll('?')".replace('?', probid.split('/')[-1]) if user.isAdmin() else None
+            
             probCards.append(Card(
                 prob.title,
                 prob.description,
-                f"/problems/{prob.id}",
+                probid,
                 None,
                 None,
                 None,
                 user,
-                prob.id
+                prob.id,
+                btn
             ))
         return Page(
             h2("Problems", cls="page-title"),

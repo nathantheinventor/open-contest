@@ -621,6 +621,7 @@ Problem page
         var id = $("#prob-id").val();
         var problem = {id: id};
         problem.title       = $("#problem-title").val();
+        problem.timelimit   = $("#problem-timelimit").val();
         problem.description = $("#problem-description").val();        
         problem.statement   = mdEditors[0].value();
         problem.input       = mdEditors[1].value();
@@ -800,6 +801,20 @@ Judging Page
             alert(`New Result: ${verdict_name[data]}`);
         });
     }
+  
+    function rejudgeAll(id)
+    {
+        
+        $(".btn-primary").attr("disabled", true);
+
+        $.post("/rejudgeAll", {id:id}, data =>{
+            
+            $(".btn-primary").attr("disabled", false);
+            alert("DONE");
+        });
+    }
+
+    
 
     function download(id) {
         $(".rejudge").attr("disabled", true);
