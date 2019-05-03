@@ -26,13 +26,13 @@ def getSample(datum, num: int) -> Card:
     if datum.input == None: datum.input = "" 
     if datum.output == None: datum.output = "" 
     return Card("Sample #{}".format(num), div(cls="row", contents=[
-        div(cls="col-6", contents=[
+        div(cls="col-12", contents=[
             h.p("Input:", cls="no-margin"),
-            h.code(datum.input.replace("\n", "<br/>").replace(" ", "&nbsp;"))
+            h.code(code_encode(datum.input))
         ]),
-        div(cls="col-6", contents=[
+        div(cls="col-12", contents=[
             h.p("Output:", cls="no-margin"),
-            h.code(datum.output.replace("\n", "<br/>").replace(" ", "&nbsp;"))
+            h.code(code_encode(datum.output))
         ])
     ]))
 

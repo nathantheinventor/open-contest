@@ -23,6 +23,11 @@ General page code
         return `${fix(time.getHours())}:${fix(time.getMinutes())}`
     }
 
+    // HTML Encode 
+    function htmlEncode(msg) {
+        return msg.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    }
+
     // from https://www.quirksmode.org/js/cookies.html
     function readCookie(name) {
         var nameEQ = name + "=";
@@ -205,11 +210,15 @@ Problem page
         "pending_review": "Pending Review",
     };
 
+    function encodeText(msg) {
+        return htmlEncode(msg).replace(/\n/g, "<br/>").replace(/ /g, "&nbsp;")
+    }
+
     function showResults(sub) {
         if (sub.results == "compile_error") {
             $(".results.card .card-contents").html(`
                 <h3>Compile Error</h3>
-                <code>${sub.compile.replace(/\n/g, "<br/>").replace(/ /g, "&nbsp;")}</code>
+                <code>${encodeText(sub.compile)}</code>
             `);
         } else if (sub.type == "test" || sub.type == "custom") {
             var tabs = "";
@@ -233,25 +242,26 @@ Problem page
                 var answer = sub.answers[i];
                 var errorStr = `<div class="col-12">
                     <h4>Stderr Output</h4>
-                    <code>${error.replace(/\n/g, "<br/>").replace(/ /g, "&nbsp;")}</code>
+                    <code>${encodeText(error)}</code>
                 </div>`;
                 if (!error) {
                     errorStr = "";
                 }
+
                 if (sub.type ==  "test"){
                     results += `<div id="tabs-${i}">
                     <div class="row">
                         <div class="col-12">
                             <h4>Input</h4>
-                            <code>${input.replace(/\n/g, "<br/>").replace(/ /g, "&nbsp;")}</code>
+                            <code>${encodeText(input)}</code>
                         </div>
                         <div class="col-6">
                             <h4>Your Output</h4>
-                            <code>${output.replace(/\n/g, "<br/>").replace(/ /g, "&nbsp;")}</code>
+                            <code>${encodeText(output)}</code>
                         </div>
                         <div class="col-6">
                             <h4>Correct Answer</h4>
-                            <code>${answer.replace(/\n/g, "<br/>").replace(/ /g, "&nbsp;")}</code>
+                            <code>${encodeText(answer)}</code>
                         </div>
                         ${errorStr}
                     </div>
@@ -262,11 +272,11 @@ Problem page
                     <div class="row">
                         <div class="col-12">
                             <h4>Your Input</h4>
-                            <code>${input.replace(/\n/g, "<br/>").replace(/ /g, "&nbsp;")}</code>
+                            <code>${encodeText(input)}</code>
                         </div>
                         <div class="col-12">
                             <h4>Your Output</h4>
-                            <code>${output.replace(/\n/g, "<br/>").replace(/ /g, "&nbsp;")}</code>
+                            <code>${encodeText(output)}</code>
                         </div>
                         ${errorStr}
                     </div>

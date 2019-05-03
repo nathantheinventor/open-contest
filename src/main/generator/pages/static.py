@@ -33,6 +33,30 @@ class FAQ(UIElement):
             cls="faq"
         )
 
+register.web("/about", "any", lambda params, user: Page(
+        h2("About", cls="page-title"),
+        Card("The Creator", """
+        OpenContest was written by Nathan Collins, a senior computer science student at BJU,
+        as an independent study project in the fall of 2018.
+        """),
+        Card("Enhancements", """
+        Dr. Schaub's Internet Application Development class added several features in the
+        spring of 2019. The following students contributed enhancements:
+        <ul>
+        <li>Andrew Avinante, Carter Shean, Zac Hayes, and Robert Meyer contributed additional reports.</li>
+        <li>Noah Mansfield contributed the Auto Rejudge.</li>
+        <li>Ryan Longacre and Levi Lohmeyer contributed bug fixes.</li>
+        <li>Zac Hayes implemented the judge review queue.</li>
+        <li>Robert Meyer contributed the test with custom input feature.</li>
+        <li>Cole Stegall contributed the judge diff view.</li>
+        <li>Tim Kephart enhanced the autojudge and contributed the submission download feature.</li>
+        <li>Michael Bruno implemented per-problem time limits.</li>
+        <li>Michael Johannes implemented configurable problem information blocks.</li>
+        </ul>
+        """)
+    ))
+
+
 # Fake privacy policy for laughs
 register.web("/privacy2", "any", lambda params, user: Page(
         h2("Privacy Policy", cls="page-title"),

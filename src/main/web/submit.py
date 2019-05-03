@@ -44,7 +44,10 @@ exts = {
 def readFile(path):
     try:
         with open(path, "rb") as f:
-            return f.read(1000000).decode("utf-8")
+            data = f.read(Submission.MAX_OUTPUT_LEN + 1).decode("utf-8")
+            if len(data) > Submission.MAX_OUTPUT_LEN:
+                data = data[:-1] + "\n... additional data truncated ..."
+            return data
     except:
         return None
 
@@ -108,47 +111,39 @@ def runCode(sub):
     results = []
     result = "ok"
 
-    if sub.type != "custom":
-        for i in range(tests):
+    for i in range(tests):
+        if sub.type == "custom":
+            inputs.append(sub.custominput)
+            answers.append("")
+        else:
             inputs.append(sub.problem.testData[i].input)
-            errors.append(readFile(f"/tmp/{sub.id}/out/err{i}.txt"))
-            outputs.append(readFile(f"/tmp/{sub.id}/out/out{i}.txt"))
             answers.append(sub.problem.testData[i].output)
 
-            anstrip = strip((answers[-1] or "").rstrip()).splitlines()
-            outstrip = strip((outputs[-1] or "").rstrip()).splitlines()
+        errors.append(readFile(f"/tmp/{sub.id}/out/err{i}.txt"))
+        outputs.append(readFile(f"/tmp/{sub.id}/out/out{i}.txt"))
 
-            res = readFile(f"/tmp/{sub.id}/out/result{i}.txt")
-            if res == "ok" and strip((answers[-1] or "").rstrip()) != strip((outputs[-1] or "").rstrip()):
-                if compareStrings(strip((outputs[-1] or "").rstrip()), strip((answers[-1] or "").rstrip())):
-                    res = "incomplete_output"
-                elif compareStrings(strip((answers[-1] or "").rstrip()), strip((outputs[-1] or "").rstrip())):
-                    res = "extra_output"
-                else:
-                    res = "wrong_answer"
-            if res == None:
-                res = "tle"
-            
-            results.append(res)
+        anstrip = strip((answers[-1] or "").rstrip()).splitlines()
+        outstrip = strip((outputs[-1] or "").rstrip()).splitlines()
 
-            # Make result the first incorrect result
-            if res != "ok" and result == "ok":
-                result = res
-    else:
-        inputs.append(sub.custominput)
-        outputs.append(readFile(f"/tmp/{sub.id}/out/out0.txt"))
-        errors.append(readFile(f"/tmp/{sub.id}/out/err0.txt"))
-        if(inputs[0]  != None): inputs[0] =  inputs[0].replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
-        if(outputs[0] != None):outputs[0] = outputs[0].replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
-        if(errors[0]  != None): errors[0] =  errors[0].replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
-        
-        answers.append("")
-        res = readFile(f"/tmp/{sub.id}/out/result0.txt")
-        if res == None:
+        res = readFile(f"/tmp/{sub.id}/out/result{i}.txt")
+        if res == "ok" and strip((answers[-1] or "").rstrip()) != strip((outputs[-1] or "").rstrip()):
+            if sub.type == "custom":
+                pass
+            elif compareStrings(strip((outputs[-1] or "").rstrip()), strip((answers[-1] or "").rstrip())):
+                res = "incomplete_output"
+            elif compareStrings(strip((answers[-1] or "").rstrip()), strip((outputs[-1] or "").rstrip())):
+                res = "extra_output"
+            else:
+                res = "wrong_answer"
+        elif res == None:
             res = "tle"
+        
+        results.append(res)
+
+        # Make result the first incorrect result
         if res != "ok" and result == "ok":
             result = res
-        results.append(res)
+
 
     sub.result = result
     if sub.result in ["ok", "runtime_error", "tle"]:
@@ -228,13 +223,18 @@ def download(params, setHeader, user):
     f.write(submission.code)
     f.close()
     for index, input in enumerate(submission.inputs):
-        f=open(f"/tmp/{id}/zip/input_{index}.txt", "w+")
-        f.write(input)
-        f.close()
+        with open(f"/tmp/{id}/zip/input_{index}.txt", "w+") as f:
+            f.write(input)
+    i = 0
     for index, output in enumerate(submission.outputs):
-        f=open(f"/tmp/{id}/zip/output_{index}.txt", "w+")
-        f.write(output)
-        f.close()
+        full_output_filename = f"/db/submissions/{submission.id}/output{i}.txt"
+        output_dest_filename = f"/tmp/{id}/zip/output_{index}.txt"
+        if os.path.exists(full_output_filename):
+            shutil.copyfile(full_output_filename, output_dest_filename)
+        else:
+            with open(output_dest_filename, "w+") as f:
+                f.write(output)
+        i += 1
     with ZipFile(f"/tmp/{id}/download.zip",'w') as zip:
         for root, directories, files in os.walk(f"/tmp/{id}/zip/"):
             for file in files:

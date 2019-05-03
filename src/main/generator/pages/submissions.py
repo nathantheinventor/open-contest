@@ -60,7 +60,7 @@ class SubmissionCard(UIElement):
                 h.br(),
                 h.br(),
                 h.strong("Code:"),
-                h.code(submission.code.replace("\n", "<br/>").replace(" ", "&nbsp;"), cls="code"),
+                h.code(code_encode(submission.code), cls="code"),
             ])
         ])
 

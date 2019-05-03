@@ -115,16 +115,16 @@ def editContest(params, user):
                 ]),                               
                 h.input(type="hidden", id="scoreboardOff", value=scoreboardOff),
                 div(cls="form-group col-6", contents=[
+                    h.label(**{"for": "scoreboard-off-time", "contents":"Turn Scoreboard Off Time"}),
+                    h.input(cls="form-control", name="scoreboard-off-time", id="scoreboard-off-time", type="time")
+                ]),
+                div(cls="form-group col-6", contents=[
                     h.label(**{"for": "scoreboard-tie-breaker", "contents":"Sample Data Breaks Ties"}),
                     h.select(cls="form-control", name="scoreboard-tie-breaker", id="scoreboard-tie-breaker", contents=[
                         *[h.option(text, value=val, selected="selected") if tieBreaker == val else
                           h.option(text, value=val) for text, val in zip(("On", "Off"), (True, False))]
                     ])
                 ]),
-                div(cls="form-group col-6", contents=[
-                    h.label(**{"for": "scoreboard-off-time", "contents":"Turn Scoreboard Off Time"}),
-                    h.input(cls="form-control", name="scoreboard-off-time", id="scoreboard-off-time", type="time")
-                ])                
             ]),
             div(cls="align-right col-12", contents=[
                 h.button("Save", cls="button", onclick="editContest()")

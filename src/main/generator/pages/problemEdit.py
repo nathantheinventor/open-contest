@@ -24,18 +24,18 @@ class TestDataCard(UIElement):
     def __init__(self, x):
         num, testData, samples = x
         isSample = num < samples
-        title = f"Sample Data #{num}" if isSample else f"Test Data #{num}"
+        title = f"Sample Data #{num}" if isSample else f"Judge Data #{num}"
         cls = "blue" if isSample else ""
         if testData.input == None: testData.input = "" 
         if testData.output == None: testData.output = "" 
         self.html = Card(title, div(cls="row", contents=[
             div(cls="col-6", contents=[
                 p("Input:", cls="no-margin"),
-                h.code(testData.input.replace(" ", "&nbsp;").replace("\n", "<br/>"))
+                h.code(code_encode(testData.input))
             ]),
             div(cls="col-6", contents=[
                 p("Output:", cls="no-margin"),
-                h.code(testData.output.replace(" ", "&nbsp;").replace("\n", "<br/>"))
+                h.code(code_encode(testData.output))
             ])
         ]), cls=cls, delete=f"deleteTestData({num})")
 
@@ -76,12 +76,12 @@ def editProblem(params, user):
                     h.label(**{"for": "problem-constraints", "contents":"Constraints"}),
                     h.textarea(cls="form-control", name="problem-constraints", id="problem-constraints", contents=escape(prob.constraints))
                 ]),
-                div(cls="form-group col-12", contents=[
+                div(cls="form-group col-6", contents=[
                     h.label(**{"for": "problem-samples", "contents":"Number of Sample Cases"}),
                     h.input(cls="form-control", type="number", name="problem-samples", id="problem-samples", value=prob.samples)
                 ]),
                 div(cls="form-group col-6", contents=[
-                    h.label(**{"for": "problem-timelimit", "contents":"Problem Time Limit"}),
+                    h.label(**{"for": "problem-timelimit", "contents":"Time Limit (secs)"}),
                     h.input(cls="form-control", type="number",name="problem-timelimit", id="problem-timelimit", value=escape(prob.timelimit))
                 ]),
             ]),

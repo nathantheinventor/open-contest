@@ -2,12 +2,17 @@ from code.util.db import getKey, setKey, listSubKeys, deleteKey, User, Problem
 from uuid import uuid4
 import logging
 from readerwriterlock import rwlock
+import os.path
 
 lock = rwlock.RWLockWrite()
 
 submissions = {}
 
 class Submission:
+
+    MAX_OUTPUT_LEN = 10000000
+    MAX_DISPLAY_OUTPUT_LEN = 10000
+
     saveCallbacks = []
     def __init__(self, id=None):
         if id != None:
@@ -83,7 +88,21 @@ class Submission:
             if self.id == None:
                 self.id = str(uuid4())
                 submissions[self.id] = self
+            full_outputs = []
+            for i in range(len(self.outputs)):
+                full_output = self.outputs[i] 
+                if full_output == None:
+                    full_output = ""
+                full_outputs.append(full_output)
+                if len(full_output) > Submission.MAX_DISPLAY_OUTPUT_LEN:
+                    self.outputs[i] = full_output[:Submission.MAX_DISPLAY_OUTPUT_LEN] + "\n... additional output not shown..."
+
             setKey(f"/submissions/{self.id}/submission.json", self.toJSONSimple())
+            if not os.path.exists(f"/db/submissions/{self.id}/output0.txt"):
+                for i in range(len(self.outputs)):
+                    with open(f"/db/submissions/{self.id}/output{i}.txt", "w") as f:
+                        f.write(full_outputs[i])
+
         for callback in Submission.saveCallbacks:
             callback(self)
     

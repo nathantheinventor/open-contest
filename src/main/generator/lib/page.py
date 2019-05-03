@@ -42,7 +42,7 @@ class Footer(UIElement):
             h2('Copyright &copy; {} by <a href="https://nathantheinventor.com" target="_blank">Nathan Collins</a>'.format(datetime.now().year)),
             div(cls="footer-links", contents=[
                 h.span(h.a("Privacy Policy", href="/privacy", target="_blank")),
-                h.span(h.a("About", href="https://github.com/nathantheinventor/open-contest/", target="_blank")),
+                h.span(h.a("About", href="/about", target="_blank")),
                 h.span(h.a("FAQs", href="/faqs", target="_blank"))
             ])
         ])
@@ -93,9 +93,9 @@ class Card(UIElement):
         if delete:
             deleteLink = div(h.i("clear", cls="material-icons"), cls="delete-link", onclick=delete)
         elif reply:
-            deleteLink = div("Reply", cls="delete-link", onclick=reply)
+            deleteLink = div(h.button("Reply", cls="btn btn-primary", onclick=reply), cls="delete-link")
         if rejudge:
-            deleteLink = div(h.button("Rejudge", cls="btn btn-primary" ,onclick=rejudge), cls="delete-link")
+            deleteLink = div(h.button("Rejudge", cls="btn btn-primary", onclick=rejudge), cls="delete-link")
         result = ''
         if user != None and problemId != None:
             icon = ''

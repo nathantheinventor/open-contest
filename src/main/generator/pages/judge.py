@@ -59,10 +59,11 @@ def statusOptions(status):
 class TestCaseTab(UIElement):
     def __init__(self, x, sub):
         num, result = x
+        test_label = "Sample" if num < sub.problem.samples else "Judge"
         self.html = h.li(
             h.a(href=f"#tabs-{sub.id}-{num}", contents=[
                 h.i(cls=f"fa fa-{icons[result]}", title=f"{verdict_name[result]}"),
-                f"Sample #{num}"
+                f"{test_label} #{num}"
             ])
         )
 
@@ -75,17 +76,17 @@ class TestCaseData(UIElement):
             div(cls="row", contents=[
                 div(cls="col-12", contents=[
                     h.h4("Input"),
-                    h.code(input.replace(" ", "&nbsp;").replace("\n", "<br/>"))
+                    h.code(code_encode(input))
                 ])
             ]),
             div(cls="row", contents=[
                 div(cls="col-6", contents=[
                     h.h4("Output"),
-                    h.code(output.replace(" ", "&nbsp;").replace("\n", "<br/>"))
+                    h.code(code_encode(output))
                 ]),
                 div(cls="col-6", contents=[
                     h.h4("Correct Answer"),
-                    h.code(answer.replace(" ", "&nbsp;").replace("\n", "<br/>"))
+                    h.code(code_encode(answer))
                 ])
             ]),
             div(cls="row", contents=[
@@ -140,7 +141,7 @@ class SubmissionCard(UIElement):
                 h.br(),
                 h.br(),
                 h.strong("Code:"),
-                h.code(submission.code.replace("\n", "<br/>").replace(" ", "&nbsp;"), cls="code"),
+                h.code(code_encode(submission.code), cls="code"),
                 div(cls="result-tabs", id="result-tabs", contents=[
                     h.ul(*map(lambda x: TestCaseTab(x, submission), enumerate(submission.results))),
                     *map(lambda x: TestCaseData(x, submission), zip(range(submission.problem.tests), submission.inputs, submission.outputs, submission.errors, submission.answers))
