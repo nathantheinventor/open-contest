@@ -5,9 +5,6 @@ import logging
 from code.util import register
 import time
 
-def custom_sort(submission):
-    return submission[2]
-
 def constructTableRows(listOfSubmissions):
     tableRows = []
     for sub in listOfSubmissions:
@@ -27,7 +24,7 @@ def generateLogReport(params, user):
             h1("&nbsp;"),
             h1("No Contest Available", cls="center")
         )
-    elif contest.scoreboardOff <= time.time() * 1000 and not user.isAdmin():
+    elif contest.scoreboardOff <= time.time() * 1000 and (not user or not user.isAdmin()):
         return Page(
             h1("&nbsp;"),
             h1("Scoreboard is off.", cls="center")
@@ -56,7 +53,7 @@ def generateLogReport(params, user):
             correctSubmissions.append((user, problem, users[user][problem].timestamp))
 
     # https://www.afternerd.com/blog/python-sort-list/
-    correctSubmissions.sort(key=custom_sort)
+    correctSubmissions.sort(key=lambda entry: entry[2])
 
     tableRows = constructTableRows(correctSubmissions)
 
@@ -78,4 +75,4 @@ def generateLogReport(params, user):
 
 
 
-register.web("/correctlog", "admin", generateLogReport)
+register.web("/correctlog", "any", generateLogReport)

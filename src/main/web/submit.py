@@ -77,7 +77,7 @@ def saveData(id: str, data: list, fileType: str):
 
 # Remove trailing whitespace
 def strip(text):
-    return re.sub("[ \t\r]*\n", "\n", text or "")
+    return re.sub("[ \t\r]*\n", "\n", text or "").rstrip()
 
 # Checks if <incomplete> contains only lines from <full> in order
 # Can be missing some lines in the middle or at the end
@@ -161,6 +161,8 @@ def runCode(sub: Submission, user: User) -> list:
             outstrip = strip(outputs[-1])
             answerLines = anstrip.split('\n')
             outLines = outstrip.split('\n')
+
+            print(answerLines, outLines)
 
             res = readFile(f"/tmp/{sub.id}/out/result{i}.txt")
             if res == None:

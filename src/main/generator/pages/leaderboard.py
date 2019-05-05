@@ -45,11 +45,11 @@ def leaderboard(params, user):
         problemSummary[prob.id] = [0, 0]
 
     scores = []
-    for user in subs:
-        usersubs = subs[user]
+    for userid in subs:
+        usersubs = subs[userid]
         scor = score(usersubs, start, problemSummary)
         scores.append((
-            User.get(user).username,
+            User.get(userid).username,
             scor[0],
             scor[1],
             scor[2],
@@ -119,7 +119,8 @@ def leaderboard(params, user):
         div(cls="align-right", contents=[
             h.br(),
             h.button("Correct Log", cls="button", onclick="window.location='/correctlog'")
-        ])
+        ] if user.isAdmin() else []
+        )
     )
 
 def contestreport(params, user):
