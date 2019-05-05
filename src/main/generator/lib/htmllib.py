@@ -36,7 +36,7 @@ class UIElement:
         return str(self.html)
 
 def html_encode(m: str) -> str:
-    return m.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
+    return (m or '').replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
 
 def code_encode(m: str) -> str:
     return html_encode(m).replace(" ", "&nbsp;").replace("\n", "<br/>")

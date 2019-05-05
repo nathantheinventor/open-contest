@@ -36,11 +36,11 @@ class Problem:
             self.input       = details["input"]
             self.output      = details["output"]
             self.constraints = details["constraints"]
-            self.samples     = int(details["samples"])
-            self.tests       = int(details["tests"])
+            self.samples     = int(details["samples"])  # Number of sample test cases
+            self.tests       = int(details["tests"])    # Total number of test cases
             self.sampleData  = [Datum.get(id, i) for i in range(self.samples)]
             self.testData    = [Datum.get(id, i) for i in range(self.tests)]
-            self.timelimit   = details.get("timelimit",str(Problem.default_timelimit))
+            self.timelimit   = details.get("timelimit",str(Problem.default_timelimit)) # Time limit in seconds
         else:
             self.id          = None
             self.title       = None

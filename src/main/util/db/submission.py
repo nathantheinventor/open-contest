@@ -1,4 +1,4 @@
-from code.util.db import getKey, setKey, listSubKeys, deleteKey, User, Problem
+from code.util.db import getKey, setKey, listSubKeys, deleteKey, User, Problem, Contest
 from uuid import uuid4
 import logging
 from readerwriterlock import rwlock
@@ -10,8 +10,13 @@ submissions = {}
 
 class Submission:
 
-    MAX_OUTPUT_LEN = 10000000
-    MAX_DISPLAY_OUTPUT_LEN = 10000
+    TYPE_CUSTOM = "custom"  # test with custom input 
+    TYPE_SUBMIT = "submit"  # full submission
+    TYPE_TEST   = "test"    # test only
+
+    MAX_OUTPUT_LEN = 10000000    # (bytes) Submission output larger than this is discarded
+    MAX_DISPLAY_LEN = 50000      # (bytes) Submission output larger than this is not displayed
+    MAX_DISPLAY_LINES = 300      # (lines) Submission output having more lines than this is not displayed
 
     saveCallbacks = []
     def __init__(self, id=None):
@@ -25,31 +30,29 @@ class Submission:
             self.code        = details["code"]
             self.type        = details["type"]
             self.results     = details["results"]
-            self.inputs      = details["inputs"]
-            self.outputs     = details["outputs"]
-            self.errors      = details["errors"]
-            self.answers     = details["answers"]
             self.result      = details["result"]
             self.status      = details.get("status", None)
             self.checkout    = details.get("checkout", None)
             self.version     = details.get("version", 1)
         else:
             self.id          = None
-            self.user        = None
-            self.problem     = None
-            self.timestamp   = 0
-            self.language    = None
-            self.code        = None
+            self.user        = None     # Instance of User
+            self.problem     = None     # Instance of Problem
+            self.timestamp   = 0        # Time of submission
+            self.language    = None     
+            self.code        = None     # Source code
             self.type        = None
             self.results     = []
-            self.inputs      = []
-            self.outputs     = []
-            self.errors      = []
-            self.answers     = []
             self.result      = []
-            self.status      = None
-            self.checkout    = None
-            self.version     = 1
+            self.status      = None     # One of "Review", "Judged"
+            self.checkout    = None     # id of judge that has submission checked out
+            self.version     = 1        # Version number for judge changes to this record
+
+        self.inputs = []      # For display only
+        self.outputs = []     # For display only
+        self.errors = []      # For display only
+        self.answers = []     # For display only
+        self.compile = None   # Compile error
 
     def get(id: str):
         with lock.gen_rlock():
@@ -67,10 +70,6 @@ class Submission:
             "code":      self.code,
             "type":      self.type,
             "results":   self.results,
-            "inputs":    self.inputs,
-            "outputs":   self.outputs,
-            "errors":    self.errors,
-            "answers":   self.answers,
             "result":    self.result,
             "status":    self.status,
             "checkout":  self.checkout,
@@ -83,25 +82,51 @@ class Submission:
     def getContestantIndividualResults(self):
         return ["pending_review" if self.result != "pending" and self.status == "Review" else res for res in self.results]
 
+    def truncateForDisplay(data: str) -> str:
+        """Truncates `data` to maximum of Submission.MAX_DISPLAY_OUTPUT_LEN bytes and Submission.MAX_DISPLAY_LINES lines"""
+
+        truncated = False
+        if data and len(data) > Submission.MAX_DISPLAY_LEN:
+            truncated = True
+            data = data[:Submission.MAX_DISPLAY_LEN]
+            
+        lines = data.split('\n')
+        if len(lines) > Submission.MAX_DISPLAY_LINES:
+            lines = lines[:Submission.MAX_DISPLAY_LINES]
+            data = '\n'.join(lines)
+            truncated = True
+        
+        if truncated:
+             data += "... additional data not displayed ..."
+
+        return data
+
+    def readFilesForDisplay(self, fileType: str) -> list:
+        results = []
+        for i in range(self.problem.tests):
+            try:
+                with open(f"/db/submissions/{self.id}/{fileType}{i}.txt") as f:
+                    data = f.read(Submission.MAX_DISPLAY_LEN + 1)
+                    results.append(Submission.truncateForDisplay(data))
+            except:
+                logging.error(f"Problem reading {fileType} #{i} for submission {self.id}")
+                results.append('Error reading data')
+
+        return results
+
     def save(self):
         with lock.gen_wlock():
             if self.id == None:
-                self.id = str(uuid4())
+                c = Contest.getCurrent()
+                probNum = 0
+                if c:
+                    for i, prob in enumerate(c.problems):
+                        if prob == self.problem:
+                            probNum = i
+                self.id = f"{self.user.username}-{probNum}-{uuid4()}"
                 submissions[self.id] = self
-            full_outputs = []
-            for i in range(len(self.outputs)):
-                full_output = self.outputs[i] 
-                if full_output == None:
-                    full_output = ""
-                full_outputs.append(full_output)
-                if len(full_output) > Submission.MAX_DISPLAY_OUTPUT_LEN:
-                    self.outputs[i] = full_output[:Submission.MAX_DISPLAY_OUTPUT_LEN] + "\n... additional output not shown..."
 
             setKey(f"/submissions/{self.id}/submission.json", self.toJSONSimple())
-            if not os.path.exists(f"/db/submissions/{self.id}/output0.txt"):
-                for i in range(len(self.outputs)):
-                    with open(f"/db/submissions/{self.id}/output{i}.txt", "w") as f:
-                        f.write(full_outputs[i])
 
         for callback in Submission.saveCallbacks:
             callback(self)
@@ -114,20 +139,6 @@ class Submission:
         
     def toJSON(self):
         with lock.gen_rlock():
-            #logging.info(self.__dict__.keys())
-            if "compile" in self.__dict__:
-                return {
-                    "id":        self.id,
-                    "user":      self.user.id,
-                    "problem":   self.problem.id,
-                    "timestamp": self.timestamp,
-                    "language":  self.language,
-                    "code":      self.code,
-                    "type":      self.type,
-                    "compile":   self.compile,
-                    "results":   self.results
-                }
-            
             
             return {
                 "id":        self.id,
@@ -138,14 +149,15 @@ class Submission:
                 "code":      self.code,
                 "type":      self.type,
                 "results":   self.results,
-                "inputs":    self.inputs [:self.problem.samples] if self.type != "custom" else self.inputs,
-                "outputs":   self.outputs[:self.problem.samples] if self.type != "custom" else self.outputs,
-                "errors":    self.errors [:self.problem.samples] if self.type != "custom" else self.errors,
-                "answers":   self.answers[:self.problem.samples] if self.type != "custom" else self.answers,
                 "result":    self.result,
                 "status":    self.status,
                 "checkout":  self.checkout,
                 "version":   self.version,
+                "compile":   self.compile,
+                "inputs":    self.inputs,
+                "outputs":   self.outputs,
+                "answers":   self.answers,
+                "errors":    self.errors
             }
 
     def forEach(callback: callable):
@@ -157,8 +169,11 @@ class Submission:
         Submission.saveCallbacks.append(callback)
     
     def all():
+        """Returns all submissions sorted by timestamp"""
         with lock.gen_rlock():
-            return [submissions[id] for id in submissions]
+            return sorted((submissions[id] for id in submissions), 
+                key=lambda sub: sub.timestamp)
+
 
 with lock.gen_wlock():
     for id in listSubKeys("/submissions"):

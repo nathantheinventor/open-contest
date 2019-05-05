@@ -22,6 +22,39 @@ class CodeEditor(UIElement):
             ])
         ])
 
+class ProblemCard(UIElement):
+    def __init__(self, prob: Problem, user: User):
+        probpath = f"/problems/{prob.id}"
+
+        btn = f"rejudgeAll('{prob.id}')" if user.isAdmin() else None
+
+        title = prob.title
+        if not user.isAdmin():
+            # Compute problem status
+            icon = ''
+            result = ''
+            for sub in Submission.all():
+                if sub.problem != prob or sub.user != user or sub.status == "Review":
+                    continue
+
+                if sub.user == user and "ok" == sub.result:
+                    icon = "check"
+                    break
+                else:
+                    icon = "times"
+
+            if icon != '':
+                result = f'<i class="fa fa-{icon}"></i> '   
+
+            title = result + title
+
+        self.html = Card(
+                title,
+                prob.description,
+                probpath,
+                rejudge=btn
+            )
+
 def getSample(datum, num: int) -> Card:
     if datum.input == None: datum.input = "" 
     if datum.output == None: datum.output = "" 
@@ -65,12 +98,12 @@ def viewProblem(params, user):
         h2(problem.title, cls="page-title"),
         div(cls="problem-description", contents=contents),
         CodeEditor(),
-        div(cls="stmt card ui-sortable-handle", contents=[
+        div(cls="stmt card ui-sortable-handle blk-custom-input", contents=[
             div(cls="card-header", contents=[h2("Custom Input", cls="card-title")]),
             div(cls="card-contents", contents=[h.textarea(id="custom-input", cls="col-12")])
         ]),
         div(cls="align-right",id="custom-code-text", contents=[
-            h.button("Test With Custom Input", cls="button test-custom button-white"),
+            h.input("Custom Input", type="checkbox", id="use-custom-input"),
             h.button("Test Code", cls="button test-samples button-white"),
             h.button("Submit Code", cls="button submit-problem")
         ])
@@ -80,22 +113,9 @@ def listProblems(params, user):
     if Contest.getCurrent():
         contest = Contest.getCurrent()
         probCards = []
-        for prob in contest.problems:
-            probid = f"/problems/{prob.id}"
+        for prob in contest.problems:            
+            probCards.append(ProblemCard(prob, user))
 
-            btn = "rejudgeAll('?')".replace('?', probid.split('/')[-1]) if user.isAdmin() else None
-            
-            probCards.append(Card(
-                prob.title,
-                prob.description,
-                probid,
-                None,
-                None,
-                None,
-                user,
-                prob.id,
-                btn
-            ))
         return Page(
             h2("Problems", cls="page-title"),
             *probCards

@@ -41,7 +41,9 @@ verdict_name = {
 def resultOptions(result):
     ans = []
     for res in verdict_name:
-        if result == res:
+        if res == "pending" or res == "pending_review":
+            pass  # These should not appear as choices in the dropdown
+        elif result == res:
             ans.append(h.option(verdict_name[res], value=res, selected="selected"))
         else:
             ans.append(h.option(verdict_name[res], value=res))
@@ -119,6 +121,7 @@ class SubmissionCard(UIElement):
             ]),
             div(cls="modal-body", contents=[
                 h.input(type="hidden", id="version", value=f"{submission.version}"),
+                h.strong(f"Contestant: {submission.user.username}"), h.br(),
                 h.strong("Language: <span class='language-format'>{}</span>".format(submission.language)),
                 h.br(),
                 h.strong("Result: ",
@@ -144,7 +147,9 @@ class SubmissionCard(UIElement):
                 h.code(code_encode(submission.code), cls="code"),
                 div(cls="result-tabs", id="result-tabs", contents=[
                     h.ul(*map(lambda x: TestCaseTab(x, submission), enumerate(submission.results))),
-                    *map(lambda x: TestCaseData(x, submission), zip(range(submission.problem.tests), submission.inputs, submission.outputs, submission.errors, submission.answers))
+                    *map(lambda x: TestCaseData(x, submission), zip(range(submission.problem.tests), 
+                        submission.readFilesForDisplay('in'), submission.readFilesForDisplay('out'), 
+                        submission.readFilesForDisplay('error'), submission.readFilesForDisplay('answer')))
                 ])
             ])
         ])
@@ -169,12 +174,16 @@ class SubmissionRow(UIElement):
             ),
             h.td(sub.status),
             h.td(checkoutUser.username if checkoutUser is not None else "None"),
-            onclick=f"submissionPopup('{sub.id}', false)"
+            id=sub.id,
+            cls="submit-row"
         )
 
 class SubmissionTable(UIElement):
     def __init__(self, contest):
-        subs = filter(lambda sub: sub.user.type != "admin" and contest.start <= sub.timestamp <= contest.end, Submission.all())
+        subs = sorted(
+            filter(lambda sub: sub.user.type != "admin" and contest.start <= sub.timestamp <= contest.end, Submission.all()),
+            key=lambda s: s.timestamp)
+
         self.html = h.table(
             h.thead(
                 h.tr(

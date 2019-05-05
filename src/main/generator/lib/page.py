@@ -1,4 +1,4 @@
-from code.util.db import Contest, Submission
+from code.util.db import Contest, Submission, User
 from .htmllib import *
 from datetime import datetime
 from uuid import uuid4
@@ -10,7 +10,8 @@ class Header(UIElement):
     def __init__(self, title):
         self.html = div(cls="top", contents=[
             div(cls="header", contents=[
-                h1(title)
+                h1(title),
+                # p(f"User: {User.getCurrentUser().username}")
             ])
         ])
 
@@ -84,7 +85,7 @@ class Page(UIElement):
         generateStatic()
 
 class Card(UIElement):
-    def __init__(self, title, contents, link=None, cls=None, delete=None, reply=None, user=None, problemId=None, rejudge=None):
+    def __init__(self, title, contents, link=None, cls=None, delete=None, reply=None, rejudge=None):
         if cls == None:
             cls = "card"
         else:
@@ -96,27 +97,10 @@ class Card(UIElement):
             deleteLink = div(h.button("Reply", cls="btn btn-primary", onclick=reply), cls="delete-link")
         if rejudge:
             deleteLink = div(h.button("Rejudge", cls="btn btn-primary", onclick=rejudge), cls="delete-link")
-        result = ''
-        if user != None and problemId != None:
-            icon = ''
-            tmstmp = 0
-            result = ''
-            for i in Submission.all():
-                if user.isAdmin():
-                    break
-                if i.problem != None:
-                    if i.problem.id == problemId and i.user.id == user.id and "ok" == i.result:
-                        icon = "check"
-                        tmstmp = i.timestamp
-                        break
-                    elif i.problem.id == problemId and i.user.id == user.id and "pending" != i.result:
-                        icon = "times"
-                        tmstmp = i.timestamp
-            if icon != '':
-                result = f'<i class="fa fa-{icon}"></i> '
+
         self.html = h.div(cls=cls, contents=[
             div(cls="card-header", contents=[
-                h2(contents=[result, title], cls="card-title"),
+                h2(contents=[title], cls="card-title"),
                 deleteLink
             ]),
             div(cls="card-contents", contents=contents)

@@ -4,6 +4,7 @@ import json
 import os
 import mimetypes
 from code.util import auth
+from code.util.db import User
 from urllib.parse import parse_qs
 import traceback
 import logging
@@ -112,9 +113,9 @@ def serve(env):
     statusCode = 200
     response = ""
 
-    if url.startswith("/static"):
-        path = url[7:]
-        return serveStatic(path)
+    # if url.startswith("/static"):
+    #     path = url[7:]
+    #     return serveStatic(path)
 
     if f"{url}|{method}" in paths:
         endpoint = paths[f"{url}|{method}"]
@@ -130,11 +131,12 @@ def serve(env):
             f = env["wsgi.input"].read().decode("utf-8")
             params = parse_qs(f)
             user = auth.getUser(cookie)
+            # User.setCurrentUser(user)
             username = f'[{user.username}]' if user else ''
 
             dolog = logging.debug if endpoint.logdebug else logging.info
             dolog(datetime.now().strftime('%H:%M:%S') + username + ":" + url + " -------------------------")
-            dolog(params)
+            logging.debug(params)
             for param in params:
                 if len(params[param]) == 1:
                     params[param] = params[param][0]

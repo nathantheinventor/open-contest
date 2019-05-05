@@ -25,6 +25,8 @@ General page code
 
     // HTML Encode 
     function htmlEncode(msg) {
+        if (!msg)
+            msg = ''
         return msg.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
     }
 
@@ -141,7 +143,7 @@ Problem page
                 languages = JSON.parse(localStorage.languages);
                 res();
             } else {
-                $.post("/static/languages.json", {}, data => {
+                $.get("/static/languages.json", {}, data => {
                     localStorage.languages = JSON.stringify(data);
                     languages = JSON.parse(localStorage.languages);
                     res();
@@ -164,7 +166,7 @@ Problem page
             if (localStorage[language] != undefined) {
                 res(localStorage[language]);
             } else {
-                $.post("/static/examples/" + languages[language].example, {}, data => {
+                $.get("/static/examples/" + languages[language].example, {}, data => {
                     localStorage[language] = data;
                     res(data);
                 });
@@ -215,7 +217,12 @@ Problem page
     }
 
     function showResults(sub) {
-        if (sub.results == "compile_error") {
+        if (sub.results == "internal_error") {
+            $(".results.card .card-contents").html(`
+                <h3>Unexpected Error</h3>
+                <p>${sub.error}</p>
+            `);
+        } else if (sub.results == "compile_error") {
             $(".results.card .card-contents").html(`
                 <h3>Compile Error</h3>
                 <code>${encodeText(sub.compile)}</code>
@@ -230,16 +237,13 @@ Problem page
             for (var i = 0; i < samples; i ++) {
                 var res = sub.results[i];
                 var icon = icons[res];
-                if (sub.type ==  "test"){
-                    tabs += `<li><a href="#tabs-${i}"><i class="fa fa-${icon}" title="${verdict_name[res]}"></i> Sample #${i}</a></li>`;
-                }
-                if(sub.type == "custom"){
-                    tabs += `<li><a href="#tabs-${i}"><i class="fa fa-${icon}" title="${verdict_name[res]}"></i> Custom </a></li>`;
-                }
+                var tabLabel = (sub.type == "custom") ? "Custom" : `Test #${i}`
+                tabs += `<li><a href="#tabs-${i}"><i class="fa fa-${icon}" title="${verdict_name[res]}"></i> ${tabLabel}</a></li>`;
+                
                 var input = sub.inputs[i];
                 var output = sub.outputs[i];
                 var error = sub.errors[i];
-                var answer = sub.answers[i];
+                var answer = (sub.type == "custom") ? "N/A" : sub.answers[i];
                 var errorStr = `<div class="col-12">
                     <h4>Stderr Output</h4>
                     <code>${encodeText(error)}</code>
@@ -248,8 +252,7 @@ Problem page
                     errorStr = "";
                 }
 
-                if (sub.type ==  "test"){
-                    results += `<div id="tabs-${i}">
+                results += `<div id="tabs-${i}">
                     <div class="row">
                         <div class="col-12">
                             <h4>Input</h4>
@@ -266,22 +269,6 @@ Problem page
                         ${errorStr}
                     </div>
                 </div>`;
-                }
-                if(sub.type == "custom"){
-                    results += `<div id="tabs-${i}">
-                    <div class="row">
-                        <div class="col-12">
-                            <h4>Your Input</h4>
-                            <code>${encodeText(input)}</code>
-                        </div>
-                        <div class="col-12">
-                            <h4>Your Output</h4>
-                            <code>${encodeText(output)}</code>
-                        </div>
-                        ${errorStr}
-                    </div>
-                </div>`;
-                }
                 
             }
             $(".results.card .card-contents").html(`<div id="result-tabs">
@@ -344,10 +331,7 @@ Problem page
             $(".submit-problem").attr("disabled", true);
             $(".submit-problem").addClass("button-gray");
             $(".test-samples").attr("disabled", true);
-            $(".test-samples").addClass("button-gray");
-            $(".test-custom").attr("disabled", true);
-            $(".test-custom").addClass("button-gray");
-            
+            $(".test-samples").addClass("button-gray");            
         }
 
         function enableButtons() {
@@ -355,43 +339,35 @@ Problem page
             $(".submit-problem").removeClass("button-gray");
             $(".test-samples").attr("disabled", false);
             $(".test-samples").removeClass("button-gray");
-            $(".test-custom").attr("disabled", false);
-            $(".test-custom").removeClass("button-gray");
         }
 
-        // When you click the submit button, submit the code to the server
-        $("button.submit-problem").click(_ => {
-            createResultsCard();
-            var code = editor.getValue();
-            disableButtons();
-            $.post("/submit", {problem: thisProblem, language: language, code: code, type: "submit"}, results => {
-                enableButtons();
-                showResults(results);
-            });
-        });
-
-        // When you click the test code button, test the code
-        $("button.test-samples").click(_ => {
-            createResultsCard();
-            var code = editor.getValue();
-            disableButtons();
-            $.post("/submit", {problem: thisProblem, language: language, code: code, type: "test"}, results => {
-                enableButtons();
-                showResults(results);
-            });
-        });
-
-        // When you click the test custom input code button, test the code with custom input
-        $("button.test-custom").click(_ => {
+        // submit or test code
+        $("button.test-samples, button.submit-problem").click(function() {
             createResultsCard();
             var code = editor.getValue();
             var input = $("#custom-input").val();
+
+            var type = $(this).text() == "Submit Code" ? "submit" :
+                        $("#use-custom-input")[0].checked ? "custom" :
+                            "test";
+
             disableButtons();
-            $.post("/submit", {problem: thisProblem, language: language, code: code, type: "custom", input:input}, results => {
+            $.post("/submit", {
+                problem: thisProblem, language: language, code: code, type: type, input: input
+            }).done(function(results) {
                 enableButtons();
                 showResults(results);
+            }).fail(function() {
+                enableButtons();
+                showResults({ results: 'internal_error', error: 'Unexpected problem testing your submission. Please notify the contest administrator.' });
             });
         });
+
+        $("#use-custom-input").change(function() {
+            $(".blk-custom-input").css('display', this.checked ? 'block' : 'none');
+        })
+
+        $(".blk-custom-input").css('display', 'none');
     }
 
     // Allow problem info blocks to be sorted
@@ -763,6 +739,21 @@ Messages Page
 /*--------------------------------------------------------------------------------------------------
 Judging Page
 --------------------------------------------------------------------------------------------------*/
+    // Page initialization
+    $(function() {
+        // Handle change event for result-choice dropdown in submission popup
+        $('.modal-dialog').on('change', '.result-choice', function() {
+            $(".status-choice").val("Judged");
+        });
+
+        $('.submit-row').click(function() {
+            if ($(this).text().indexOf("Executing") == -1) {
+                submissionPopup($(this).attr('id'));
+            }
+        });
+
+    })
+
     function changeSubmissionResult(id, version) {
         var result = $(`.result-choice.${id}`).val();
         var status = $(`.status-choice.${id}`).val();
@@ -787,6 +778,7 @@ Judging Page
                 $(".modal-dialog").html(data);
                 $(".result-tabs").tabs();
                 fixFormatting();
+
                 $(".modal").modal().click(() => $.post("/judgeSubmissionClose", {id: id, version: $("#version").val()} ));
             }
         });
@@ -809,6 +801,7 @@ Judging Page
             $(".rejudge").attr("disabled", false);
             $(".rejudge").removeClass("button-gray");
             alert(`New Result: ${verdict_name[data]}`);
+            $(".result-choice").val(data);
         });
     }
   
@@ -820,7 +813,7 @@ Judging Page
         $.post("/rejudgeAll", {id:id}, data =>{
             
             $(".btn-primary").attr("disabled", false);
-            alert("DONE");
+            alert(data);
         });
     }
 

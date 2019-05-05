@@ -186,30 +186,24 @@ def contestreport(params, user):
     deatiledContestDisplay = []
     for person in log:
         outproblems = []
-        submissions = subs[person["userid"]]
-        submissions = sorted(submissions, key=lambda k: k.__dict__['timestamp']) 
+        submissions = sorted(subs[person["userid"]], key=lambda sub: sub.timestamp) 
         for p in problems:
             p_trys = 0
             earliest_time = 0
             for s in submissions:
-                s = s.__dict__
-                sub_prob_id = s["problem"].__dict__['id']
-                if p == sub_prob_id:
+                if p == s.problem.id:
                     p_trys += 1
-                    if s["result"] == "ok":
-                        earliest_time = s['timestamp']
+                    if s.result == "ok":
+                        earliest_time = s.timestamp
                         break
 
             if earliest_time: 
-                outproblems.append(h.td(f"({p_trys}) {datetime.utcfromtimestamp(earliest_time / 1000).strftime('%H:%M')}"))
+                outproblems.append(h.td(f"({p_trys}) {datetime.utcfromtimestamp((earliest_time - start) / 1000).strftime('%H:%M')}"))
                 for prob in problemSummaryreport:
                     if prob['id'] == p:
                         prob["attempts"] += p_trys
                         prob["correct"] += 1
-                        if s["language"] in prob:
-                            prob[s["language"]] += 1
-                        else:
-                            prob[s["language"]] = 1
+                        prob[s.language] = prob.get(s.language, 0) + 1
                         
             elif p_trys:      
                 outproblems.append(h.td(f"({p_trys}) -- "))

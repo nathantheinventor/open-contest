@@ -1,7 +1,7 @@
 import os
 import logging
 from code.util import register
-from code.util.db import Submission, Problem
+from code.util.db import Submission, Problem, User
 import time
 import shutil
 import re
@@ -9,6 +9,8 @@ from uuid import uuid4
 from zipfile import ZipFile
 import base64
 import json
+import io
+import traceback
 
 def addSubmission(probId, lang, code, user, type, custominput):
     sub = Submission()
@@ -16,18 +18,17 @@ def addSubmission(probId, lang, code, user, type, custominput):
     sub.language = lang
     sub.code = code
     sub.result = "pending"
+    sub.custominput = custominput
     sub.user = user
     sub.timestamp = time.time() * 1000
     sub.type = type
     sub.status = "Review"
     
-    if type == "submit":
+    if type == Submission.TYPE_SUBMIT:
         sub.save()
-    elif type == "custom":
-        sub.custominput = custominput
-        sub.id = str(uuid4())
     else:
         sub.id = str(uuid4())
+
     return sub
 
 exts = {
@@ -42,25 +43,49 @@ exts = {
 }
 
 def readFile(path):
+    """Reads file at `path` and returns string of at most Submission.MAX_OUTPUT_LEN"""
     try:
         with open(path, "rb") as f:
-            data = f.read(Submission.MAX_OUTPUT_LEN + 1).decode("utf-8")
-            if len(data) > Submission.MAX_OUTPUT_LEN:
-                data = data[:-1] + "\n... additional data truncated ..."
-            return data
-    except:
-        return None
+            data = bytearray(f.read(Submission.MAX_OUTPUT_LEN))
 
+            for i, value in enumerate(data):
+                if value == 10 or (value <= 127 and chr(value).isprintable()):
+                    pass  
+                elif value == '\r':
+                    data[i] = 32  # ignore carriage returns
+                else:
+                    data[i] = 63  # other characters map to ?
+
+            result = data.decode('ascii')
+            if f.read(1):
+                result += "... additional data truncated ..."
+            return result
+    except Exception:
+        traceback.print_exc()
+        return ''
+
+def writeFile(path: str, data: str):
+    with open(path, "w") as f:
+        if data != None:
+            f.write(data)
+
+# Saves and truncates <data>
+def saveData(id: str, data: list, fileType: str):
+    for i in range(len(data)):
+        writeFile(f"/db/submissions/{id}/{fileType}{i}.txt", data[i])
+        data[i] = Submission.truncateForDisplay(data[i])
+
+# Remove trailing whitespace
 def strip(text):
-    return re.sub("[ \t\r]*\n", "\n", text)
+    return re.sub("[ \t\r]*\n", "\n", text or "")
 
 # Checks if <incomplete> contains only lines from <full> in order
 # Can be missing some lines in the middle or at the end
-def compareStrings(incomplete, full):
+def compareStrings(incomplete: list, full: list) -> bool:
     lineNumOfFull = 0
-    for line in incomplete.split('\n'):
-        while lineNumOfFull < len(full.split('\n')):
-            if line == full.split('\n')[lineNumOfFull]:
+    for line in incomplete:
+        while lineNumOfFull < len(full):
+            if line == full[lineNumOfFull]:
                 break
             lineNumOfFull += 1
         else:
@@ -68,115 +93,132 @@ def compareStrings(incomplete, full):
         lineNumOfFull += 1
     return True
 
-def runCode(sub):
-    # Copy the code over to the runner /tmp folder
+def runCode(sub: Submission, user: User) -> list:
+    """Executes submission `sub` and returns lists of data files"""
     extension = exts[sub.language]
-    os.mkdir(f"/tmp/{sub.id}")
-    with open(f"/tmp/{sub.id}/code.{extension}", "wb") as f:
-        f.write(sub.code.encode("utf-8"))
-    
-    prob = sub.problem
-    
-    if sub.type == "test":
-        tests = prob.samples 
-    elif sub.type == "custom":
-        tests = 1
-    else:
-        tests = prob.tests     
-    # Copy the input over to the tmp folder for the runner
-    
-    
-   
-    if sub.type != "custom":
-        for i in range(tests):
-            shutil.copyfile(f"/db/problems/{prob.id}/input/in{i}.txt", f"/tmp/{sub.id}/in{i}.txt") 
-    else:
-        with open(f"/tmp/{sub.id}/in0.txt", "w") as text_file:
-            if(sub.custominput == None):
-                sub.custominput = ""
-            text_file.write(sub.custominput)    
 
+    try:
+        shutil.rmtree(f"/tmp/{id}", ignore_errors=True)
+        os.makedirs(f"/tmp/{sub.id}", exist_ok=True)
 
-    # Output files will go here
-    os.mkdir(f"/tmp/{sub.id}/out")
-
-    # Run the runner
-    if os.system(f"docker run --rm --network=none -m 256MB -v /tmp/{sub.id}/:/source nathantheinventor/open-contest-dev-{sub.language}-runner {tests} {prob.timelimit} > /tmp/{sub.id}/result.txt") != 0:
-        raise Exception("Something went wrong")
-
-    inputs = []
-    outputs = []
-    answers = []
-    errors = []
-    results = []
-    result = "ok"
-
-    for i in range(tests):
-        if sub.type == "custom":
-            inputs.append(sub.custominput)
-            answers.append("")
-        else:
-            inputs.append(sub.problem.testData[i].input)
-            answers.append(sub.problem.testData[i].output)
-
-        errors.append(readFile(f"/tmp/{sub.id}/out/err{i}.txt"))
-        outputs.append(readFile(f"/tmp/{sub.id}/out/out{i}.txt"))
-
-        anstrip = strip((answers[-1] or "").rstrip()).splitlines()
-        outstrip = strip((outputs[-1] or "").rstrip()).splitlines()
-
-        res = readFile(f"/tmp/{sub.id}/out/result{i}.txt")
-        if res == "ok" and strip((answers[-1] or "").rstrip()) != strip((outputs[-1] or "").rstrip()):
-            if sub.type == "custom":
-                pass
-            elif compareStrings(strip((outputs[-1] or "").rstrip()), strip((answers[-1] or "").rstrip())):
-                res = "incomplete_output"
-            elif compareStrings(strip((answers[-1] or "").rstrip()), strip((outputs[-1] or "").rstrip())):
-                res = "extra_output"
-            else:
-                res = "wrong_answer"
-        elif res == None:
-            res = "tle"
+        # Copy the code over to the runner /tmp folder
+        writeFile(f"/tmp/{sub.id}/code.{extension}", sub.code)
         
-        results.append(res)
+        prob = sub.problem
+        
+        if sub.type == Submission.TYPE_TEST and not user.isAdmin():
+            numTests = prob.samples 
+        elif sub.type == Submission.TYPE_CUSTOM:
+            numTests = 1
+        else:
+            numTests = prob.tests     
 
-        # Make result the first incorrect result
-        if res != "ok" and result == "ok":
-            result = res
+        # Copy the input over to the tmp folder for the runner
+        if sub.type == Submission.TYPE_CUSTOM:
+            writeFile(f"/tmp/{sub.id}/in0.txt", sub.custominput)    
+        else:
+            for i in range(numTests):
+                shutil.copyfile(f"/db/problems/{prob.id}/input/in{i}.txt", f"/tmp/{sub.id}/in{i}.txt") 
 
 
-    sub.result = result
-    if sub.result in ["ok", "runtime_error", "tle"]:
-        sub.status = "Judged"
-    if readFile(f"/tmp/{sub.id}/result.txt") == "compile_error\n":
-        sub.results = "compile_error"
-        sub.delete()
-        sub.compile = readFile(f"/tmp/{sub.id}/out/compile_error.txt")
+        # Output files will go here
+        os.makedirs(f"/tmp/{sub.id}/out", exist_ok=True)
+
+        # Run the runner
+        cmd = f"docker run --rm --network=none -m 256MB -v /tmp/{sub.id}/:/source nathantheinventor/open-contest-dev-{sub.language}-runner {numTests} {prob.timelimit} > /tmp/{sub.id}/result.txt"
+        logging.debug(cmd)        
+        if os.system(cmd) != 0:
+            raise Exception("Problem testing submission with Docker: Review log")
+
+        # Check for compile error
+        if readFile(f"/tmp/{sub.id}/result.txt") == "compile_error\n":
+            sub.results = "compile_error"
+            sub.delete()
+            sub.compile = readFile(f"/tmp/{sub.id}/out/compile_error.txt")
+            return None, None, None, None
+
+        # Submission ran; process test results
+
+        inputs = []
+        outputs = []
+        answers = []
+        errors = []
+        results = []
+        result = "ok"
+
+        for i in range(numTests):
+            if sub.type == Submission.TYPE_CUSTOM:
+                inputs.append(sub.custominput)
+                answers.append("")
+            else:
+                inputs.append(sub.problem.testData[i].input)
+                answers.append(sub.problem.testData[i].output)
+
+            errors.append(readFile(f"/tmp/{sub.id}/out/err{i}.txt"))
+            outputs.append(readFile(f"/tmp/{sub.id}/out/out{i}.txt"))
+
+            anstrip = strip(answers[-1])
+            outstrip = strip(outputs[-1])
+            answerLines = anstrip.split('\n')
+            outLines = outstrip.split('\n')
+
+            res = readFile(f"/tmp/{sub.id}/out/result{i}.txt")
+            if res == None:
+                res = "tle"
+            elif res == "ok" and anstrip != outstrip:
+                if sub.type == Submission.TYPE_CUSTOM:
+                    pass  # custom input cannot produce incorrect result
+                elif compareStrings(outLines, answerLines):
+                    res = "incomplete_output"
+                elif compareStrings(answerLines, outLines):
+                    res = "extra_output"
+                else:
+                    res = "wrong_answer"
+            
+            results.append(res)
+
+            # Make result the first incorrect result
+            if res != "ok" and result == "ok":
+                result = res
+
+
+        sub.result = result
+        if sub.result in ["ok", "runtime_error", "tle"] or user.isAdmin():
+            sub.status = "Judged"
+            
+        sub.results = results
+        
+        if sub.type == Submission.TYPE_SUBMIT:
+            saveData(sub.id, inputs, 'in')
+            saveData(sub.id, outputs, 'out')
+            saveData(sub.id, answers, 'answer')
+            saveData(sub.id, errors, 'error')
+            sub.save()
+
+        return inputs, outputs, answers, errors
+
+    finally:
         shutil.rmtree(f"/tmp/{sub.id}", ignore_errors=True)
-        return
 
-    sub.results = results
-    sub.inputs  = inputs
-    sub.outputs = outputs
-    sub.answers = answers
-    sub.errors  = errors
-    
-    if sub.type == "submit":
-        sub.save()
-    shutil.rmtree(f"/tmp/{sub.id}", ignore_errors=True)
-
+# Process contestant test or submission
 def submit(params, setHeader, user):
     probId = params["problem"]
     lang   = params["language"]
     code   = params["code"]
-    type   = params["type"]
+    type   = params["type"]    # Submission.TYPE_*
     custominput = params.get("input")
     submission = addSubmission(probId, lang, code, user, type, custominput)
-    runCode(submission)
+    inputs, outputs, answers, errors = runCode(submission, user)
     response = submission.toJSON()
-    if submission.type != "test":
+    if (submission.type == Submission.TYPE_SUBMIT or
+       (submission.type == Submission.TYPE_TEST and user.isAdmin())):
         response["result"] = submission.getContestantResult()
         response["results"] = submission.getContestantIndividualResults()
+
+    response["inputs"] = inputs
+    response["outputs"] = outputs
+    response["answers"] = answers
+    response["errors"] = errors
     return response
 
 def changeResult(params, setHeader, user):
@@ -184,7 +226,7 @@ def changeResult(params, setHeader, user):
     id = params["id"]
     sub = Submission.get(id)
     if not sub:
-        return "Error: incorrect id"
+        return "Error: no such submission"
     elif sub.version != version:
         return "The submission has been changed by another judge since you loaded it. Please reload the sumbission to modify it."
     sub.result = params["result"]
@@ -195,54 +237,46 @@ def changeResult(params, setHeader, user):
     return "ok"
 
 def rejudge(params, setHeader, user):
+    """Ajax method: Rejudge a single submission `id`"""
+
     id = params["id"]
     submission = Submission.get(id)
-    if os.path.exists(f"/tmp/{id}"):
-        shutil.rmtree(f"/tmp/{id}")
-    runCode(submission)
+    runCode(submission, user)
     return submission.result
 
 def rejudgeAll(params, setHeader, user):
+    """Ajax method: Rejudge all submissions for problem `id`"""
 
     ctime = time.time() * 1000
     id = params["id"]
-    allsub = Submission.all()
-    for i in allsub:
-        if i.problem.id == id and i.timestamp < ctime and i.result != 'reject':
-            rejudge({'id':i.id}, None, None)
-    return "Finished"
+    numSubmissions = 0
+    for sub in Submission.all():
+        if sub.problem.id == id and sub.timestamp < ctime and sub.result != 'reject':
+            runCode(sub, user)
+            numSubmissions += 1
+    return f"Rejudged {numSubmissions} submissions"
 
+# Create and return zip of submission data
 def download(params, setHeader, user):
     id = params["id"]
     submission = Submission.get(id)
-    if os.path.exists(f"/tmp/{id}"):
-        shutil.rmtree(f"/tmp/{id}")
-    os.mkdir(f"/tmp/{id}")
-    os.mkdir(f"/tmp/{id}/zip")
-    f=open(f"/tmp/{id}/zip/source."+exts[submission.language], "w+")
-    f.write(submission.code)
-    f.close()
-    for index, input in enumerate(submission.inputs):
-        with open(f"/tmp/{id}/zip/input_{index}.txt", "w+") as f:
-            f.write(input)
-    i = 0
-    for index, output in enumerate(submission.outputs):
-        full_output_filename = f"/db/submissions/{submission.id}/output{i}.txt"
-        output_dest_filename = f"/tmp/{id}/zip/output_{index}.txt"
-        if os.path.exists(full_output_filename):
-            shutil.copyfile(full_output_filename, output_dest_filename)
-        else:
-            with open(output_dest_filename, "w+") as f:
-                f.write(output)
-        i += 1
-    with ZipFile(f"/tmp/{id}/download.zip",'w') as zip:
-        for root, directories, files in os.walk(f"/tmp/{id}/zip/"):
-            for file in files:
-                zip.write(os.path.join(root, file), file)
-    with open(f"/tmp/{id}/download.zip", "rb") as binary_file:
-        data = {"download.zip": base64.b64encode(binary_file.read()).decode('ascii')}
-    return json.dumps(data)
+
+    buf = io.BytesIO()
+    with ZipFile(buf,'w') as zip:
+        sourceFile = f"source.{exts[submission.language]}"
+        zip.writestr(sourceFile, submission.code)
+
+        for index in range(submission.problem.tests):
+            for fileType in ["in", "out", "answer", "error"]:
+                filename = f"/db/submissions/{id}/{fileType}{index}.txt"
+                output_dest_filename = f"{fileType}{index}.txt"
+                if os.path.exists(filename):
+                    zip.write(filename, output_dest_filename)
+                
+    data = {"download.zip": base64.b64encode(buf.getvalue()).decode('ascii')}
     
+    return json.dumps(data)
+      
 
 register.post("/submit", "loggedin", submit)
 register.post("/changeResult", "admin", changeResult)
