@@ -807,8 +807,11 @@ Judging Page
   
     function rejudgeAll(id)
     {
+        if (!confirm('This will invoke the auto judge on all submissions for this problem. Are you sure you wish to continue?'))
+            return;
         
         $(".btn-primary").attr("disabled", true);
+
 
         $.post("/rejudgeAll", {id:id}, data =>{
             

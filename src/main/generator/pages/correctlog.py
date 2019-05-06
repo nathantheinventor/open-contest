@@ -52,7 +52,6 @@ def generateLogReport(params, user):
         for problem in users[user].keys():
             correctSubmissions.append((user, problem, users[user][problem].timestamp))
 
-    # https://www.afternerd.com/blog/python-sort-list/
     correctSubmissions.sort(key=lambda entry: entry[2])
 
     tableRows = constructTableRows(correctSubmissions)
