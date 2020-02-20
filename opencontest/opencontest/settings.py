@@ -19,7 +19,6 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, "contest/static")
-print(STATIC_ROOT)
 
 
 # Quick-start development settings - unsuitable for production
@@ -31,7 +30,7 @@ SECRET_KEY = '0oqd#=9^s2r3q9*43=4#d0_n8f5-#=lurr9x!^8(-45+jclrkl'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -121,30 +120,32 @@ USE_L10N = True
 USE_TZ = True
 
 
-# LOGGING = {
-#     'version': 1,
-#     'disable_existing_loggers': False,
-#     'formatters': {
-#         'log': {
-#             'format': '{asctime} {levelname} {message}'
-#         }
-#     },
-#     'handlers': {
-#         'console': {
-#             'level': 'INFO',
-#             'class': 'logging.StreamHandler',
-#             'formatter': 'log'
-#         }
-#     },
-#     'loggers': {
-#         'contest': {
-#             'handlers': ['console'],
-#             'level': 'INFO',
-#         },
-#         'django': {
-#             'handlers': ['console'],
-#             'level': 'INFO',
-#             'propagate': True
-#         }
-#     }
-# }
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'log': {
+            'format': '{asctime} {levelname} {module}  {message}',
+            'style': '{',
+            'datefmt' : '%H:%M:%S'
+        }
+    },
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'log'
+        }
+    },
+    'loggers': {
+        'contest': {
+            'handlers': ['console'],
+            'level': 'DEBUG',  # Set this to INFO during a contest, DEBUG during development. TODO: Make this configurable without a code change.
+        },
+        'django': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': True
+        }
+    }
+}

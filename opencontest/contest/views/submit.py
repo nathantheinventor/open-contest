@@ -18,6 +18,10 @@ from contest.models.problem import Problem
 from contest.models.submission import Submission
 from contest.models.user import User
 
+DOCKERHUB_USER='bjucps'
+DOCKERHUB_IMAGE_PREFIX='open-contest'
+
+logger = logging.getLogger(__name__)
 
 def addSubmission(probId, lang, code, user, type, custominput):
     sub = Submission()
@@ -137,8 +141,8 @@ def runCode(sub: Submission, user: User) -> list:
         os.makedirs(f"/tmp/{sub.id}/out", exist_ok=True)
 
         # Run the runner
-        cmd = f"docker run --rm --network=none -m 256MB -v /tmp/{sub.id}/:/source heast/oc-test-{sub.language}-runner {numTests} {prob.timelimit} 5 > /tmp/{sub.id}/result.txt"
-        logging.debug(cmd)        
+        cmd = f"docker run --rm --network=none -m 256MB -v /tmp/{sub.id}/:/source {DOCKERHUB_USER}/{DOCKERHUB_IMAGE_PREFIX}-{sub.language}-runner {numTests} {prob.timelimit} 5 > /tmp/{sub.id}/result.txt"
+        logger.debug(cmd)        
         if os.system(cmd) != 0:
             raise Exception("Problem testing submission with Docker: Review log")
 
@@ -174,7 +178,8 @@ def runCode(sub: Submission, user: User) -> list:
             answerLines = anstrip.split('\n')
             outLines = outstrip.split('\n')
 
-            print(answerLines, outLines)
+            if logger.isEnabledFor(logging.DEBUG):
+                logger.debug('Answer lines: %s\nOutput lines: %s', answerLines, outLines)
 
             res = readFile(f"/tmp/{sub.id}/out/result{i}.txt")
             if res == None:

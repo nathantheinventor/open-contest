@@ -1,4 +1,4 @@
-django
-readerwriterlock
-markdown2
-uwsgi
+django==3.0.3
+readerwriterlock==1.0.6
+markdown2==2.3.8
+uwsgi==2.0.18

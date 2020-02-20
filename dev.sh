@@ -17,14 +17,16 @@ if [ ! -e $DBDIR ]; then
   mkdir $DBDIR
 fi
 
-export USER="nathantheinventor"
+export USER="bjucps"
 export OC_PROJECT_NAME="open-contest"
-export OC_CODE_DIR=$DIR/src/main
+export OC_CODE_DIR=$DIR/opencontest
+
+cd $OC_CODE_DIR
 docker run \
     -v /var/run/docker.sock:/var/run/docker.sock \
     -v $DBDIR:/db \
     -v /tmp:/tmp \
     -v $OC_CODE_DIR/:/code \
-    -v $OC_CODE_DIR/nginx.conf:/etc/nginx/sites-enabled/nginx.conf \
     -p 0.0.0.0:8000:8000/tcp \
-    $USER/$OC_PROJECT_NAME
+    $USER/$OC_PROJECT_NAME \
+    --ini uwsgi.ini

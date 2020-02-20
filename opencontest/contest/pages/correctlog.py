@@ -10,6 +10,7 @@ from contest.models.user import User
 from contest.pages.lib import Page
 from contest.pages.lib.htmllib import h, h1, h2
 
+logger = logging.getLogger(__name__)
 
 def constructTableRows(listOfSubmissions):
     tableRows = []
