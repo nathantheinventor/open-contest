@@ -4,3 +4,5 @@ test/
 *.html
 __pycache__/
 .vscode/
+db/
+src/

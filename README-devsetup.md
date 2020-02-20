@@ -21,8 +21,15 @@
 1. Make changes to files in open-contest/src/main as needed, then press
    Ctrl-C in the console and re-execute the bash command above to restart the
    server and test the changes.
+   
+# Working in PyCharm
+PyCharm Professional provides out-of-the-box Django support, but PyCharm Community 
+may also be used. After opening the project in PyCharm Community, mark the project
+directory (named "opencontest") as project root. This configuration will allow
+PyCharm to find things within Django's directory structure. 
 
-# Working with Visual Studio Code
+
+# Working with Visual Studio Code (NOT TESTED)
 
 Visual Studio Code includes excellent Python support. After installing the
 Python extension, to enable improved code browsing, execute the following to

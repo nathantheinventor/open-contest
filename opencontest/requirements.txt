@@ -1,0 +1,4 @@
+django
+readerwriterlock
+markdown2
+uwsgi
