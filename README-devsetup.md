@@ -21,7 +21,7 @@ The following instructions have been tested in an Ubuntu 18.04 environment.
 
 1. Create the Docker image needed for development:
    ```
-   docker build --rm --force-rm -t bjucps/open-contest ~/open-contest/opencontest
+   docker build -t bjucps/open-contest ~/open-contest/opencontest
    ```
 
 1. To start the contest server running using your development source code, execute
