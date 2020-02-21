@@ -66,6 +66,7 @@ class Page(UIElement):
                 h.link(rel="stylesheet", href="/static/lib/jqueryui/jquery-ui.min.css", type="text/css"),
                 h.link(rel="stylesheet", href="/static/lib/simplemde/simplemde.min.css", type="text/css"),
                 h.link(rel="stylesheet", href="/static/styles/style.css?" + uuid(), type="text/css"),
+                h.link(rel="shortcut icon", href="/static/favicon.ico"),
                 h.script(src="/static/lib/jquery/jquery.min.js"),
                 h.script(src="/static/lib/bootstrap/js/bootstrap.min.js"),
                 h.script(src="/static/lib/jqueryui/jquery-ui.min.js"),
