@@ -1,23 +1,32 @@
 # Development Setup
 
-1. Follow [installation instructions](README.md) to install open-contest in a Linux
-   or Mac environment. Create the db folder in your home directory.
+The following instructions have been tested in an Ubuntu 18.04 environment.
+
+1. Install Docker:
+   ```
+   sudo apt install docker.io
+   ```
+
+1. Execute the following to add the current user to the docker group
+   so that docker commands can be executed without using sudo:
+   ```
+   sudo usermod -a -G docker $USER
+   ```
+   Logout, then login to make the change take effect.
 
 1. Clone this project (recommended location: your home directory).
    ```
-   cd ~
-   git clone https://github.com/bjucps/open-contest
+   git clone https://github.com/bjucps/open-contest ~/open-contest
    ```
 
-1. If you have not already done so, create an empty db directory to hold the
-   contest database files.
+1. Create the Docker image needed for development:
    ```
-   mkdir ~/db
-   ~~~
+   docker build --rm --force-rm -t bjucps/open-contest ~/open-contest/opencontest
+   ```
 
 1. To start the contest server running using your development source code, execute
    ```
-   bash ~/open-contest/dev.sh [ <path-to-db-directory> ]
+   ~/open-contest/launch.sh -p 8000 --log-stdout --log-debug --log-all-requests
    ```
 
    Review the Admin credentials in the output:
@@ -38,7 +47,7 @@ directory (named "opencontest") as project root. This configuration will allow
 PyCharm to find things within Django's directory structure. 
 
 
-# Working with Visual Studio Code (NOT TESTED)
+# Working with Visual Studio Code
 
 Visual Studio Code includes excellent Python support. 
 

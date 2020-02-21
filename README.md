@@ -8,7 +8,7 @@ For example, to install docker on Ubuntu 18.04 execute the following:
 sudo apt install docker.io
 ```
 
-Then, install the open-contest docker image:
+Logout, then login. Then, install the open-contest docker image:
 
 ```
 $> docker pull bjucps/open-contest

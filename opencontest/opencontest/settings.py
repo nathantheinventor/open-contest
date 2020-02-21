@@ -20,6 +20,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, "contest/static")
 
+# Get default LOG_LEVEL from OC_LOG_LEVEL environment variable
+LOG_LEVEL = os.environ.get('OC_LOG_LEVEL', 'INFO')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
@@ -140,7 +142,7 @@ LOGGING = {
     'loggers': {
         'contest': {
             'handlers': ['console'],
-            'level': 'DEBUG',  # Set this to INFO during a contest, DEBUG during development. TODO: Make this configurable without a code change.
+            'level': LOG_LEVEL, 
         },
         'django': {
             'handlers': ['console'],

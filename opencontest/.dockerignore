@@ -1,4 +1,2 @@
 venv
 db.sqlite3
-test.py
-setup.py
