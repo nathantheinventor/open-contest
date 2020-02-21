@@ -212,7 +212,6 @@ class SubmissionTable(UIElement):
             ),
             id="submissions"
         )
-        print(self.html)
 
 
 @admin_required

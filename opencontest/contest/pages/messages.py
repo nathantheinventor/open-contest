@@ -18,7 +18,6 @@ class MessageCard(UIElement):
             )
         else:
             body = msg.message
-            print('*** msglist = ', msglist)
             for reply in msglist[1:]:
                 body += f"""\n<br><br>Reply from {reply.fromUser.username} at 
                     <span class='time-format'>{reply.timestamp}</span>:<br>
