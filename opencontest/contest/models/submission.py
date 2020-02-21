@@ -7,6 +7,9 @@ from contest.models.problem import Problem
 from contest.models.simple import getKey, setKey, deleteKey, listSubKeys
 from contest.models.user import User
 
+from opencontest.settings import OC_MAX_DISPLAY_LEN, OC_MAX_DISPLAY_LEN, OC_MAX_DISPLAY_LINES
+
+
 lock = rwlock.RWLockWrite()
 submissions = {}
 
@@ -16,10 +19,6 @@ class Submission:
     TYPE_CUSTOM = "custom"  # test with custom input 
     TYPE_SUBMIT = "submit"  # full submission
     TYPE_TEST = "test"    # test only
-
-    MAX_OUTPUT_LEN = 10000000    # (bytes) Submission output larger than this is discarded
-    MAX_DISPLAY_LEN = 50000      # (bytes) Submission output larger than this is not displayed
-    MAX_DISPLAY_LINES = 300      # (lines) Submission output having more lines than this is not displayed
 
     saveCallbacks = []
 
@@ -88,18 +87,18 @@ class Submission:
         return ["pending_review" if self.result != "pending" and self.status == "Review" else res for res in self.results]
 
     def truncateForDisplay(data: str) -> str:
-        """Truncates `data` to maximum of Submission.MAX_DISPLAY_OUTPUT_LEN bytes and
-        Submission.MAX_DISPLAY_LINES lines
+        """Truncates `data` to maximum of OC_MAX_DISPLAY_LEN bytes and
+        OC_MAX_DISPLAY_LINES lines
         """
 
         truncated = False
-        if data and len(data) > Submission.MAX_DISPLAY_LEN:
+        if data and len(data) > OC_MAX_DISPLAY_LEN:
             truncated = True
-            data = data[:Submission.MAX_DISPLAY_LEN]
+            data = data[:OC_MAX_DISPLAY_LEN]
             
         lines = data.split('\n')
-        if len(lines) > Submission.MAX_DISPLAY_LINES:
-            lines = lines[:Submission.MAX_DISPLAY_LINES]
+        if len(lines) > OC_MAX_DISPLAY_LINES:
+            lines = lines[:OC_MAX_DISPLAY_LINES]
             data = '\n'.join(lines)
             truncated = True
         
@@ -114,7 +113,7 @@ class Submission:
             try:
                 # TODO: test paths
                 with open(f"../db/submissions/{self.id}/{fileType}{i}.txt") as f:
-                    data = f.read(Submission.MAX_DISPLAY_LEN + 1)
+                    data = f.read(OC_MAX_DISPLAY_LEN + 1)
                     results.append(Submission.truncateForDisplay(data))
             except:
                 logging.error(f"Problem reading {fileType} #{i} for submission {self.id}")

@@ -24,9 +24,15 @@ The following instructions have been tested in an Ubuntu 18.04 environment.
    docker build -t bjucps/open-contest ~/open-contest/opencontest
    ```
 
-1. To start the contest server running using your development source code, execute
+1. Optionally copy the sample contest database to your home directory
+   to use for testing:
    ```
-   ~/open-contest/launch.sh -dev -p 8000 --log-stdout --log-debug --log-all-requests
+   cp -r ~/open-contest/test/db ~
+   ```
+
+1. To start the contest server running, execute
+   ```
+   ~/open-contest/launch.sh -dev -p 8000 -d ~/db --log-stdout --log-debug --log-all-requests
    ```
 
    Review the Admin credentials in the output:

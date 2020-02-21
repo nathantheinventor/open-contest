@@ -3,8 +3,11 @@
 # Get directory of this script
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
-USER="bjucps"
-OC_PROJECT_NAME="open-contest"
+OC_DOCKERIMAGE_BASE=bjucps/open-contest
+OC_MAX_OUTPUT_LEN=10000  # (bytes) Submission output larger than this is discarded
+OC_MAX_DISPLAY_LEN=500    # (bytes) Submission output larger than this is not displayed
+OC_MAX_DISPLAY_LINES=30    # (lines) Submission output having more lines than this is not displayed
+
 OC_CODE_DIR=$DIR/opencontest
 
 IPADDR=0.0.0.0
@@ -49,8 +52,12 @@ if [ ! -e $DBDIR ]; then
   mkdir $DBDIR
 fi
 
+LOGFILE=$DBDIR/opencontest.log
 if [ ! -z "$LOGTOFILE" ]; then
-  echo Logging to $DBDIR/opencontest.log.
+  echo Logging to $LOGFILE.
+  if [ -e $LOGFILE ]; then
+    mv $LOGFILE $LOGFILE.old
+  fi
 fi
 
 # Get group id of docker group
@@ -65,7 +72,11 @@ RUNCMD="docker run \
     -v /var/run/docker.sock:/var/run/docker.sock \
     -p $IPADDR:$PORT:8000/tcp \
     -e OC_LOG_LEVEL=$LOG_LEVEL \
-    $USER/$OC_PROJECT_NAME \
+    -e OC_MAX_OUTPUT_LEN=$OC_MAX_OUTPUT_LEN \
+    -e OC_MAX_DISPLAY_LEN=$OC_MAX_DISPLAY_LEN \
+    -e OC_MAX_DISPLAY_LINES=$OC_MAX_DISPLAY_LINES \
+    -e OC_DOCKERIMAGE_BASE=$OC_DOCKERIMAGE_BASE \
+    $OC_DOCKERIMAGE_BASE \
     $LOGTOFILE \
     $DISABLE_REQ_LOG" 
 

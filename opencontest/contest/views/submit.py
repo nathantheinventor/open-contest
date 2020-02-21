@@ -18,8 +18,7 @@ from contest.models.problem import Problem
 from contest.models.submission import Submission
 from contest.models.user import User
 
-DOCKERHUB_USER='bjucps'
-DOCKERHUB_IMAGE_PREFIX='open-contest'
+from opencontest.settings import OC_MAX_DISPLAY_LEN, OC_MAX_OUTPUT_LEN, OC_DOCKERIMAGE_BASE
 
 logger = logging.getLogger(__name__)
 
@@ -55,10 +54,10 @@ exts = {
 
 
 def readFile(path):
-    """Reads file at `path` and returns string of at most Submission.MAX_OUTPUT_LEN"""
+    """Reads file at `path` and returns string of at most OC_MAX_OUTPUT_LEN"""
     try:
         with open(path, "rb") as f:
-            data = bytearray(f.read(Submission.MAX_OUTPUT_LEN))
+            data = bytearray(f.read(OC_MAX_OUTPUT_LEN))
 
             for i, value in enumerate(data):
                 if value == 10 or (value <= 127 and chr(value).isprintable()):
@@ -141,7 +140,7 @@ def runCode(sub: Submission, user: User) -> list:
         os.makedirs(f"/tmp/{sub.id}/out", exist_ok=True)
 
         # Run the runner
-        cmd = f"docker run --rm --network=none -m 256MB -v /tmp/{sub.id}/:/source {DOCKERHUB_USER}/{DOCKERHUB_IMAGE_PREFIX}-{sub.language}-runner {numTests} {prob.timelimit} 5 > /tmp/{sub.id}/result.txt"
+        cmd = f"docker run --rm --network=none -m 256MB -v /tmp/{sub.id}/:/source {OC_DOCKERIMAGE_BASE}-{sub.language}-runner {numTests} {prob.timelimit} > /tmp/{sub.id}/result.txt"
         logger.debug(cmd)        
         if os.system(cmd) != 0:
             raise Exception("Problem testing submission with Docker: Review log")
