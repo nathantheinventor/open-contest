@@ -27,8 +27,8 @@ ENTRYPOINT ["uwsgi", "--threads", "10", "--http", "0.0.0.0:8000", "--module", "o
 # docker run -v $(pwd):/code -v /tmp:/tmp -v $HOME/db:/db -v /var/run/docker.sock:/var/run/docker.sock -p 80:8000 bjucps/open-contest
 
 
-# If requirements.txt changes, execute the following build command, then rebuild open-contest using the above command:
+# If requirements.txt changes, execute the following build command, then rebuild open-contest using the above
+# docker build command:
 # docker build --rm -f Dockerfile-ocbase -t bjucps/open-contest-base .
 # To publish it to dockerhub:
-# docker tag (image-id) bjucps/open-contest-base:(tag-name)
-# docker push bjucps/open-contest-base:(tag-name)
+# docker push bjucps/open-contest-base
