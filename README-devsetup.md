@@ -26,7 +26,7 @@ The following instructions have been tested in an Ubuntu 18.04 environment.
 
 1. To start the contest server running using your development source code, execute
    ```
-   ~/open-contest/launch.sh -p 8000 --log-stdout --log-debug --log-all-requests
+   ~/open-contest/launch.sh -dev -p 8000 --log-stdout --log-debug --log-all-requests
    ```
 
    Review the Admin credentials in the output:

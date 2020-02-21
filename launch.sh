@@ -3,6 +3,10 @@
 # Get directory of this script
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
+USER="bjucps"
+OC_PROJECT_NAME="open-contest"
+OC_CODE_DIR=$DIR/opencontest
+
 IPADDR=0.0.0.0
 PORT=80
 DBDIR=$DIR/../db
@@ -20,6 +24,8 @@ while [ $# -ne 0 ]; do
   elif [ $1 == -db ]; then
     DBDIR=$2
     shift
+  elif [ $1 == -dev ]; then
+    OC_CODE_OPT="-v $OC_CODE_DIR/:/code"
   elif [ $1 == --log-debug ]; then
     LOG_LEVEL='DEBUG'
   elif [ $1 == --local-only ]; then
@@ -43,11 +49,6 @@ if [ ! -e $DBDIR ]; then
   mkdir $DBDIR
 fi
 
-export USER="bjucps"
-export OC_PROJECT_NAME="open-contest"
-export OC_CODE_DIR=$DIR/opencontest
-
-cd $OC_CODE_DIR
 if [ ! -z "$LOGTOFILE" ]; then
   echo Logging to $DBDIR/opencontest.log.
 fi
@@ -59,7 +60,7 @@ RUNCMD="docker run \
     --rm \
     --user=$UID:$GID \
     -v $DBDIR:/db \
-    -v $OC_CODE_DIR/:/code \
+    $OC_CODE_OPT
     -v /tmp:/tmp \
     -v /var/run/docker.sock:/var/run/docker.sock \
     -p $IPADDR:$PORT:8000/tcp \
