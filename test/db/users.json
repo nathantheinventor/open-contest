@@ -1,0 +1,20 @@
+[
+    {
+        "id": "Admin-9b4178c6-7400-419d-b78d-970dc81d359d",
+        "username": "Admin",
+        "password": "admin",
+        "type": "admin"
+    },
+    {
+        "id": "c1",
+        "username": "c1",
+        "password": "c1",
+        "type": "participant"
+    },
+    {
+        "id": "c2",
+        "username": "c2",
+        "password": "c2",
+        "type": "participant"
+    }
+]

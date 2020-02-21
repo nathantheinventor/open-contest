@@ -1,0 +1,1 @@
+{"id": "c2-0-eeacf512-f17b-4282-b883-7641c318ca40", "user": "c2", "problem": "44b70cd5-a6fc-4746-8b1f-b9362a9cbf5d", "timestamp": 1582307901796.3276, "language": "python3", "code": "for _ in range(int(1)):\n    print(_)", "type": "submit", "results": ["incomplete_output", "incomplete_output"], "result": "incomplete_output", "status": "Judged", "checkout": null, "version": 2}

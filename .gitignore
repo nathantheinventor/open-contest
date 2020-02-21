@@ -1,8 +1,4 @@
-bin/
-test/
 *.pyc
 *.html
 __pycache__/
 .vscode/
-db/
-src/

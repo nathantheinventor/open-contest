@@ -260,7 +260,7 @@ def contestreport(request):
         ))
 
     return HttpResponse(Page(
-        h2("FINAL STANDINGS", cls="page-title"),
+        h2("DETAILED STANDINGS", cls="page-title"),
         h.table(
             h.thead(h.tr(*reportcols)),
             h.tbody(*deatiledContestDisplay)
