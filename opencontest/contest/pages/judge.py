@@ -252,4 +252,4 @@ def judge_submission_close(request):
         if submission.checkout == user.id:
             submission.checkout = None
         submission.save()
-    return JsonResponse('ok')
+    return JsonResponse('ok', safe=False)
