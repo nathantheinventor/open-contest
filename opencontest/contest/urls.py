@@ -42,7 +42,7 @@ urlpatterns = [
 
     path('submit', submit, name='submit'),
     path('submissions', getSubmissions, name='getSubmissions'),
-    path('contestantSubmission/<uuid:id>', contestant_submission, name='contestant_submission'),
+    path('contestantSubmission/<str:id>', contestant_submission, name='contestant_submission'),
 
     path('leaderboard', leaderboard, name='leaderboard'),
     path('contestreport', contestreport, name='contestreport'),
