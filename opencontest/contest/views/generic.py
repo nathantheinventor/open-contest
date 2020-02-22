@@ -29,8 +29,8 @@ def login(request):
             ])
         ))
     else:
-        username = request.POST['username']
-        password = request.POST['password']
+        username = request.POST.get('username')
+        password = request.POST.get('password')
         user = checkPassword(username, password)
         if user:
             resp = JsonResponse('ok', safe=False)
