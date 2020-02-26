@@ -99,7 +99,7 @@ class Card(UIElement):
         elif reply:
             deleteLink = div(h.button("Reply", cls="btn btn-primary", onclick=reply), cls="delete-link")
         if rejudge:
-            deleteLink = div(h.button("Rejudge", cls="btn btn-primary", onclick=rejudge), cls="delete-link")
+            deleteLink = div(h.button("Rejudge All", cls="btn btn-primary", onclick=rejudge), cls="delete-link")
 
         self.html = h.div(cls=cls, contents=[
             div(cls="card-header", contents=[

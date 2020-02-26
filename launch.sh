@@ -36,7 +36,7 @@ while [ $# -ne 0 ]; do
   elif [ $1 == --log-stdout ]; then
     unset LOGTOFILE
   else
-    echo "Usage: dev.sh [-p port#] [-db path] [--log-all-requests] [--log-stdout] [--local-only]"
+    echo "Usage: dev.sh [-dev] [-p port#] [-db path] [--log-all-requests] [--log-stdout] [--local-only]"
     exit 1
   fi
 
