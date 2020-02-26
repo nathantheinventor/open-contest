@@ -266,7 +266,7 @@ def changeResult(request, *args, **kwargs):
 @admin_required
 def rejudge(request):
     """Ajax method: Rejudge a single submission `id`"""
-    user = request.COOKIES['user']
+    user = User.get(request.COOKIES['user'])
     id = request.POST["id"]
     submission = Submission.get(id)
     runCode(submission, user)
@@ -276,7 +276,7 @@ def rejudge(request):
 @admin_required
 def rejudgeAll(request):
     """Ajax method: Rejudge all submissions for problem `id`"""
-    user = request.COOKIES['user']
+    user = User.get(request.COOKIES['user'])
     ctime = time.time() * 1000
     id = request.POST["id"]
     numSubmissions = 0
