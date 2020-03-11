@@ -19,9 +19,11 @@ The following instructions have been tested in an Ubuntu 18.04 environment.
    git clone https://github.com/bjucps/open-contest ~/open-contest
    ```
 
-1. Create the Docker image needed for development:
+1. Create the Docker images needed for development:
    ```
    docker build -t bjucps/open-contest ~/open-contest/opencontest
+   cd ~/open-contest/contest/runners
+   bash build.sh
    ```
 
 1. Optionally copy the sample contest database to your home directory
@@ -32,8 +34,9 @@ The following instructions have been tested in an Ubuntu 18.04 environment.
 
 1. To start the contest server running, execute
    ```
-   ~/open-contest/launch.sh --dev --fg -p 8000 --db ~/db --log-stdout --log-debug --log-all-requests
+   ~/open-contest/launch.sh --dev -p 8000 --fg --log-stdout 
    ```
+   See "The launch script" below for details on the options.
 
    Review the Admin credentials in the output:
    ```

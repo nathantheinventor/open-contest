@@ -91,6 +91,9 @@ class Submission:
         OC_MAX_DISPLAY_LINES lines
         """
 
+        if data == None:
+            return ''
+
         truncated = False
         if data and len(data) > OC_MAX_DISPLAY_LEN:
             truncated = True

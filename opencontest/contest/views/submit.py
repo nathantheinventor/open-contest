@@ -71,9 +71,11 @@ def readFile(path):
             if f.read(1):
                 result += "... additional data truncated ..."
             return result
+    except FileNotFoundError:
+        return None
     except Exception:
-        traceback.print_exc()
-        return ''
+        logger.exception('Error reading file ' + path)
+        return None
 
 
 def writeFile(path: str, data: str):
@@ -147,7 +149,7 @@ def runCode(sub: Submission, user: User) -> list:
 
         # Check for compile error
         if readFile(f"/tmp/{sub.id}/result.txt") == "compile_error\n":
-            sub.results = "compile_error"
+            sub.results = ["compile_error"]
             sub.delete()
             sub.compile = readFile(f"/tmp/{sub.id}/out/compile_error.txt")
             return None, None, None, None
@@ -178,9 +180,10 @@ def runCode(sub: Submission, user: User) -> list:
             outLines = outstrip.split('\n')
 
             if logger.isEnabledFor(logging.DEBUG):
-                logger.debug('Answer lines: %s\nOutput lines: %s', answerLines, outLines)
+                logger.debug('Answer lines: %s\n\tOutput lines: %s', answerLines, outLines)
 
             res = readFile(f"/tmp/{sub.id}/out/result{i}.txt")
+            logger.debug(f"Result of testing {sub.id} with test {i}: {res}")
             if res == None:
                 res = "tle"
             elif res == "ok" and anstrip != outstrip:

@@ -2,18 +2,19 @@ ARG USER=bjucps
 ARG OC_PROJECT_NAME=open-contest
 
 # Include all the mini-dockerfiles used for contest submissions in this build.
-#FROM $USER/$OC_PROJECT_NAME-c-runner
-#FROM $USER/$OC_PROJECT_NAME-cpp-runner
-#FROM $USER/$OC_PROJECT_NAME-cs-runner
-#FROM $USER/$OC_PROJECT_NAME-java-runner
+FROM $USER/$OC_PROJECT_NAME-c-runner
+FROM $USER/$OC_PROJECT_NAME-cpp-runner
+FROM $USER/$OC_PROJECT_NAME-cs-runner
+FROM $USER/$OC_PROJECT_NAME-java-runner
 FROM $USER/$OC_PROJECT_NAME-python3-runner
-#FROM $USER/$OC_PROJECT_NAME-ruby-runner
-#FROM $USER/$OC_PROJECT_NAME-vb-runner
+FROM $USER/$OC_PROJECT_NAME-ruby-runner
+FROM $USER/$OC_PROJECT_NAME-vb-runner
 
-FROM python:3.8
+FROM python:3.8-buster
+RUN apt-get update 
 
 # Install dependencies.
-RUN apt update && apt install -y docker.io psmisc 
+RUN apt-get install -y docker.io psmisc 
 COPY ./requirements.txt /requirements.txt
 RUN pip3 install -r requirements.txt
 
