@@ -3,10 +3,8 @@
 # Get directory of this script
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
-OC_DOCKERIMAGE_BASE=bjucps/open-contest
-OC_MAX_OUTPUT_LEN=10000  # (bytes) Submission output larger than this is discarded
-OC_MAX_DISPLAY_LEN=500    # (bytes) Submission output larger than this is not displayed
-OC_MAX_DISPLAY_LINES=30    # (lines) Submission output having more lines than this is not displayed
+source $DIR/open-contest.config
+source ~/.open-contest  # Override defaults with local settings, if present
 
 OC_CODE_DIR=$DIR/opencontest
 
@@ -17,17 +15,20 @@ LOG_LEVEL=INFO
 
 LOGTOFILE="--logto /db/opencontest.log"
 DISABLE_REQ_LOG="--log-5xx --log-4xx --disable-logging"
+DETACHED="-d"
 
 while [ $# -ne 0 ]; do
   if [ $1 == -p ]; then
     PORT=$2
     shift
+  elif [ $1 == --fg ]; then
+    unset DETACHED
   elif [ $1 == --log-all-requests ]; then
     unset DISABLE_REQ_LOG
-  elif [ $1 == -db ]; then
+  elif [ $1 == --db ]; then
     DBDIR=$2
     shift
-  elif [ $1 == -dev ]; then
+  elif [ $1 == --dev ]; then
     OC_CODE_OPT="-v $OC_CODE_DIR/:/code"
   elif [ $1 == --log-debug ]; then
     LOG_LEVEL='DEBUG'
@@ -36,7 +37,7 @@ while [ $# -ne 0 ]; do
   elif [ $1 == --log-stdout ]; then
     unset LOGTOFILE
   else
-    echo "Usage: dev.sh [-dev] [-p port#] [-db path] [--log-all-requests] [--log-stdout] [--local-only]"
+    echo "Usage: launch.sh [--dev] [--fg] [-p port#] [--db path] [--log-all-requests] [--log-stdout] [--local-only]"
     exit 1
   fi
 
@@ -63,7 +64,13 @@ fi
 # Get group id of docker group
 GID=$(getent group docker | cut -d: -f3)
 
+echo "Using configuration:"
+echo "OC_MAX_OUTPUT_LEN=$OC_MAX_OUTPUT_LEN"
+echo "OC_MAX_DISPLAY_LEN=$OC_MAX_DISPLAY_LEN"
+echo "OC_MAX_DISPLAY_LINES=$OC_MAX_DISPLAY_LINES"
+
 RUNCMD="docker run \
+    $DETACHED \
     --rm \
     --user=$UID:$GID \
     -v $DBDIR:/db \

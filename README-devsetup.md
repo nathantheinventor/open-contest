@@ -32,7 +32,7 @@ The following instructions have been tested in an Ubuntu 18.04 environment.
 
 1. To start the contest server running, execute
    ```
-   ~/open-contest/launch.sh -dev -p 8000 -db ~/db --log-stdout --log-debug --log-all-requests
+   ~/open-contest/launch.sh --dev --fg -p 8000 --db ~/db --log-stdout --log-debug --log-all-requests
    ```
 
    Review the Admin credentials in the output:
@@ -46,6 +46,33 @@ The following instructions have been tested in an Ubuntu 18.04 environment.
    Ctrl-C in the console and re-execute the bash command above to restart the
    server and test the changes.
    
+# The launch script
+
+The launch script provides the following command line options:
+
+* `--db` *database-directory* specifies the location of the local database directory.
+   If the directory does not exist, it is created.
+
+* `--dev` overrides the open-contest code in the Docker container with the code in the
+  local open-contest folder
+
+* `--fg` runs the container in the foreground, allowing it to be shutdown with a Ctrl-C.
+  The default is to run the container in the background. To shut down the container
+  when run in the background, use **docker ps** to determine the name of the container, 
+  then **docker kill *container-name***
+
+* `--log-stdout` sends logging output from open-contest to stdout instead of to
+  the open-contest.log file in the database directory
+
+* `--log-debug` includes DEBUG-level logging in the log output
+
+* `--log-all-requests` outputs an entry in the log file for every HTTP request to the
+  open-contest application. Since this results in a lot of log data, by default, HTTP requests are not logged.
+
+* `-p` *port* specifies the port number for the open-contest server (default: 80)
+
+* `--local-only` specifies that only browsers running on localhost can connect to the open-contest server
+
 # Working in PyCharm
 PyCharm Professional provides out-of-the-box Django support, but PyCharm Community 
 may also be used. After opening the project in PyCharm Community, mark the project
