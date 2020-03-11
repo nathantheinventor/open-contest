@@ -69,7 +69,7 @@ def readFile(path):
 
             result = data.decode('ascii')
             if f.read(1):
-                result += "... additional data truncated ..."
+                result += "...\nadditional output not retained ..."
             return result
     except FileNotFoundError:
         return None

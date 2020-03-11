@@ -119,7 +119,7 @@ class SubmissionCard(UIElement):
         self.html = div(cls="modal-content", contents=[
             div(cls=f"modal-header {cls}", contents=[
                 h.h5(
-                    f"Submission to {probName} at ",
+                    f"{probName} from {submission.user.username} at ",
                     h.span(subTime, cls="time-format")
                 ),
                 """
@@ -129,9 +129,6 @@ class SubmissionCard(UIElement):
             ]),
             div(cls="modal-body", contents=[
                 h.input(type="hidden", id="version", value=f"{submission.version}"),
-                h.strong(f"Contestant: {submission.user.username}"), h.br(),
-                h.strong("Language: <span class='language-format'>{}</span>".format(submission.language)),
-                h.br(),
                 h.strong("Result: ",
                     h.select(cls=f"result-choice {submission.id}", contents=[
                         *resultOptions(submission.result)
@@ -144,14 +141,13 @@ class SubmissionCard(UIElement):
                 ),
                 h.span("&emsp;"),
                 h.button("Save", type="button", onclick=f"changeSubmissionResult('{submission.id}', '{submission.version}')", cls="btn btn-primary"),
-                h.br(),
-                h.br(),
+                h.span(" "),
                 h.button("Rejudge", type="button", onclick=f"rejudge('{submission.id}')", cls="btn btn-primary rejudge"),
                 h.span(" "),
                 h.button("Download", type="button", onclick=f"download('{submission.id}')", cls="btn btn-primary rejudge"),
                 h.br(),
                 h.br(),
-                h.strong("Code:"),
+                h.strong(f"Language: <span class='language-format'>{submission.language}</span>"),
                 h.code(code_encode(submission.code), cls="code"),
                 div(cls="result-tabs", id="result-tabs", contents=[
                     h.ul(*map(lambda x: TestCaseTab(x, submission), enumerate(submission.results))),

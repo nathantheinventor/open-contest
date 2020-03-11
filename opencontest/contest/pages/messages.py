@@ -84,8 +84,8 @@ def displayMessages(request, *args, **kwargs):
 
     if user.isAdmin():
         filter = div(
-            a(href='inbox', contents="Inbox "),
-            a(href='processed', contents="Handled "),
+            a(href='inbox', contents="Inbox"), ' | ',
+            a(href='processed', contents="Handled"), ' | ',
             a(href='announcements', contents="Announcements"),
         )
     else:

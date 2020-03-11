@@ -117,7 +117,7 @@ class Problem:
     
     def forEach(callback: callable):
         with lock.gen_rlock():
-            for id in problems:
+            for id in sorted(problems.keys(), key=lambda probid: problems[probid].title):
                 callback(problems[id])
     
     def onSave(callback: callable):

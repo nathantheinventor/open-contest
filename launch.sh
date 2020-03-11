@@ -4,7 +4,6 @@
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 source $DIR/open-contest.config
-source ~/.open-contest  # Override defaults with local settings, if present
 
 OC_CODE_DIR=$DIR/opencontest
 
@@ -37,7 +36,7 @@ while [ $# -ne 0 ]; do
   elif [ $1 == --log-stdout ]; then
     unset LOGTOFILE
   else
-    echo "Usage: launch.sh [--dev] [--fg] [-p port#] [--db path] [--log-all-requests] [--log-stdout] [--local-only]"
+    echo "Usage: launch.sh [--dev] [--fg] [-p port#] [--db path] [--log-all-requests] [--log-stdout] [--log-debug] [--local-only]"
     exit 1
   fi
 
@@ -52,6 +51,9 @@ echo "Using database directory: $DBDIR"
 if [ ! -e $DBDIR ]; then 
   mkdir $DBDIR
 fi
+
+source $DBDIR/open-contest.config  # Override defaults with local settings, if present
+
 
 LOGFILE=$DBDIR/opencontest.log
 if [ ! -z "$LOGTOFILE" ]; then

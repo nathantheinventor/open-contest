@@ -106,7 +106,7 @@ class Submission:
             truncated = True
         
         if truncated:
-             data += "... additional data not displayed ..."
+             data += "...\nadditional data not displayed ..."
 
         return data
 
