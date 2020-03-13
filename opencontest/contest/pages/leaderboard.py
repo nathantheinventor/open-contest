@@ -281,7 +281,8 @@ def contestreport(request):
         h.table(
             h.thead(h.tr(*lang_col)
             ),h.tbody(*LanguageDisplay)
-        )
+        ),
+        cls='wide-content' # Use a wide format for this page
     ))
 
 

@@ -55,7 +55,7 @@ class Footer(UIElement):
 
 
 class Page(UIElement):
-    def __init__(self, *bodyData):
+    def __init__(self, *bodyData, cls='main-content'):
         cont = Contest.getCurrent()
         title = cont.name if cont else "OpenContest"
         self.html = h.html(
@@ -81,7 +81,7 @@ class Page(UIElement):
                 Header(title),
                 Menu(),
                 div(cls="message-alerts"),
-                div(*bodyData, cls="main-content"),
+                div(*bodyData, cls=cls),
                 Footer()
             )
         )

@@ -227,7 +227,8 @@ def judge(request):
             div(cls="modal-dialog", role="document", contents=[
                 div(id="modal-content")
             ])
-        ])
+        ]),
+        cls='wide-content' # Use a wide format for this page
     ))
 
 
