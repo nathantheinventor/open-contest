@@ -178,6 +178,9 @@ class Submission:
     def onSave(callback: callable):
         Submission.saveCallbacks.append(callback)
 
+    def __str__(self):
+        return str(self.toJSON())
+
     @staticmethod
     def all():
         """Returns all submissions sorted by timestamp"""

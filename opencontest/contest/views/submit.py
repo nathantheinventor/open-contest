@@ -85,9 +85,10 @@ def writeFile(path: str, data: str):
 
 
 # Saves and truncates <data>
-def saveData(id: str, data: list, fileType: str):
+def saveData(sub: Submission, data: list, fileType: str):
     for i in range(len(data)):
-        writeFile(f"/db/submissions/{id}/{fileType}{i}.txt", data[i])
+        if sub.type == Submission.TYPE_SUBMIT:
+            writeFile(f"/db/submissions/{id}/{fileType}{i}.txt", data[i])
         data[i] = Submission.truncateForDisplay(data[i])
 
 
@@ -179,11 +180,7 @@ def runCode(sub: Submission, user: User) -> list:
             answerLines = anstrip.split('\n')
             outLines = outstrip.split('\n')
 
-            if logger.isEnabledFor(logging.DEBUG):
-                logger.debug('Answer lines: %s\n\tOutput lines: %s', answerLines, outLines)
-
             res = readFile(f"/tmp/{sub.id}/out/result{i}.txt")
-            logger.debug(f"Result of testing {sub.id} with test {i}: {res}")
             if res == None:
                 res = "tle"
             elif res == "ok" and anstrip != outstrip:
@@ -207,12 +204,16 @@ def runCode(sub: Submission, user: User) -> list:
             sub.status = "Judged"
             
         sub.results = results
-        
+
+
+        logger.debug(f"Result of testing {sub.id}: {sub}")
+
+
+        saveData(sub, inputs, 'in')
+        saveData(sub, outputs, 'out')
+        saveData(sub, answers, 'answer')
+        saveData(sub, errors, 'error')
         if sub.type == Submission.TYPE_SUBMIT:
-            saveData(sub.id, inputs, 'in')
-            saveData(sub.id, outputs, 'out')
-            saveData(sub.id, answers, 'answer')
-            saveData(sub.id, errors, 'error')
             sub.save()
 
         return inputs, outputs, answers, errors
