@@ -1,3 +1,5 @@
+import logging
+
 from django.http import HttpResponse, JsonResponse
 
 from contest.auth import admin_required
@@ -7,6 +9,7 @@ from contest.models.user import User
 from contest.pages.lib import Page
 from contest.pages.lib.htmllib import UIElement, h, div, code_encode, h1, h2
 
+logger = logging.getLogger(__name__)
 
 class ProblemTab(UIElement):
     def __init__(self, x):
@@ -115,7 +118,6 @@ class SubmissionCard(UIElement):
         subTime = submission.timestamp
         probName = submission.problem.title
         cls = "gray" if submission.status == Submission.STATUS_REVIEW else "red" if submission.result != "ok" else ""
-        submission.checkout = user.id
         self.html = div(cls="modal-content", contents=[
             div(cls=f"modal-header {cls}", contents=[
                 h.h5(
@@ -233,20 +235,18 @@ def judge(request):
 
 
 @admin_required
-def judge_submission(request, *args, **kwargs):
+def judge_submission(request, *args, **kwargs):    
     submission = Submission.get(kwargs.get('id'))
     user = User.get(request.COOKIES['user'])
     force = kwargs.get('force') == "force"
-    if submission.checkout is not None and not force:
-        return f"CONFLICT:{User.get(submission.checkout).username}"
+    if not submission.checkoutToJudge(user.id, force):
+        return JsonResponse(f"CONFLICT:{User.get(submission.checkout).username}", safe=False)
     return HttpResponse(SubmissionCard(submission, user, force))
 
 
 def judge_submission_close(request):
     submission = Submission.get(request.POST["id"])
     user = User.get(request.COOKIES['user'])
-    if submission.version == int(request.POST["version"]):
-        if submission.checkout == user.id:
-            submission.checkout = None
-        submission.save()
+    if submission.checkout == user.id:
+        submission.checkout = None
     return JsonResponse('ok', safe=False)

@@ -8,25 +8,28 @@ from contest.pages.lib.htmllib import UIElement, h, div, a, h2
 from contest.pages.lib.page import Modal, Page
 
 
+def formatFrom(fromUser, currentUser) -> str:
+    if fromUser.id == currentUser.id or currentUser.isAdmin():
+        return fromUser.username
+    else:
+        return "judge"
+
+
 class MessageCard(UIElement):
     def __init__(self, msglist, user):
         msg = msglist[0]
-        if not user.isAdmin() or msg.fromUser.id == user.id:
-            self.html = Card(
-                f"Message from {msg.fromUser.username} at <span class='time-format'>{msg.timestamp}</span>",
-                msg.message
-            )
-        else:
-            body = msg.message
-            for reply in msglist[1:]:
-                body += f"""\n<br><br>Reply from {reply.fromUser.username} at 
-                    <span class='time-format'>{reply.timestamp}</span>:<br>
-                    {reply.message}"""
-            self.html = Card(
-                f"Message from judge at <span class='time-format'>{msg.timestamp}</span>",
-                body,
-                reply=f"reply('{msg.fromUser.id}', '{msg.id}')"
-            )
+    
+        body = msg.message
+        for reply in msglist[1:]:
+            body += f"""\n<br><br>Reply from {formatFrom(reply.fromUser, user)} at 
+                <span class='time-format'>{reply.timestamp}</span>:<br>
+                {reply.message}"""
+        
+        self.html = Card(
+            f"Message from {formatFrom(msg.fromUser, user)} at <span class='time-format'>{msg.timestamp}</span>",
+            body,
+            reply=f"reply('{msg.fromUser.id}', '{msg.id}')" if msg.isAdmin and user.isAdmin() else None
+        )
 
 
 INBOX, PROCESSED, ANNOUNCEMENT = 'inbox', 'processed', 'announcements'

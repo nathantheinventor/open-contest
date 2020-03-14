@@ -67,7 +67,7 @@ urlpatterns = [
     path('deleteUser', deleteUser, name='deleteUser'),
 
     path('judgeSubmission/<str:id>', judge_submission, name='judge_submission'),
-    path('judgeSubmission/<uuid:id>/<str:force>', judge_submission, name='judge_submission'),
+    path('judgeSubmission/<str:id>/<str:force>', judge_submission, name='judge_submission'),
     path('judgeSubmissionClose', judge_submission_close, name='judge_submission_close'),
     path('judge', judge, name='judge'),
     path('changeResult', changeResult, name='changeResult'),

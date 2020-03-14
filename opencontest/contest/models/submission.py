@@ -134,6 +134,25 @@ class Submission:
 
         return results
 
+    def checkoutToJudge(self, userid: str, force: bool) -> bool:
+        with lock.gen_wlock():
+            if self.checkout == None or force:
+                self.checkout = userid
+                return True
+    
+        return False        
+
+    def changeResult(self, result: str, status: str, orig_version: int) -> bool:
+        with lock.gen_wlock():
+            if self.version != orig_version:
+                return False
+
+            self.result = result
+            self.status = status
+            self.version += 1
+            self.checkout = None
+            return True
+
     def save(self):
         with lock.gen_wlock():
             if self.id == None:
