@@ -668,7 +668,7 @@ General
             var timestamp = $(span).text();
             if ($.isNumeric(timestamp)) {
                 var d = new Date(parseInt(timestamp));
-                $(span).text(d.toLocaleString());
+                $(span).text(d.toLocaleTimeString());
             }
         });
         await getLanguages();
