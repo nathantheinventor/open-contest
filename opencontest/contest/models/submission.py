@@ -50,7 +50,7 @@ class Submission:
             self.id = None
             self.user = None     # Instance of User
             self.problem = None     # Instance of Problem
-            self.timestamp = 0        # Time of submission
+            self.timestamp = 0        # Time of submission (in milliseconds from time.time() * 1000)
             self.language = None
             self.code = None     # Source code
             self.type = None

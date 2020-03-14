@@ -68,6 +68,7 @@ General page code
         setupHeaderDiv();
         fixFormatting();
         showCountdown();
+        displayRemainingTime();
         displayIncomingMessages();
         if ($("#ace-editor").length > 0) {
             setupAceEditor();
@@ -680,7 +681,46 @@ General
             var result = $(span).text();
             $(span).text(verdict_name[result]);
         });
+
+        $("span.login-user").each((_, span) => {
+            var user = readCookie("user");
+            if (user) {
+                $(span).text('User: ' + user);
+            }
+        });
+        $("span.time-remaining").each((_, span) => {
+            var remaining = parseInt($(span).text() / 60);
+            if (remaining) {
+                window.setTimeout( () => {
+                    remaining--;
+                    $(span).text("Time remaining:" + new Date(remaining * 60 * 1000).toLocaleTimeString('it-IT'));
+                }, 1000)
+            }
+        });
+
     }
+
+    var remainingTime;
+
+    function displayRemainingTime() {
+        if (!remainingTime) {
+            remainingTime = parseInt($('span.time-remaining').attr('data_timeremaining'));
+        }
+        if (remainingTime && remainingTime > 0) {
+            remainingTime--;
+            var dateObj = new Date(remainingTime * 1000);
+            var hours = dateObj.getUTCHours();
+            var minutes = dateObj.getUTCMinutes();
+            var seconds = dateObj.getSeconds();
+
+            var timeString = hours.toString().padStart(2, '0') + ':' + 
+                minutes.toString().padStart(2, '0') + ':' + 
+                seconds.toString().padStart(2, '0');
+            $('span.time-remaining').text("Time remaining: " + timeString);
+            window.setTimeout(displayRemainingTime, 1000)
+        }
+    }
+
 /*--------------------------------------------------------------------------------------------------
 Messages Page
 --------------------------------------------------------------------------------------------------*/

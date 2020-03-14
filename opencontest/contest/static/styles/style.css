@@ -33,6 +33,13 @@ General page code
             color: #093;
             padding: 20px;
             cursor: pointer;
+            display: flex;
+        }
+        div.spacer {
+            flex-grow: 1;
+        }
+        .header-right {
+            text-align: right;
         }
         div.header h1 {
             margin: 0px;

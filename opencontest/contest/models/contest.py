@@ -18,7 +18,7 @@ class Contest:
             details = getKey(f"/contests/{id}/contest.json")
             self.id = details["id"]
             self.name = details["name"]
-            self.start = int(details["start"])
+            self.start = int(details["start"])   
             self.end = int(details["end"])
             self.scoreboardOff = int(details.get("scoreboardOff", self.end))
             self.showProblInfoBlocks = details.get("showProblInfoBlocks","Off")
@@ -28,12 +28,12 @@ class Contest:
         else:
             self.id = None
             self.name = None
-            self.start = None
+            self.start = None                       # timestamp in milliseconds from time.time() * 1000
             self.end = None
             self.scoreboardOff = None
             self.showProblInfoBlocks = None
-            self.problems = None                        
-            self.tieBreaker = False          
+            self.problems = None
+            self.tieBreaker = False
 
     @staticmethod
     def get(id: uuid4):
