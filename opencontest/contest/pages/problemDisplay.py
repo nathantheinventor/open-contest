@@ -42,7 +42,7 @@ class ProblemCard(UIElement):
             icon = ''
             result = ''
             for sub in Submission.all():
-                if sub.problem != prob or sub.user != user or sub.status == "Review":
+                if sub.problem != prob or sub.user != user or sub.status == Submission.STATUS_REVIEW:
                     continue
 
                 if sub.user == user and "ok" == sub.result:

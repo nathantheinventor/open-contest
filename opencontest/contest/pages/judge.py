@@ -45,7 +45,7 @@ verdict_name = {
 def resultOptions(result):
     ans = []
     for res in verdict_name:
-        if res == "pending" or res == "pending_review":
+        if res == Submission.RESULT_PENDING or res == Submission.RESULT_PENDING_REVIEW:
             pass  # These should not appear as choices in the dropdown
         elif result == res:
             ans.append(h.option(verdict_name[res], value=res, selected="selected"))
@@ -56,7 +56,7 @@ def resultOptions(result):
 
 def statusOptions(status):
     ans = []
-    for stat in ["Review", "Judged"]:
+    for stat in [Submission.STATUS_REVIEW, Submission.STATUS_JUDGED]:
         if status == stat:
             ans.append(h.option((stat), value=stat, selected="selected"))
         else:
@@ -114,7 +114,7 @@ class SubmissionCard(UIElement):
     def __init__(self, submission: Submission, user, force):
         subTime = submission.timestamp
         probName = submission.problem.title
-        cls = "gray" if submission.status == "Review" else "red" if submission.result != "ok" else ""
+        cls = "gray" if submission.status == Submission.STATUS_REVIEW else "red" if submission.result != "ok" else ""
         submission.checkout = user.id
         self.html = div(cls="modal-content", contents=[
             div(cls=f"modal-header {cls}", contents=[

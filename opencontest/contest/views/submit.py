@@ -27,12 +27,12 @@ def addSubmission(probId, lang, code, user, type, custominput):
     sub.problem = Problem.get(probId)
     sub.language = lang
     sub.code = code
-    sub.result = "pending"
+    sub.result = Submission.RESULT_PENDING
     sub.custominput = custominput
     sub.user = user
     sub.timestamp = time.time() * 1000
     sub.type = type
-    sub.status = "Review"
+    sub.status = Submission.STATUS_REVIEW
     
     if type == Submission.TYPE_SUBMIT:
         sub.save()
@@ -88,7 +88,7 @@ def writeFile(path: str, data: str):
 def saveData(sub: Submission, data: list, fileType: str):
     for i in range(len(data)):
         if sub.type == Submission.TYPE_SUBMIT:
-            writeFile(f"/db/submissions/{id}/{fileType}{i}.txt", data[i])
+            writeFile(f"/db/submissions/{sub.id}/{fileType}{i}.txt", data[i])
         data[i] = Submission.truncateForDisplay(data[i])
 
 
@@ -201,7 +201,7 @@ def runCode(sub: Submission, user: User) -> list:
 
         sub.result = result
         if sub.result in ["ok", "runtime_error", "tle"] or user.isAdmin():
-            sub.status = "Judged"
+            sub.status = Submission.STATUS_JUDGED
             
         sub.results = results
 

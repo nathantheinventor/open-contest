@@ -20,6 +20,15 @@ class Submission:
     TYPE_SUBMIT = "submit"  # full submission
     TYPE_TEST = "test"    # test only
 
+    # Submission result
+    RESULT_PENDING = "pending"
+    RESULT_PENDING_REVIEW = "pending_review"
+    RESULT_REJECT = "reject"
+
+    # Submission status
+    STATUS_REVIEW = "Review"
+    STATUS_JUDGED = "Judged"
+
     saveCallbacks = []
 
     def __init__(self, id=None):
@@ -47,7 +56,7 @@ class Submission:
             self.type = None
             self.results = []
             self.result = []
-            self.status = None     # One of "Review", "Judged"
+            self.status = None     # One of Submission.STATUS_REVIEW, Submission.STATUS_JUDGED
             self.checkout = None     # id of judge that has submission checked out
             self.version = 1        # Version number for judge changes to this record
 
@@ -81,11 +90,12 @@ class Submission:
         }
 
     def getContestantResult(self):
-        return "pending_review" if self.result != "pending" and self.status == "Review" else self.result
+        return Submission.RESULT_PENDING_REVIEW if self.result != Submission.RESULT_PENDING and self.status == Submission.STATUS_REVIEW else self.result
 
     def getContestantIndividualResults(self):
-        return ["pending_review" if self.result != "pending" and self.status == "Review" else res for res in self.results]
+        return [Submission.RESULT_PENDING_REVIEW if self.result != Submission.RESULT_PENDING and self.status == Submission.STATUS_REVIEW else res for res in self.results]
 
+    @staticmethod
     def truncateForDisplay(data: str) -> str:
         """Truncates `data` to maximum of OC_MAX_DISPLAY_LEN bytes and
         OC_MAX_DISPLAY_LINES lines
@@ -132,7 +142,7 @@ class Submission:
                 if c:
                     for i, prob in enumerate(c.problems):
                         if prob == self.problem:
-                            probNum = i
+                            probNum = i + 1                
                 self.id = f"{self.user.username}-{probNum}-{uuid4()}"
                 submissions[self.id] = self
 
@@ -170,11 +180,13 @@ class Submission:
                 "errors":    self.errors
             }
 
+    @staticmethod
     def forEach(callback: callable):
         with lock.gen_rlock():
             for id in submissions:
                 callback(submissions[id])
     
+    @staticmethod
     def onSave(callback: callable):
         Submission.saveCallbacks.append(callback)
 
@@ -191,4 +203,7 @@ class Submission:
 
 with lock.gen_wlock():
     for id in listSubKeys("/submissions"):
-        submissions[id] = Submission(id)
+        sub = Submission(id)
+        if sub.result == Submission.RESULT_PENDING:
+            sub.result = Submission.RESULT_REJECT
+        submissions[id] = sub

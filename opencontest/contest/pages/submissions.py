@@ -46,7 +46,7 @@ class SubmissionCard(UIElement):
     def __init__(self, submission: Submission):
         subTime = submission.timestamp
         probName = submission.problem.title
-        cls = "gray" if submission.status == "Review" else "red" if submission.result != "ok" else ""
+        cls = "gray" if submission.status == Submission.STATUS_REVIEW else "red" if submission.result != "ok" else ""
         self.html = div(cls="modal-content", contents=[
             div(cls=f"modal-header {cls}", contents=[
                 h.h5(
