@@ -144,7 +144,7 @@ class SubmissionCard(UIElement):
                 h.span("&emsp;"),
                 h.button("Save", type="button", onclick=f"changeSubmissionResult('{submission.id}', '{submission.version}')", cls="btn btn-primary"),
                 h.span(" "),
-                h.button("Rejudge", type="button", onclick=f"rejudge('{submission.id}')", cls="btn btn-primary rejudge"),
+                h.button("Retest", type="button", onclick=f"rejudge('{submission.id}')", cls="btn btn-primary rejudge"),
                 h.span(" "),
                 h.button("Download", type="button", onclick=f"download('{submission.id}')", cls="btn btn-primary rejudge"),
                 h.br(),

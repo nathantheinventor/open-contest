@@ -1,8 +1,4 @@
-// document.addEventListener("visibilitychange", _ => {
-//     window.setTimeout(_ => {
-//         window.location.reload();
-//     }, 500);
-// }, false);
+var MESSAGE_CHECK_SECS = 30  // check for messages every __ seconds
 
 /*--------------------------------------------------------------------------------------------------
 General page code
@@ -713,8 +709,11 @@ Messages Page
     }
 
     function showIncomingMessage(msg) {
+        var body = msg.message;
+        if (msg.general) 
+            body = "General Announcement: " + body
         $("div.message-alerts").append(`<div class="alert alert-warning alert-dismissible fade show" role="alert">
-            ${msg.message}
+            ${body}
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
             </button>
@@ -735,7 +734,7 @@ Messages Page
             }
             localStorage.seenMessages = JSON.stringify(seenMessages);
         });
-        window.setTimeout(displayIncomingMessages, 5000);
+        window.setTimeout(displayIncomingMessages, MESSAGE_CHECK_SECS * 1000);
     }
 
 /*--------------------------------------------------------------------------------------------------
@@ -803,7 +802,7 @@ Judging Page
             $(".rejudge").attr("disabled", false);
             $(".rejudge").removeClass("button-gray");
             alert(`New Result: ${verdict_name[data]}`);
-            $(".result-choice").val(data);
+            window.location.reload();
         });
     }
   

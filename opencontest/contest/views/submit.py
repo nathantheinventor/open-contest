@@ -205,9 +205,7 @@ def runCode(sub: Submission, user: User) -> list:
             
         sub.results = results
 
-
         logger.debug(f"Result of testing {sub.id}: {sub}")
-
 
         saveData(sub, inputs, 'in')
         saveData(sub, outputs, 'out')

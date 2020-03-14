@@ -1,5 +1,5 @@
 import logging
-from uuid import uuid4
+import time
 from readerwriterlock import rwlock
 
 from contest.models.contest import Contest
@@ -44,8 +44,8 @@ class Submission:
             self.results = details["results"]
             self.result = details["result"]
             self.status = details.get("status", None)
-            self.checkout = details.get("checkout", None)
-            self.version = details.get("version", 1)
+            self.checkout = None  # On server restart, all judges lose their checkouts
+            self.version = 0
         else:
             self.id = None
             self.user = None     # Instance of User
@@ -138,6 +138,7 @@ class Submission:
         with lock.gen_wlock():
             if self.checkout == None or force:
                 self.checkout = userid
+                self.version += 1
                 return True
     
         return False        
@@ -161,10 +162,12 @@ class Submission:
                 if c:
                     for i, prob in enumerate(c.problems):
                         if prob == self.problem:
-                            probNum = i + 1                
-                self.id = f"{self.user.username}-{probNum}-{uuid4()}"
+                            probNum = i + 1
+                timestr = time.strftime("%H%M%S", time.localtime(self.timestamp / 1000))
+                self.id = f"{self.user.username}-{probNum}-{timestr}"
                 submissions[self.id] = self
 
+            self.version += 1
             setKey(f"/submissions/{self.id}/submission.json", self.toJSONSimple())
 
         for callback in Submission.saveCallbacks:

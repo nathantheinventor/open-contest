@@ -18,6 +18,7 @@ def formatFrom(fromUser, currentUser) -> str:
 class MessageCard(UIElement):
     def __init__(self, msglist, user):
         msg = msglist[0]
+        msgType = "Announcement" if msg.isGeneral else "Message"
     
         body = msg.message
         for reply in msglist[1:]:
@@ -26,7 +27,7 @@ class MessageCard(UIElement):
                 {reply.message}"""
         
         self.html = Card(
-            f"Message from {formatFrom(msg.fromUser, user)} at <span class='time-format'>{msg.timestamp}</span>",
+            f"{msgType} from {formatFrom(msg.fromUser, user)} at <span class='time-format'>{msg.timestamp}</span>",
             body,
             reply=f"reply('{msg.fromUser.id}', '{msg.id}')" if msg.isAdmin and user.isAdmin() else None
         )
