@@ -23,7 +23,7 @@ if usr:
     password = usr.password
 else:
     password = generatePassword()
-    usr = User(user, password, 'admin')
+    usr = User(user, user, password, 'admin')
     usr.save()
 
 print(f'Admin username is "{user}".')
