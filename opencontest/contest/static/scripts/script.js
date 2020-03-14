@@ -684,6 +684,10 @@ General
 
         $("span.login-user").each((_, span) => {
             var user = readCookie("user");
+            var dashPos = user.indexOf('-')
+            if (dashPos > 0) {
+                user = user.substring(0, dashPos);
+            }
             if (user) {
                 $(span).text('User: ' + user);
             }
