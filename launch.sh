@@ -9,7 +9,7 @@ OC_CODE_DIR=$DIR/opencontest
 
 IPADDR=0.0.0.0
 PORT=80
-DBDIR=$DIR/../db
+DBDIR=$HOME/db
 LOG_LEVEL=INFO
 
 LOGTOFILE="--logto /db/opencontest.log"

@@ -48,6 +48,9 @@ The following instructions have been tested in an Ubuntu 18.04 environment.
 1. Make changes to files in open-contest/opencontest as needed, then press
    Ctrl-C in the console and re-execute the bash command above to restart the
    server and test the changes.
+
+1. If you make changes to the code in the runners folder, use ~/open-contest/runners/build.sh
+   to rebuild the docker images.
    
 # The launch script
 
@@ -89,3 +92,10 @@ Visual Studio Code includes excellent Python support.
 
 To setup Visual Studio Code, install the Microsoft Python extension, then choose
 **File > Open Folder** and select the open-contest/opencontest folder.
+
+# Publishing Changes to Docker
+
+After making changes to the application, you must build a new Docker image, and then
+optionally publish the changes to Dockerhub. See commands in the opencontest/Dockerfile
+to do this.
+
