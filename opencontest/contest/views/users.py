@@ -9,6 +9,7 @@ def createUser(request):
     newPassword = generatePassword()
     user = User(
         request.POST["username"],
+        request.POST["username"],
         newPassword,
         request.POST["type"]
     )

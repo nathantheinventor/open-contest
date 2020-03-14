@@ -7,12 +7,13 @@ userNames = {}
 
 
 class User:
-    def __init__(self, username: str, password: str, type: str, id: str = None):
+    def __init__(self, username: str, fullname: str, password: str, type: str, id: str = None):
         self.id = id
         if username in userNames:
             self.id = userNames[username].id
         self.username = username
         self.password = password
+        self.fullname = fullname
         self.type = type
 
     @staticmethod
@@ -62,6 +63,6 @@ class User:
 
 usrs = getKey("/users.json") or []
 for usr in usrs:
-    user = User(usr["username"], usr["password"], usr["type"], usr["id"])
+    user = User(usr["username"], usr.get('fullname', usr["username"]), usr["password"], usr["type"], usr["id"])
     users[usr["id"]] = user
     userNames[usr["username"]] = user

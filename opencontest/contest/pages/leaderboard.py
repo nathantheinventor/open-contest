@@ -58,7 +58,7 @@ def leaderboard(request):
             scor[0],
             scor[1],
             scor[2],
-            len(usersubs)
+            scor[3]
         ))
     scores = sorted(scores, key=lambda score: score[1] * 1000000000 + score[2] * 10000000 - score[3], reverse=True)
     
@@ -171,7 +171,7 @@ def contestreport(request):
             scor[0],
             scor[1],
             scor[2],
-            len(usersubs),
+            scor[3],
             user
         ))
     
@@ -293,6 +293,7 @@ def score(submissions: list, contestStart, problemSummary) -> tuple:
     solvedProbs = 0
     sampleProbs = 0
     penPoints = 0
+    attempts = 0
 
     # map from problems to list of submissions
     probs = {}
@@ -314,6 +315,7 @@ def score(submissions: list, contestStart, problemSummary) -> tuple:
         sampleSolved = False
         
         for sub in subs:
+            attempts += 1
             for res in sub.results[:sub.problem.samples]:
                 if res != "ok":
                     break
@@ -331,7 +333,7 @@ def score(submissions: list, contestStart, problemSummary) -> tuple:
                 solved = True
                 break
         
-        # Increment attempts
+        # Increment attempts for problem summary
         problemSummary[sub.problem.id][0] += 1
 
         # A problem affects the score only if it was successfully solved
@@ -343,4 +345,4 @@ def score(submissions: list, contestStart, problemSummary) -> tuple:
             sampleProbs += 1
     
     # The user's score is dependent on the number of solved problems and the number of penalty points
-    return solvedProbs, sampleProbs, int(penPoints)
+    return solvedProbs, sampleProbs, int(penPoints), attempts
