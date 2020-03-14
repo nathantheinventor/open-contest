@@ -618,8 +618,9 @@ Problem page
         problem.samples     = $("#problem-samples").val();
         testData = [];
         $(".test-data-cards .card").each((_, card) => {
-            var input = $(card).find("code:eq(0)").text();
-            var output = $(card).find("code:eq(1)").text();
+            var input = $(card).find("code:eq(0)")[0].innerText.replace('\xa0', ' ');
+            var output = $(card).find("code:eq(1)")[0].innerText.replace('\xa0', ' ');
+            console.log('output:', output);
             testData.push({input: input, output: output});
         });
         if (newTest != undefined) {

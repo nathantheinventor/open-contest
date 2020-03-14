@@ -246,7 +246,7 @@ Problem Page
         padding: 10px;
         max-height: 305px;
         overflow: auto;
-        white-space: nowrap;
+        white-space: pre;
     }
     div.samples div.col-6:first-child {
         padding-left: 10px;

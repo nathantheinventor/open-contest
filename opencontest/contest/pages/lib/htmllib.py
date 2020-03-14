@@ -45,7 +45,7 @@ def html_encode(m: str) -> str:
 
 
 def code_encode(m: str) -> str:
-    return html_encode(m).replace(" ", "&nbsp;").replace("\n", "<br/>")
+    return html_encode(m)  # .replace(" ", "&nbsp;").replace("\n", "<br/>")
 
 
 h = HTML()

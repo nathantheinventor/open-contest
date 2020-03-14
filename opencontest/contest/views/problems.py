@@ -1,10 +1,13 @@
 import json
+import logging
 
 from django.http import JsonResponse
 
 from contest.auth import admin_required
 from contest.models.problem import Datum, Problem
 
+
+logger = logging.getLogger(__name__)
 
 @admin_required
 def deleteProblem(request):
@@ -27,6 +30,7 @@ def createProblem(request):
     problem.samples = int(request.POST["samples"])
 
     testData = json.loads(request.POST["testData"])
+    logger.debug('testData: %s', repr(testData))
     problem.testData = [Datum(d["input"], d["output"]) for d in testData]
     problem.tests = len(testData)
     problem.timelimit = request.POST["timelimit"]
