@@ -1,0 +1,11 @@
+[Unit]
+Description=Cloudflare IP update
+After=network.target 
+
+[Service]
+EnvironmentFile=/home/ubuntu/cloudflare.config
+ExecStart=/bin/bash /home/ubuntu/open-contest/cloudflare.sh
+Type=simple
+
+[Install]
+WantedBy=multi-user.target
