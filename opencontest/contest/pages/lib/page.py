@@ -1,4 +1,5 @@
 from datetime import datetime
+import time
 from uuid import uuid4
 
 from contest.models.contest import Contest
@@ -10,10 +11,19 @@ def uuid():
 
 
 class Header(UIElement):
-    def __init__(self, title):
+    def __init__(self, title, endtimestamp=None):
+        timeRemaining = ""
+        if endtimestamp:
+            timeRemaining = str(int(((endtimestamp / 1000) - time.time())))
         self.html = div(cls="top", contents=[
             div(cls="header", contents=[
                 h1(title),
+                div(cls="spacer"),
+                div(cls="header-right", contents=[
+                    h.span(cls="time-remaining", data_timeremaining=timeRemaining),
+                    h.br(),
+                    h.span(cls="login-user")
+                ])
             ])
         ])
 
@@ -78,7 +88,7 @@ class Page(UIElement):
                 h.script(src="/static/lib/diff.min.js"),
             ),
             body(
-                Header(title),
+                Header(title, cont.end if cont else None),
                 Menu(),
                 div(cls="message-alerts"),
                 div(*bodyData, cls=cls),

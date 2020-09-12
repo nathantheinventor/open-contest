@@ -27,9 +27,9 @@ WORKDIR /code
 ENTRYPOINT ["uwsgi", "--threads", "50", "--http", "0.0.0.0:8000", "--module", "opencontest.wsgi", "--ini", "uwsgi.ini"]
 
 # Note: use the following build and run commands:
-# docker build --rm --force-rm -t bjucps/open-contest .
+# docker build -t bjucps/open-contest .
 # To publish it to dockerhub:
-# docker push bjucps/open-contest-base
+# docker push bjucps/open-contest
 
 # To run :
 # docker run -v /tmp:/tmp -v $HOME/db:/db -v /var/run/docker.sock:/var/run/docker.sock -p 80:8000 bjucps/open-contest

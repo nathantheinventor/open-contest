@@ -187,7 +187,7 @@ def contestreport(request):
     for (name, solved, samples, points, attempts, userid), rank in zip(scores, ranks):
         log.append({"rank": rank, "name": name, "userid": userid, "solved": solved, "points": points})
     
-    deatiledContestDisplay = []
+    detailedContestDisplay = []
     for person in log:
         outproblems = []
         submissions = sorted(subs[person["userid"]], key=lambda sub: sub.timestamp) 
@@ -218,9 +218,14 @@ def contestreport(request):
             else:
                 outproblems.append(h.td(f""))
             
-        deatiledContestDisplay.append(h.tr(
+        user = User.getByName(person["name"])
+        if user and user.fullname:
+            fullname = user.fullname
+        else:
+            fullname = person["name"]
+        detailedContestDisplay.append(h.tr(
             h.td(person["rank"]),
-            h.td(person["name"]),
+            h.td(fullname),
             h.td(person["name"]) if start  <= time.time() <=  end else "",
             h.td(person["solved"]),
             h.td(person["points"]),
@@ -263,7 +268,7 @@ def contestreport(request):
         h2("DETAILED STANDINGS", cls="page-title"),
         h.table(
             h.thead(h.tr(*reportcols)),
-            h.tbody(*deatiledContestDisplay)
+            h.tbody(*detailedContestDisplay)
         ),
         h2("Problem Summary", cls="page-title"),
         h.table(
