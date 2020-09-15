@@ -9,6 +9,8 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
 import os
+import sentry_sdk
+from sentry_sdk.integrations.django import DjangoIntegration
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -35,6 +37,16 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
+MONITORING = True
+if MONITORING:
+    sentry_sdk.init(
+        dsn="https://df3efc6cb9a649eab71081a510456b0a@sentry.bjucps.dev/7",
+        integrations=[DjangoIntegration()],
+
+        # If you wish to associate users to errors (assuming you are using
+        # django.contrib.auth) you may enable sending PII data.
+        send_default_pii=False
+    )
 
 # Application definition
 
@@ -48,7 +60,15 @@ INSTALLED_APPS = [
     'contest.apps.ContestConfig'
 ]
 
-MIDDLEWARE = [
+if MONITORING:
+    INSTALLED_APPS += ['django_prometheus']
+
+MIDDLEWARE = []
+
+if MONITORING:
+    MIDDLEWARE += ['django_prometheus.middleware.PrometheusBeforeMiddleware']
+
+MIDDLEWARE += [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -57,6 +77,9 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+if MONITORING:
+    MIDDLEWARE += ['django_prometheus.middleware.PrometheusAfterMiddleware']
 
 ROOT_URLCONF = 'opencontest.urls'
 
@@ -84,7 +107,7 @@ WSGI_APPLICATION = 'opencontest.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
+        'ENGINE': 'django_prometheus.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
