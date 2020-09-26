@@ -51,12 +51,19 @@ do
 
   echo "DNSrecordid for $dnsrecord is $dnsrecordid"
 
+  # # update the record
+  # curl -s -X PUT "https://api.cloudflare.com/client/v4/zones/$zoneid/dns_records/$dnsrecordid" \
+  #   -H "X-Auth-Email: $cloudflare_auth_email" \
+  #   -H "X-Auth-Key: $cloudflare_auth_key" \
+  #   -H "Content-Type: application/json" \
+  #   --data "{\"type\":\"A\",\"name\":\"$dnsrecord\",\"content\":\"$ip\",\"ttl\":1,\"proxied\":false}" | jq
+
   # update the record
-  curl -s -X PUT "https://api.cloudflare.com/client/v4/zones/$zoneid/dns_records/$dnsrecordid" \
+  curl -s -X PATCH "https://api.cloudflare.com/client/v4/zones/$zoneid/dns_records/$dnsrecordid" \
     -H "X-Auth-Email: $cloudflare_auth_email" \
     -H "X-Auth-Key: $cloudflare_auth_key" \
     -H "Content-Type: application/json" \
-    --data "{\"type\":\"A\",\"name\":\"$dnsrecord\",\"content\":\"$ip\",\"ttl\":1,\"proxied\":false}" | jq
+    --data "{\"type\":\"A\",\"name\":\"$dnsrecord\",\"content\":\"$ip\"}" | jq
 
 
 done
