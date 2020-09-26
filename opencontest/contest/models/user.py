@@ -30,7 +30,9 @@ class User:
     
     def save(self):
         if self.id == None:
-            self.id = f"{self.username}-{uuid4()}"
+            if self.username in [user.id for user in User.all()]:
+                return  # don't create duplicate user
+            self.id = self.username
             users[self.id] = self
             userNames[self.username] = self
         usrs = [users[id].toJSON() for id in users]
