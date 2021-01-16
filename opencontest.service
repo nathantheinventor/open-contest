@@ -3,7 +3,8 @@ Description=open-contest server
 After=network.target
 
 [Service]
-ExecStart=/bin/bash /home/ubuntu/open-contest/launch.sh --dev
+ExecStart=/bin/bash /home/ubuntu/open-contest/launch.sh --dev --fg --db /home/ubuntu/db
+ExecStop=/usr/bin/docker stop open-contest-server
 Type=simple
 
 [Install]

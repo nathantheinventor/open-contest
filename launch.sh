@@ -15,6 +15,7 @@ LOG_LEVEL=INFO
 LOGTOFILE="--logto /db/opencontest.log"
 DISABLE_REQ_LOG="--log-5xx --log-4xx --disable-logging"
 DETACHED="-d"
+NAME="open-contest-server"
 
 while [ $# -ne 0 ]; do
   if [ $1 == -p ]; then
@@ -22,6 +23,9 @@ while [ $# -ne 0 ]; do
     shift
   elif [ $1 == --fg ]; then
     unset DETACHED
+  elif [ $1 == --name ]; then
+    NAME=$2
+    shift
   elif [ $1 == --log-all-requests ]; then
     unset DISABLE_REQ_LOG
   elif [ $1 == --db ]; then
@@ -36,7 +40,7 @@ while [ $# -ne 0 ]; do
   elif [ $1 == --log-stdout ]; then
     unset LOGTOFILE
   else
-    echo "Usage: launch.sh [--dev] [--fg] [-p port#] [--db path] [--log-all-requests] [--log-stdout] [--log-debug] [--local-only]"
+    echo "Usage: launch.sh [--dev] [--fg] [-p port#] [--name docker-name] [--db path] [--log-all-requests] [--log-stdout] [--log-debug] [--local-only]"
     exit 1
   fi
 
@@ -85,6 +89,7 @@ RUNCMD="docker run \
     -e OC_MAX_DISPLAY_LEN=$OC_MAX_DISPLAY_LEN \
     -e OC_MAX_DISPLAY_LINES=$OC_MAX_DISPLAY_LINES \
     -e OC_DOCKERIMAGE_BASE=$OC_DOCKERIMAGE_BASE \
+    --name $NAME \
     $OC_DOCKERIMAGE_BASE \
     $LOGTOFILE \
     $DISABLE_REQ_LOG" 
