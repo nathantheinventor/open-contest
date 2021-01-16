@@ -1,0 +1,10 @@
+[Unit]
+Description=open-contest server
+After=network.target
+
+[Service]
+ExecStart=/bin/bash /home/ubuntu/open-contest/launch.sh --dev
+Type=simple
+
+[Install]
+WantedBy=multi-user.target

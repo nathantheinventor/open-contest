@@ -45,6 +45,7 @@ def about(request):
         <li>Tim Kephart enhanced the autojudge and contributed the submission download feature.</li>
         <li>Michael Bruno implemented per-problem time limits.</li>
         <li>Michael Johannes implemented configurable problem information blocks.</li>
+        <li>Heather East ported the system to the Django framework.</li>
         </ul>
         """)
     ))

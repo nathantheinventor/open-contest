@@ -51,12 +51,29 @@ do
 
   echo "DNSrecordid for $dnsrecord is $dnsrecordid"
 
-  # update the record
-  curl -s -X PUT "https://api.cloudflare.com/client/v4/zones/$zoneid/dns_records/$dnsrecordid" \
-    -H "X-Auth-Email: $cloudflare_auth_email" \
-    -H "X-Auth-Key: $cloudflare_auth_key" \
-    -H "Content-Type: application/json" \
-    --data "{\"type\":\"A\",\"name\":\"$dnsrecord\",\"content\":\"$ip\",\"ttl\":1,\"proxied\":false}" | jq
+  if [ "$dnsrecord" = "contest.bjucps.dev" ]; then
+    proxied=true
+  else
+    proxied=false
+  fi
 
+  if [ "$dnsrecordid" = "null" ]; then
+    # create the record
+    echo "Creating DNS record for $dnsrecord"
+    curl -s -X POST "https://api.cloudflare.com/client/v4/zones/$zoneid/dns_records" \
+      -H "X-Auth-Email: $cloudflare_auth_email" \
+      -H "X-Auth-Key: $cloudflare_auth_key" \
+      -H "Content-Type: application/json" \
+      --data "{\"type\":\"A\",\"name\":\"$dnsrecord\",\"content\":\"$ip\",\"ttl\":1,\"proxied\":$proxied}" 
+  else
+    # update the record
+    echo "Updating DNS record for $dnsrecord"
+    curl -s -X PUT "https://api.cloudflare.com/client/v4/zones/$zoneid/dns_records/$dnsrecordid" \
+      -H "X-Auth-Email: $cloudflare_auth_email" \
+      -H "X-Auth-Key: $cloudflare_auth_key" \
+      -H "Content-Type: application/json" \
+      --data "{\"type\":\"A\",\"name\":\"$dnsrecord\",\"content\":\"$ip\",\"ttl\":1,\"proxied\":$proxied}" 
+
+  fi
 
 done
