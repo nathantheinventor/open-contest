@@ -252,7 +252,9 @@ def changeResult(request, *args, **kwargs):
     if not sub:
         return JsonResponse("Error: no such submission", safe=False)
     
-    if not sub.changeResult(request.POST["result"], request.POST["status"], version):
+    if sub.changeResult(request.POST["result"], request.POST["status"], version):
+        sub.save()
+    else:
         return JsonResponse(
             "The submission has been changed by another judge since you loaded it. Please reload the sumbission to "
             "modify it.",

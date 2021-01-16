@@ -122,7 +122,8 @@ class SubmissionCard(UIElement):
             div(cls=f"modal-header {cls}", contents=[
                 h.h5(
                     f"{probName} from {submission.user.username} at ",
-                    h.span(subTime, cls="time-format")
+                    h.span(subTime, cls="time-format"),
+                    f" (id {submission.id})",
                 ),
                 """
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -214,7 +215,7 @@ class SubmissionTable(UIElement):
 
 @admin_required
 def judge(request):
-    cont = Contest.getCurrent()
+    cont = Contest.getCurrent() or Contest.getPast()
     if not cont:
         return HttpResponse(Page(
             h1("&nbsp;"),

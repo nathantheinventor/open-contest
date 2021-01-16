@@ -39,11 +39,7 @@ def leaderboard(request):
     start = contest.start
     end = contest.end
 
-    subs = {}
-    for sub in Submission.all():
-        if start <= sub.timestamp <= end and not sub.user.isAdmin():
-            subs[sub.user.id] = subs.get(sub.user.id) or []
-            subs[sub.user.id].append(sub)            
+    subs = get_user_subs_map(contest)
     
     problemSummary = {}
     for prob in contest.problems:
@@ -52,7 +48,7 @@ def leaderboard(request):
     scores = []
     for userid in subs:
         usersubs = subs[userid]
-        scor = score(usersubs, start, problemSummary)
+        scor = score(usersubs, contest, problemSummary)
         scores.append((
             User.get(userid).username,
             scor[0],
@@ -141,11 +137,7 @@ def contestreport(request):
     end = contest.end
     problemSummaryreport = []
     
-    subs = {}
-    for sub in Submission.all():
-        if start <= sub.timestamp <= end and not sub.user.isAdmin():
-            subs[sub.user.id] = subs.get(sub.user.id) or []
-            subs[sub.user.id].append(sub)  
+    subs = get_user_subs_map(contest) 
 
     if start <= time.time() <= end:
         reportcols = [h.th("Rank"), h.th("Contestant"), h.th("Contestant ID"), h.th("Correct"), h.th("Penalty"), ]
@@ -165,7 +157,7 @@ def contestreport(request):
     scores = []
     for user in subs:
         usersubs = subs[user]
-        scor = score(usersubs, start, problemSummary)
+        scor = score(usersubs, contest, problemSummary)
         scores.append((
             User.get(user).username,
             scor[0],
@@ -290,11 +282,19 @@ def contestreport(request):
         cls='wide-content' # Use a wide format for this page
     ))
 
+def get_user_subs_map(contest: Contest) -> dict:
+    contest_prob_ids = [prob.id for prob in contest.problems]
+    subs = {}
+    for sub in Submission.all():
+        if contest.start <= sub.timestamp <= contest.end and not sub.user.isAdmin() and sub.problem.id in contest_prob_ids:
+            subs[sub.user.id] = subs.get(sub.user.id, [])
+            subs[sub.user.id].append(sub)
 
-def score(submissions: list, contestStart, problemSummary) -> tuple:
+    return subs
+
+def score(submissions: list, contest: Contest, problemSummary) -> tuple:
     """ Given a list of submissions by a particular user, calculate that user's score.
         Calculates score in ACM format. """
-    contest = Contest.getCurrent() or Contest.getPast()
     solvedProbs = 0
     sampleProbs = 0
     penPoints = 0
@@ -334,7 +334,7 @@ def score(submissions: list, contestStart, problemSummary) -> tuple:
                 # The first successful submission adds a penalty point for each
                 #     minute since the beginning of the contest
                 # The timestamp is in millis
-                points += (sub.timestamp - contestStart) // 60000
+                points += (sub.timestamp - contest.start) // 60000
                 solved = True
                 break
         
