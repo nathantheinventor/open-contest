@@ -12,7 +12,7 @@ from contest.pages.lib.htmllib import UIElement, div, h2, h, code_encode, h1
 
 def formatMD(md: str) -> str:
     """ Convert Markdown to HTML """
-    return markdown2.markdown(md, extras=["tables"])
+    return markdown2.markdown(md, extras=["tables", "fenced-code-blocks"])
 
 
 class CodeEditor(UIElement):
