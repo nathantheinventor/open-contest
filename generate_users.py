@@ -22,13 +22,17 @@ def generatePassword():
         password = f"{word()} {word()}"
     return password
 
-db_dir = sys.argv[0]
-csvfilename = sys.argv[1]
+if len(sys.argv) < 3:
+    print("Usage: python3 generate_users.py <participant_type> <# users>")
+    print("... where <participant_type> is c (contestant) or j (judge)")
+    sys.exit(1)
 
-usernum = 1
-with open(csvfilename) as csvfile:
-    for row in csv.reader(csvfile):
-        fullname = row[0]
-        username = f"c{usernum:02d}"
-        print(f"""{{ "id": "{username}-{uuid.uuid4()}", "username": "{username}", "fullname": "{fullname}", "password": "{generatePassword()}", "type": "participant" }}, """)
-        usernum += 1
+user_type = sys.argv[1]  # c or j
+num_users = int(sys.argv[2])
+
+participant_type = 'participant' if user_type == 'c' else 'admin'
+
+for i in range(num_users):
+    usernum = i + 1
+    username = f"{user_type}{usernum:02d}"
+    print(f"""{{ "id": "{username}", "username": "{username}",  "password": "{generatePassword()}", "type": "{participant_type}" }}, """)

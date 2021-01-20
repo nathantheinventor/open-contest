@@ -105,5 +105,11 @@ OpenContest formats problems for printing so that you can print and distribute p
 From the user list page, you can print the page with Ctrl+P for a list of usernames and passwords. You can then cut the paper and deliver these sheets to the contestants.
 ![](https://contests-dev.bjucps.com/images/printusers.png)
 
+## Troubleshooting
+
+### When I click the "Test Code" button I don't get any feedback
+
+Make sure that the problem's Sample Test Cases count is at least 1. If 0, Run Test will silently fail.
+
 ## Development Information
 To set up a development environment, view [README-devsetup.md](README-devsetup.md).
