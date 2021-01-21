@@ -24,7 +24,8 @@ COPY . /code
 
 EXPOSE 8000
 WORKDIR /code
-ENTRYPOINT ["uwsgi", "--threads", "50", "--http", "0.0.0.0:8000", "--module", "opencontest.wsgi", "--ini", "uwsgi.ini"]
+ENV YOUR_COMMAND_OPTIONS=uwsgi\ --threads\ 50\ --http\ 0.0.0.0:8000\ --module\ opencontest.wsgi\ --ini\ uwsgi.ini
+ENTRYPOINT NEW_RELIC_CONFIG_FILE=newrelic.ini newrelic-admin run-program $YOUR_COMMAND_OPTIONS
 
 # Note: use the following build and run commands:
 # docker build -t bjucps/open-contest .
