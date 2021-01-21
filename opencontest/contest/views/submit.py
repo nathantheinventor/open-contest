@@ -170,7 +170,7 @@ def runCode(sub: Submission, user: User) -> list:
                 answers.append("")
             else:
                 inputs.append(sub.problem.testData[i].input)
-                answers.append(sub.problem.testData[i].output)
+                answers.append(readFile(f"/db/problems/{prob.id}/output/out{i}.txt"))
 
             errors.append(readFile(f"/tmp/{sub.id}/out/err{i}.txt"))
             outputs.append(readFile(f"/tmp/{sub.id}/out/out{i}.txt"))

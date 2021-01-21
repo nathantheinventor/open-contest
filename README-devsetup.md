@@ -91,7 +91,9 @@ PyCharm to find things within Django's directory structure.
 Visual Studio Code includes excellent Python support. 
 
 To setup Visual Studio Code, install the Microsoft Python extension in VSCode, then choose
-**File > Open Folder** and select the open-contest/opencontest folder.
+**File > Open Folder** and select the open-contest/opencontest folder. That will set the
+correct root folder for the Python extension to be able to provide proper code navigation
+and autocompletion features.
 
 # Publishing Changes to DockerHub
 
@@ -103,6 +105,6 @@ to do this.
 
 To add a new language:
 
-1. Edit leaderboard.py and languages.json to add the new language.
+1. Edit leaderboard.py, languages.json, and submit.py to add the new language.
 
 1. Define a runner for the language by creating a subfolder in open-contest/runners.
